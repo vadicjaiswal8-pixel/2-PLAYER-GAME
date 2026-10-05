@@ -1,0 +1,88 @@
+<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><title>Pocket Arcade</title><link rel="manifest" href="/manifest.json"><meta name="theme-color" content="#1b1740"><link rel="icon" href="/icon-192.png">
+<style>
+*{box-sizing:border-box;touch-action:manipulation}body{margin:0;background:linear-gradient(160deg,#1b1740,#0f2a4a);color:#fff;font:16px system-ui,sans-serif;min-height:100vh}
+#a{max-width:520px;margin:auto;padding:14px;text-align:center}h1{margin:8px 0;font-size:28px}p{opacity:.85}
+button{font:inherit;border:0;border-radius:14px;padding:12px 16px;background:#ffb703;color:#222;font-weight:700;cursor:pointer;margin:4px}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:8px}.card{background:#ffffff1c;color:#fff;margin:0;padding:14px 8px}.card b{font-size:36px;display:block}.card small{font-weight:400;opacity:.8}
+.big{font-size:46px;font-weight:800;margin:10px}.sc{font-size:24px;margin:8px}.pill{background:#ffffff22;border-radius:20px;padding:8px 14px;margin:8px 0;word-break:break-all}
+.tap{width:100%;height:230px;font-size:42px;background:#ff5d8f;color:#fff;border-radius:24px;margin:8px 0}.rd{background:#e63946}.gr{background:#2ecc71}
+input{font-size:30px;text-align:center;width:80%;padding:10px;border-radius:12px;border:0}
+.mg{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}.mc{height:76px;font-size:32px;background:#3a4a8a;color:#fff;margin:0;padding:0}.mc.up{background:#fff}.mc.ok{background:#2ecc71;opacity:.6}
+</style></head><body><div id="a"></div><script>
+const $=s=>document.querySelector(s);
+const G={tap:['👆','Tap Race','Tap as fast as you can for 10 seconds'],mem:['🧠','Memory Flip','Match all 6 pairs in the fewest moves'],math:['➕','Quick Math','Solve as many sums as you can in 25 seconds'],word:['🔤','Word Scramble','Unscramble as many words as you can in 45 seconds'],react:['⚡','Reaction Duel','Tap the moment the screen turns green']};
+const LOW={tap:0,math:0,word:0,mem:1,react:1},U={tap:'taps',math:'solved',word:'solved',mem:'pairs',react:''};
+const F={tap:v=>v+' taps',math:v=>v+' solved',word:v=>v+' solved',mem:v=>Math.floor(v/100)+' moves',react:v=>v>=9999?'Too early':v+' ms'};
+const fm=(g,v)=>v==null||v>=1e9||v<0?'—':F[g](v);
+const WORDS='planet guitar island dragon coffee jungle rocket pillow butter castle garden window monkey silver pocket banana orange bridge candle wizard forest cookie pirate tunnel hammer market shadow turtle sunset puzzle'.split(' ');
+const rng=s=>()=>{s|=0;s=s+0x6D2B79F5|0;let t=Math.imul(s^s>>>15,1|s);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296};
+const timer=(el,ms,done)=>{const end=Date.now()+ms,iv=setInterval(()=>{const l=Math.max(0,Math.ceil((end-Date.now())/1000));$('#ts').textContent=l;if(Date.now()>=end){clearInterval(iv);done()}},100);return()=>clearInterval(iv)};
+const GAMES={
+tap(el,seed,prog,done){let c=0;el.innerHTML='<div class=big id=ts>10</div><button id=tb class=tap>TAP!</button><div class=sc id=tc>0</div>';
+ const tb=$('#tb');tb.onpointerdown=()=>{c++;$('#tc').textContent=c;prog(c)};
+ return timer(el,10000,()=>{tb.disabled=true;done(c)})},
+math(el,seed,prog,done){const r=rng(seed);let c=0,q;
+ const nx=()=>{const a=2+Math.floor(r()*11),b=2+Math.floor(r()*11),o=Math.floor(r()*3);q=o==0?[a+' + '+b,a+b]:o==1?[(a+b)+' − '+b,a]:[a+' × '+b,a*b];$('#mq').textContent=q[0]+' = ?';$('#mi').value=''};
+ el.innerHTML='<div class=big id=ts>25</div><div class=big id=mq></div><input id=mi type=number inputmode=numeric><div class=sc id=tc>0</div>';
+ nx();const i=$('#mi');i.focus();i.oninput=()=>{if(+i.value===q[1]){c++;$('#tc').textContent=c;prog(c);nx()}};
+ return timer(el,25000,()=>{i.disabled=true;done(c)})},
+word(el,seed,prog,done){const r=rng(seed);let c=0,w;
+ const sh=s=>{let a=s.split(''),t;do{for(let i=a.length-1;i>0;i--){const j=Math.floor(r()*(i+1));[a[i],a[j]]=[a[j],a[i]]}t=a.join('')}while(t==s);return t};
+ const nx=()=>{w=WORDS[Math.floor(r()*WORDS.length)];$('#mq').textContent=sh(w).toUpperCase();$('#mi').value=''};
+ el.innerHTML='<div class=big id=ts>45</div><div class=big id=mq></div><input id=mi autocapitalize=off autocomplete=off><div class=sc id=tc>0</div>';
+ nx();const i=$('#mi');i.focus();i.oninput=()=>{if(i.value.toLowerCase().trim()===w){c++;$('#tc').textContent=c;prog(c);nx()}};
+ return timer(el,45000,()=>{i.disabled=true;done(c)})},
+mem(el,seed,prog,done){const r=rng(seed),E=['🐶','🐱','🦊','🐼','🐸','🦄'],d=E.concat(E);
+ for(let i=11;i>0;i--){const j=Math.floor(r()*(i+1));[d[i],d[j]]=[d[j],d[i]]}
+ let open=[],mv=0,m=0,lock=false;const t0=Date.now();
+ el.innerHTML='<div class=sc id=tc>Moves: 0</div><div class=mg>'+d.map((x,i)=>`<button class=mc data-i=${i}>?</button>`).join('')+'</div>';
+ const bs=[...el.querySelectorAll('.mc')];
+ bs.forEach(b=>b.onclick=()=>{const i=+b.dataset.i;if(lock||open.includes(i)||b.classList.contains('ok'))return;b.textContent=d[i];b.classList.add('up');open.push(i);
+  if(open.length==2){mv++;$('#tc').textContent='Moves: '+mv;const[a,c]=open;
+   if(d[a]==d[c]){bs[a].classList.add('ok');bs[c].classList.add('ok');open=[];m++;prog(m);if(m==6)done(mv*100+Math.min(99,Math.round((Date.now()-t0)/1000)))}
+   else{lock=true;setTimeout(()=>{[a,c].forEach(k=>{bs[k].textContent='?';bs[k].classList.remove('up')});open=[];lock=false},700)}}});
+ return()=>{}},
+react(el,seed,prog,done){const r=rng(seed),dl=2000+Math.floor(r()*3000);let st=0,t0,fd=0;
+ el.innerHTML='<button id=rb class="tap rd">WAIT...</button>';const b=$('#rb');
+ const to=setTimeout(()=>{st=1;t0=Date.now();b.textContent='TAP NOW!';b.className='tap gr'},dl);
+ const fin=setTimeout(()=>{if(!fd){fd=1;done(9999)}},dl+4000);
+ b.onpointerdown=()=>{if(fd)return;fd=1;clearTimeout(to);clearTimeout(fin);if(!st){b.textContent='Too early!';done(9999)}else{const ms=Date.now()-t0;b.textContent=ms+' ms';done(ms)}};
+ return()=>{clearTimeout(to);clearTimeout(fin)}}};
+let ws,off=0,room=null,n=1,wins={me:0,opp:0},view='home',msg='',cleanup=null,last=null,want=0,cd=null,best=JSON.parse(localStorage.best||'{}'),
+ pid=localStorage.pid||(localStorage.pid=Math.random().toString(36).slice(2)+Date.now().toString(36));
+const send=o=>ws&&ws.readyState==1&&ws.send(JSON.stringify({...o,pid}));
+function conn(){ws=new WebSocket((location.protocol=='https:'?'wss://':'ws://')+location.host);
+ ws.onopen=()=>{const c=new URLSearchParams(location.search).get('r')||localStorage.room;if(c)send({t:'join',code:c})};
+ ws.onmessage=e=>{const d=JSON.parse(e.data);
+  if(d.t=='err'){msg=d.err;room=null;localStorage.removeItem('room');history.replaceState(null,'','/');if(view!='play')draw()}
+  else if(d.t=='room'){room=d.code;n=d.n;wins=d.wins;localStorage.room=room;msg='';history.replaceState(null,'','/');if(want&&n==1){want=0;share()}if(view!='play')draw()}
+  else if(d.t=='go'){off=d.now-Date.now();startGame(d.g,d.seed,d.startAt-off,true)}
+  else if(d.t=='prog'){const o=$('#op');if(o)o.textContent='Friend: '+d.v+' '+U[cur]}
+  else if(d.t=='res'){view='res';last=d;if(cleanup)cleanup();draw()}};
+ ws.onclose=()=>setTimeout(conn,1500)}
+let cur='';
+function startGame(g,seed,at,mp){if(cleanup)cleanup();if(cd)clearInterval(cd);cur=g;view='play';
+ $('#a').innerHTML=`<h1>${G[g][0]} ${G[g][1]}</h1><p>${G[g][2]}</p><div class=pill id=op style="${mp?'':'display:none'}">Friend: ready</div><div class=big id=cd></div><div id=gm></div>`;
+ cd=setInterval(()=>{const l=at-Date.now();if(l>0){$('#cd').textContent=Math.ceil(l/1000);return}
+  clearInterval(cd);$('#cd').textContent='GO!';
+  cleanup=GAMES[g]($('#gm'),seed,v=>mp&&send({t:'prog',v}),v=>{
+   if(mp){send({t:'score',v});$('#gm').insertAdjacentHTML('beforeend','<p>Your score: '+fm(g,v)+'<br>Waiting for your friend to finish...</p>')}
+   else{const b=best[g],nb=b==null||(LOW[g]?v<b:v>b);if(nb){best[g]=v;localStorage.best=JSON.stringify(best)}last={g,sc:{me:v},win:'solo',nb};view='res';draw()}})},100)}
+function play(g){if(room&&n>1)send({t:'pick',g});else startGame(g,Math.floor(Math.random()*1e9),Date.now()+2500,false)}
+function home(){if(cleanup)cleanup();cleanup=null;if(cd)clearInterval(cd);view='home';draw()}
+function share(){const u=location.origin+'/?r='+room;
+ if(navigator.share)navigator.share({title:'Play with me!',text:'Join my game on Pocket Arcade',url:u}).catch(()=>{});
+ else if(navigator.clipboard)navigator.clipboard.writeText(u).then(()=>{msg='Invite link copied! Send it to your friend.';draw()});else{msg=u;draw()}}
+function invite(){if(!room){want=1;send({t:'create'})}else share()}
+function draw(){const a=$('#a');if(view=='play')return;
+ if(view=='res'){const d=last,g=d.g,T={me:'🎉 You win!',opp:'💛 Friend wins!',tie:"🤝 It's a tie!",solo:d.nb?'🏆 New personal best!':'Nice run!'}[d.win],
+  S={me:'Sweet victory. Rematch?',opp:'So close! Go for the rematch.',tie:'Evenly matched!',solo:best[g]!=null?'Your best: '+fm(g,best[g]):''}[d.win];
+  a.innerHTML=`<h1>${T}</h1><p>${S}</p><div class=pill>You: ${fm(g,d.sc.me)}${d.win!='solo'?' &nbsp;·&nbsp; Friend: '+fm(g,d.sc.opp):''}</div>${room&&n>1?`<div class=pill>Series: You ${wins.me} - ${wins.opp} Friend</div>`:''}<button onclick="play('${g}')">Play again</button><button onclick="home()">All games</button>${d.win=='solo'?'<button onclick="invite()">👥 Challenge a friend</button>':''}`;return}
+ const link=room?location.origin+'/?r='+room:'';
+ a.innerHTML=`<h1>🎮 Pocket Arcade</h1><p>Quick games. Play solo, or challenge a friend any time.</p>${msg?`<div class=pill>${msg}</div>`:''}
+ ${room&&n>1?`<div class=pill>Friend connected · You ${wins.me} - ${wins.opp} Friend</div>`:room?`<div class=pill>Waiting for a friend to join...<br><small>${link}</small></div>`:''}
+ <button onclick="invite()">${room?'📤 Share invite link':'👥 Invite a friend'}</button>
+ <div class=grid>${Object.keys(G).map(g=>`<button class=card onclick="play('${g}')"><b>${G[g][0]}</b>${G[g][1]}<br><small>${G[g][2]}</small></button>`).join('')}</div>`}
+draw();conn();
+if("serviceWorker"in navigator)navigator.serviceWorker.register("/sw.js");
+</script></body></html>
