@@ -1,6 +1,6 @@
 const http = require('http'), fs = require('fs'), path = require('path');
 const { WebSocketServer } = require('ws');
-const LOW = { tap: 0, math: 0, word: 0, mem: 1, react: 1 }, rooms = {};
+const LOW = { tug: 0, spot: 1, draw: 1, darts: 0, archery: 0 }, rooms = {};
 const T = { '/manifest.json': 'application/json', '/sw.js': 'text/javascript', '/icon-192.png': 'image/png', '/icon-512.png': 'image/png' };
 const srv = http.createServer((q, s) => {
   const p = q.url.split('?')[0], f = T[p] ? p.slice(1) : 'index.html';
@@ -12,7 +12,7 @@ const live = r => r.p.filter(x => x.ws && x.ws.readyState == 1);
 const all = r => live(r).every(x => r.round.sc[x.pid] !== undefined);
 function info(r) {
   const L = live(r);
-  for (const x of L) send(x.ws, { t: 'room', code: r.code, n: L.length, wins: { me: r.wins[x.pid] || 0, opp: r.p.reduce((s, y) => s + (y.pid != x.pid ? (r.wins[y.pid] || 0) : 0), 0) } });
+  for (const x of L) send(x.ws, { t: 'room', code: r.code, n: L.length, names: { me: x.name || 'You', opp: (L.find(y => y != x) || {}).name || '' }, wins: { me: r.wins[x.pid] || 0, opp: r.p.reduce((s, y) => s + (y.pid != x.pid ? (r.wins[y.pid] || 0) : 0), 0) } });
 }
 function finish(r) {
   const rd = r.round; if (!rd || rd.done) return; rd.done = 1;
@@ -22,13 +22,13 @@ function finish(r) {
   for (const x of L) { const o = L.find(y => y != x); send(x.ws, { t: 'res', g: rd.g, sc: { me: rd.sc[x.pid], opp: o ? rd.sc[o.pid] : undefined }, win: L.length < 2 ? 'solo' : win == null ? 'tie' : win == x.pid ? 'me' : 'opp' }); }
   info(r);
 }
-function join(ws, c, pid) {
+function join(ws, c, pid, name) {
   const r = rooms[c];
   if (!r) return send(ws, { t: 'err', err: 'Room not found. Ask your friend for a new link.' });
   if (!pid) return;
   let x = r.p.find(y => y.pid == pid);
   if (!x) { if (r.p.length >= 2) return send(ws, { t: 'err', err: 'That room is full.' }); x = { pid }; r.p.push(x); }
-  x.ws = ws; ws.r = r; ws.x = x; info(r);
+  x.ws = ws; if (name) x.name = String(name).slice(0, 14); ws.r = r; ws.x = x; info(r);
 }
 function act(ws, d) {
   const r = ws.r, x = ws.x;
@@ -45,8 +45,8 @@ wss.on('connection', ws => {
     let d; try { d = JSON.parse(m); } catch { return; }
     if (d.t == 'create') {
       let c; do c = Array.from({ length: 6 }, () => 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'[Math.floor(Math.random() * 32)]).join(''); while (rooms[c]);
-      rooms[c] = { code: c, p: [], wins: {}, round: null }; join(ws, c, d.pid);
-    } else if (d.t == 'join') join(ws, String(d.code || '').toUpperCase(), d.pid);
+      rooms[c] = { code: c, p: [], wins: {}, round: null }; join(ws, c, d.pid, d.name);
+    } else if (d.t == 'join') join(ws, String(d.code || '').toUpperCase(), d.pid, d.name);
     else if (ws.r) act(ws, d);
   });
   ws.on('close', () => {
@@ -57,4 +57,4 @@ wss.on('connection', ws => {
     if (!live(r).length) setTimeout(() => { if (!live(r).length) delete rooms[r.code]; }, 6e5);
   });
 });
-srv.listen(process.env.PORT || 3000, '0.0.0.0', () => console.log('Pocket Arcade running'));
+srv.listen(process.env.PORT || 3000, '0.0.0.0', () => console.log('Tussle running'));

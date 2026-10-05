@@ -1,88 +1,104 @@
-<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><title>Pocket Arcade</title><link rel="manifest" href="/manifest.json"><meta name="theme-color" content="#1b1740"><link rel="icon" href="/icon-192.png">
+<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><title>Tussle</title><link rel="manifest" href="/manifest.json"><meta name="theme-color" content="#f4ead5"><link rel="icon" href="/icon-192.png">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Lilita+One&family=Nunito:wght@700;900&display=swap">
 <style>
-*{box-sizing:border-box;touch-action:manipulation}body{margin:0;background:linear-gradient(160deg,#1b1740,#0f2a4a);color:#fff;font:16px system-ui,sans-serif;min-height:100vh}
-#a{max-width:520px;margin:auto;padding:14px;text-align:center}h1{margin:8px 0;font-size:28px}p{opacity:.85}
-button{font:inherit;border:0;border-radius:14px;padding:12px 16px;background:#ffb703;color:#222;font-weight:700;cursor:pointer;margin:4px}
-.grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:8px}.card{background:#ffffff1c;color:#fff;margin:0;padding:14px 8px}.card b{font-size:36px;display:block}.card small{font-weight:400;opacity:.8}
-.big{font-size:46px;font-weight:800;margin:10px}.sc{font-size:24px;margin:8px}.pill{background:#ffffff22;border-radius:20px;padding:8px 14px;margin:8px 0;word-break:break-all}
-.tap{width:100%;height:230px;font-size:42px;background:#ff5d8f;color:#fff;border-radius:24px;margin:8px 0}.rd{background:#e63946}.gr{background:#2ecc71}
-input{font-size:30px;text-align:center;width:80%;padding:10px;border-radius:12px;border:0}
-.mg{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}.mc{height:76px;font-size:32px;background:#3a4a8a;color:#fff;margin:0;padding:0}.mc.up{background:#fff}.mc.ok{background:#2ecc71;opacity:.6}
+*{box-sizing:border-box;touch-action:manipulation}
+body{margin:0;background:#f4ead5 radial-gradient(#1a1a1a1f 1.2px,transparent 1.5px) 0 0/14px 14px;color:#1a1a1a;font:700 16px Nunito,sans-serif;min-height:100vh}
+#a{max-width:440px;margin:auto;padding:22px 18px 40px;text-align:center}
+.L,h1,.big,.sc{font-family:'Lilita One',sans-serif;font-weight:400}
+h1{margin:0;font-size:80px;line-height:1;transform:rotate(-3deg);-webkit-text-stroke:3px #1a1a1a;text-shadow:5px 5px 0 #1a1a1a;letter-spacing:1px}
+h2{font:400 26px 'Lilita One';margin:10px 0}
+.b{border:4px solid #1a1a1a;border-radius:18px;font:inherit;font-weight:900;padding:12px 16px;background:#ffc93c;box-shadow:4px 4px 0 #1a1a1a;cursor:pointer;color:#1a1a1a;margin:6px}
+.b:active{transform:translate(3px,3px);box-shadow:1px 1px 0 #1a1a1a}
+.cta{width:100%;height:64px;margin:6px 0;background:#e5392f;color:#fff6e0;font:400 27px 'Lilita One';letter-spacing:1px}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:6px}
+.k{margin:0;height:170px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;font:400 21px 'Lilita One'}.k small{font:900 13px Nunito}
+.k:nth-child(odd){transform:rotate(-1.4deg)}.k:nth-child(even){transform:rotate(1.3deg)}
+.pill{border:3px solid #1a1a1a;background:#fff6e0;border-radius:16px;padding:8px 12px;margin:10px 0;word-break:break-all;box-shadow:3px 3px 0 #1a1a1a}
+input{font:900 20px Nunito;text-align:center;width:100%;padding:10px;border-radius:14px;border:4px solid #1a1a1a;background:#fff6e0;margin:6px 0}
+.big{font-size:46px;margin:6px}.sc{font-size:26px;margin:8px}
+.tap{width:100%;height:210px;font:400 44px 'Lilita One';border:4px solid #1a1a1a;border-radius:24px;color:#fff6e0;background:#e5392f;box-shadow:5px 5px 0 #1a1a1a;margin:8px 0;user-select:none}
+.tap:active{transform:translate(4px,4px);box-shadow:1px 1px 0 #1a1a1a}.rd{background:#e5392f}.gr{background:#2f9e5b}
+.rope{position:relative;height:30px;border:4px solid #1a1a1a;border-radius:16px;background:linear-gradient(90deg,#e5392f 50%,#2563c9 50%);margin:12px 0}
+#rm{position:absolute;top:-10px;left:50%;width:22px;height:42px;margin-left:-11px;background:#ffc93c;border:4px solid #1a1a1a;border-radius:8px;transition:left .08s}
+.ci{position:relative;width:168px;height:168px;border:4px solid #1a1a1a;border-radius:50%;background:#fff6e0;margin:10px auto;box-shadow:4px 4px 0 #1a1a1a}
+.ci span{position:absolute;line-height:1;cursor:pointer;transform:translate(-50%,-50%);color:#1a1a1a;padding:2px}
+.bad{animation:sh .3s}@keyframes sh{25%{transform:translateX(-8px)}75%{transform:translateX(8px)}}
 </style></head><body><div id="a"></div><script>
-const $=s=>document.querySelector(s);
-const G={tap:['👆','Tap Race','Tap as fast as you can for 10 seconds'],mem:['🧠','Memory Flip','Match all 6 pairs in the fewest moves'],math:['➕','Quick Math','Solve as many sums as you can in 25 seconds'],word:['🔤','Word Scramble','Unscramble as many words as you can in 45 seconds'],react:['⚡','Reaction Duel','Tap the moment the screen turns green']};
-const LOW={tap:0,math:0,word:0,mem:1,react:1},U={tap:'taps',math:'solved',word:'solved',mem:'pairs',react:''};
-const F={tap:v=>v+' taps',math:v=>v+' solved',word:v=>v+' solved',mem:v=>Math.floor(v/100)+' moves',react:v=>v>=9999?'Too early':v+' ms'};
+const $=s=>document.querySelector(s),shuf=(a,r)=>{for(let i=a.length-1;i>0;i--){const j=Math.floor(r()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a};
+const K='stroke="#1a1a1a" stroke-width="3"',V=b=>'<svg viewBox="0 0 80 80" width="84" height="84">'+b+'</svg>';
+const G={tug:['Tug of War','Tap like mad','#e5392f','#fff6e0',V('<path d="M8 46Q40 36 72 46" stroke="#1a1a1a" stroke-width="5" fill="none"/><rect x="36" y="38" width="8" height="18" fill="#ffc93c" '+K+'/><circle cx="12" cy="38" r="9" fill="#fff6e0" '+K+'/><circle cx="68" cy="38" r="9" fill="#2563c9" '+K+'/>')],
+spot:['Spot the Match','Find the twin','#ffc93c','#1a1a1a',V('<circle cx="28" cy="40" r="24" fill="#fff6e0" '+K+'/><circle cx="52" cy="40" r="24" fill="#fff6e0" fill-opacity=".7" '+K+'/><polygon points="18,30 21,37 28,37 22,41 24,48 18,44 12,48 14,41 8,37 15,37" fill="#2563c9"/><path d="M40 33L46 40L40 47L34 40Z" fill="#e5392f" '+K+'/>')],
+draw:['Quick Draw','Wait… now!','#ff7a2f','#1a1a1a',V('<path d="M8 54Q40 74 72 54Q58 52 56 36Q40 26 24 36Q22 52 8 54Z" fill="#fff6e0" '+K+'/><text x="40" y="22" text-anchor="middle" font-family="Lilita One" font-size="24">!</text>')]};
+G.darts=['Darts','Time your throw','#2563c9','#fff6e0',V('<circle cx="38" cy="44" r="30" fill="#fff6e0" '+K+'/><circle cx="38" cy="44" r="21" fill="#e5392f" '+K+'/><circle cx="38" cy="44" r="12" fill="#fff6e0" '+K+'/><circle cx="38" cy="44" r="4" fill="#1a1a1a"/><path d="M38 44L68 12" stroke="#1a1a1a" stroke-width="4" stroke-linecap="round"/><path d="M62 10L72 8L70 18Z" fill="#ffc93c" '+K+'/>')];
+G.archery=['Archery','Mind the wind','#2f9e5b','#fff6e0',V('<path d="M56 8Q22 40 56 72" stroke="#1a1a1a" stroke-width="5" fill="none"/><path d="M56 8L56 72M10 40L66 40" stroke="#1a1a1a" stroke-width="3"/><path d="M66 32L78 40L66 48Z" fill="#ffc93c" '+K+'/><path d="M10 40L4 33M10 40L4 47" stroke="#e5392f" stroke-width="4"/>')];
+const LOW={tug:0,spot:1,draw:1,darts:0,archery:0},F={darts:v=>v+' pts',archery:v=>v+' pts',tug:v=>v+' taps',spot:v=>(v/1000).toFixed(1)+' s',draw:v=>v>=9999?'Too early':v+' ms'};
 const fm=(g,v)=>v==null||v>=1e9||v<0?'—':F[g](v);
-const WORDS='planet guitar island dragon coffee jungle rocket pillow butter castle garden window monkey silver pocket banana orange bridge candle wizard forest cookie pirate tunnel hammer market shadow turtle sunset puzzle'.split(' ');
 const rng=s=>()=>{s|=0;s=s+0x6D2B79F5|0;let t=Math.imul(s^s>>>15,1|s);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296};
-const timer=(el,ms,done)=>{const end=Date.now()+ms,iv=setInterval(()=>{const l=Math.max(0,Math.ceil((end-Date.now())/1000));$('#ts').textContent=l;if(Date.now()>=end){clearInterval(iv);done()}},100);return()=>clearInterval(iv)};
+const timer=(ms,done)=>{const end=Date.now()+ms,iv=setInterval(()=>{const l=Math.max(0,Math.ceil((end-Date.now())/1000));$('#ts').textContent=l;if(Date.now()>=end){clearInterval(iv);done()}},100);return()=>clearInterval(iv)};
+const aim=(el,seed,prog,done,N,wnd,rings)=>{const r=rng(seed),P=[];for(let i=0;i<N;i++)P.push([1.4+r()*1.2,1.1+r()*1.2,r()*6.28,r()*6.28,wnd?(r()*2-1)*45:0]);
+ let i=0,tot=0,raf,st=performance.now(),dead=0;
+ el.innerHTML='<div class="sc" id="tc"></div><div class="pill" id="wd"></div><div id="bd" style="position:relative;width:260px;height:260px;margin:0 auto"><svg viewBox="-130 -130 260 260" width="260" height="260">'+rings.map((c,k)=>'<circle r="'+(120-k*24)+'" fill="'+c+'" stroke="#1a1a1a" stroke-width="3"/>').join('')+'</svg><div id="ch" style="position:absolute;width:26px;height:26px;border:4px solid #1a1a1a;border-radius:50%;background:#ffffff88"></div></div><button class="b cta" id="th">THROW</button>';
+ const lab=()=>{$('#tc').textContent=(wnd?'Arrow ':'Dart ')+Math.min(i+1,N)+' / '+N+' · '+tot+' pts';const w=P[Math.min(i,N-1)][4];$('#wd').textContent=wnd?'Wind '+(w>0?'→ ':'← ')+Math.abs(Math.round(w)):'Stop the crosshair on the bullseye'};
+ const pos=()=>{const t=(performance.now()-st)/1000,p=P[Math.min(i,N-1)];return[Math.cos(t*p[0]+p[2])*100,Math.sin(t*p[1]+p[3])*100]};
+ const loop=()=>{if(dead||i>=N)return;const[x,y]=pos(),c=$('#ch');c.style.left=(117+x)+'px';c.style.top=(117+y)+'px';raf=requestAnimationFrame(loop)};
+ $('#th').onpointerdown=()=>{if(i>=N)return;const[x,y]=pos(),hx=x+P[i][4],s=Math.max(0,Math.round(100*(1-Math.hypot(hx,y)/120)));tot+=s;
+  $('#bd').insertAdjacentHTML('beforeend','<div style="position:absolute;width:12px;height:12px;border-radius:50%;background:#1a1a1a;border:2px solid #ffc93c;left:'+(124+hx)+'px;top:'+(124+y)+'px"></div>');
+  i++;prog(tot);if(i>=N){$('#th').disabled=true;done(tot)}else st=performance.now();lab()};
+ lab();loop();return()=>{dead=1;cancelAnimationFrame(raf)}};
+let tc=0,oc=0;const rope=()=>{const m=$('#rm');if(m)m.style.left=Math.max(4,Math.min(96,50+(tc-oc)*2.5))+'%'};
 const GAMES={
-tap(el,seed,prog,done){let c=0;el.innerHTML='<div class=big id=ts>10</div><button id=tb class=tap>TAP!</button><div class=sc id=tc>0</div>';
- const tb=$('#tb');tb.onpointerdown=()=>{c++;$('#tc').textContent=c;prog(c)};
- return timer(el,10000,()=>{tb.disabled=true;done(c)})},
-math(el,seed,prog,done){const r=rng(seed);let c=0,q;
- const nx=()=>{const a=2+Math.floor(r()*11),b=2+Math.floor(r()*11),o=Math.floor(r()*3);q=o==0?[a+' + '+b,a+b]:o==1?[(a+b)+' − '+b,a]:[a+' × '+b,a*b];$('#mq').textContent=q[0]+' = ?';$('#mi').value=''};
- el.innerHTML='<div class=big id=ts>25</div><div class=big id=mq></div><input id=mi type=number inputmode=numeric><div class=sc id=tc>0</div>';
- nx();const i=$('#mi');i.focus();i.oninput=()=>{if(+i.value===q[1]){c++;$('#tc').textContent=c;prog(c);nx()}};
- return timer(el,25000,()=>{i.disabled=true;done(c)})},
-word(el,seed,prog,done){const r=rng(seed);let c=0,w;
- const sh=s=>{let a=s.split(''),t;do{for(let i=a.length-1;i>0;i--){const j=Math.floor(r()*(i+1));[a[i],a[j]]=[a[j],a[i]]}t=a.join('')}while(t==s);return t};
- const nx=()=>{w=WORDS[Math.floor(r()*WORDS.length)];$('#mq').textContent=sh(w).toUpperCase();$('#mi').value=''};
- el.innerHTML='<div class=big id=ts>45</div><div class=big id=mq></div><input id=mi autocapitalize=off autocomplete=off><div class=sc id=tc>0</div>';
- nx();const i=$('#mi');i.focus();i.oninput=()=>{if(i.value.toLowerCase().trim()===w){c++;$('#tc').textContent=c;prog(c);nx()}};
- return timer(el,45000,()=>{i.disabled=true;done(c)})},
-mem(el,seed,prog,done){const r=rng(seed),E=['🐶','🐱','🦊','🐼','🐸','🦄'],d=E.concat(E);
- for(let i=11;i>0;i--){const j=Math.floor(r()*(i+1));[d[i],d[j]]=[d[j],d[i]]}
- let open=[],mv=0,m=0,lock=false;const t0=Date.now();
- el.innerHTML='<div class=sc id=tc>Moves: 0</div><div class=mg>'+d.map((x,i)=>`<button class=mc data-i=${i}>?</button>`).join('')+'</div>';
- const bs=[...el.querySelectorAll('.mc')];
- bs.forEach(b=>b.onclick=()=>{const i=+b.dataset.i;if(lock||open.includes(i)||b.classList.contains('ok'))return;b.textContent=d[i];b.classList.add('up');open.push(i);
-  if(open.length==2){mv++;$('#tc').textContent='Moves: '+mv;const[a,c]=open;
-   if(d[a]==d[c]){bs[a].classList.add('ok');bs[c].classList.add('ok');open=[];m++;prog(m);if(m==6)done(mv*100+Math.min(99,Math.round((Date.now()-t0)/1000)))}
-   else{lock=true;setTimeout(()=>{[a,c].forEach(k=>{bs[k].textContent='?';bs[k].classList.remove('up')});open=[];lock=false},700)}}});
- return()=>{}},
-react(el,seed,prog,done){const r=rng(seed),dl=2000+Math.floor(r()*3000);let st=0,t0,fd=0;
- el.innerHTML='<button id=rb class="tap rd">WAIT...</button>';const b=$('#rb');
- const to=setTimeout(()=>{st=1;t0=Date.now();b.textContent='TAP NOW!';b.className='tap gr'},dl);
- const fin=setTimeout(()=>{if(!fd){fd=1;done(9999)}},dl+4000);
+darts(el,seed,prog,done){return aim(el,seed,prog,done,6,0,['#fff6e0','#e5392f','#fff6e0','#e5392f','#1a1a1a'])},
+archery(el,seed,prog,done){return aim(el,seed,prog,done,5,1,['#fff6e0','#1a1a1a','#2563c9','#e5392f','#ffc93c'])},
+tug(el,seed,prog,done){tc=oc=0;el.innerHTML='<div class="big" id="ts">15</div><div class="rope"><div id="rm"></div></div><div class="L">'+(on.opp?nm+' vs '+on.opp:'Pull!')+'</div><button id="tb" class="tap">PULL!</button><div class="sc" id="tc">0</div>';
+ const tb=$('#tb');tb.onpointerdown=()=>{tc++;$('#tc').textContent=tc;rope();prog(tc)};
+ return timer(15000,()=>{tb.disabled=true;done(tc)})},
+spot(el,seed,prog,done){const r=rng(seed),S='★♥♣☂☾♞⚑✂☎♫⚓✿❄☀♛✈'.split('');let n=0,pen=0,t0=Date.now();
+ const rd=()=>{const p=shuf(S.slice(),r),sh=p[0],ring=l=>'<div class="ci">'+shuf(l,r).map((g,i)=>{const a=(i*60+r()*30)*Math.PI/180,d=24+r()*14;return '<span data-g="'+g+'" style="left:'+(50+d*Math.cos(a))+'%;top:'+(50+d*Math.sin(a))+'%;font-size:'+(24+r()*20)+'px;transform:translate(-50%,-50%) rotate('+Math.floor(r()*360)+'deg)">'+g+'</span>'}).join('')+'</div>';
+  el.innerHTML='<div class="sc">Match '+(n+1)+' / 8</div>'+ring(p.slice(1,6).concat(sh))+ring(p.slice(6,11).concat(sh));
+  el.querySelectorAll('span').forEach(s=>s.onpointerdown=()=>{if(s.dataset.g==sh){n++;prog(n);n==8?done(Date.now()-t0+pen):rd()}else{pen+=1000;el.classList.remove('bad');void el.offsetWidth;el.classList.add('bad')}})};
+ rd();return()=>{}},
+draw(el,seed,prog,done){const r=rng(seed),dl=2000+Math.floor(r()*3000);let st=0,t0,fd=0;
+ el.innerHTML='<button id="rb" class="tap rd">WAIT…</button>';const b=$('#rb');
+ const to=setTimeout(()=>{st=1;t0=Date.now();b.textContent='DRAW!';b.className='tap gr'},dl),fin=setTimeout(()=>{if(!fd){fd=1;done(9999)}},dl+4000);
  b.onpointerdown=()=>{if(fd)return;fd=1;clearTimeout(to);clearTimeout(fin);if(!st){b.textContent='Too early!';done(9999)}else{const ms=Date.now()-t0;b.textContent=ms+' ms';done(ms)}};
  return()=>{clearTimeout(to);clearTimeout(fin)}}};
-let ws,off=0,room=null,n=1,wins={me:0,opp:0},view='home',msg='',cleanup=null,last=null,want=0,cd=null,best=JSON.parse(localStorage.best||'{}'),
+let ws,off=0,room=null,n=1,wins={me:0,opp:0},view='home',msg='',cleanup=null,last=null,want=0,cd=null,pend=null,cur='',on={me:'',opp:''},nm=localStorage.name||'',best=JSON.parse(localStorage.best||'{}'),
  pid=localStorage.pid||(localStorage.pid=Math.random().toString(36).slice(2)+Date.now().toString(36));
-const send=o=>ws&&ws.readyState==1&&ws.send(JSON.stringify({...o,pid}));
+const send=o=>ws&&ws.readyState==1&&ws.send(JSON.stringify({...o,pid,name:nm||'Player'}));
 function conn(){ws=new WebSocket((location.protocol=='https:'?'wss://':'ws://')+location.host);
- ws.onopen=()=>{const c=new URLSearchParams(location.search).get('r')||localStorage.room;if(c)send({t:'join',code:c})};
+ ws.onopen=()=>{const c=new URLSearchParams(location.search).get('r')||localStorage.room;if(c){if(nm)send({t:'join',code:c});else{pend=c;view='name';ui()}}};
  ws.onmessage=e=>{const d=JSON.parse(e.data);
-  if(d.t=='err'){msg=d.err;room=null;localStorage.removeItem('room');history.replaceState(null,'','/');if(view!='play')draw()}
-  else if(d.t=='room'){room=d.code;n=d.n;wins=d.wins;localStorage.room=room;msg='';history.replaceState(null,'','/');if(want&&n==1){want=0;share()}if(view!='play')draw()}
+  if(d.t=='err'){msg=d.err;room=null;localStorage.removeItem('room');history.replaceState(null,'','/');view=view=='play'?view:'home';if(view!='play')ui()}
+  else if(d.t=='room'){room=d.code;n=d.n;wins=d.wins;on=d.names||on;localStorage.room=room;msg='';history.replaceState(null,'','/');if(view=='name')view='home';if(want&&n==1){want=0;share()}if(view!='play')ui()}
   else if(d.t=='go'){off=d.now-Date.now();startGame(d.g,d.seed,d.startAt-off,true)}
-  else if(d.t=='prog'){const o=$('#op');if(o)o.textContent='Friend: '+d.v+' '+U[cur]}
-  else if(d.t=='res'){view='res';last=d;if(cleanup)cleanup();draw()}};
+  else if(d.t=='prog'){oc=d.v;if(cur=='tug')rope();const o=$('#op');if(o&&cur!='tug'&&cur!='draw')o.textContent=on.opp+': '+d.v+(cur=='spot'?' / 8':' pts')}
+  else if(d.t=='res'){view='res';last=d;if(cleanup)cleanup();ui()}};
  ws.onclose=()=>setTimeout(conn,1500)}
-let cur='';
 function startGame(g,seed,at,mp){if(cleanup)cleanup();if(cd)clearInterval(cd);cur=g;view='play';
- $('#a').innerHTML=`<h1>${G[g][0]} ${G[g][1]}</h1><p>${G[g][2]}</p><div class=pill id=op style="${mp?'':'display:none'}">Friend: ready</div><div class=big id=cd></div><div id=gm></div>`;
+ $('#a').innerHTML='<h2>'+G[g][0]+'</h2><div class="pill" id="op" style="'+(mp&&g!='tug'?'':'display:none')+'">'+on.opp+': ready</div><div class="big" id="cd"></div><div id="gm"></div>';
  cd=setInterval(()=>{const l=at-Date.now();if(l>0){$('#cd').textContent=Math.ceil(l/1000);return}
-  clearInterval(cd);$('#cd').textContent='GO!';
+  clearInterval(cd);$('#cd').textContent=g=='draw'?'':'GO!';
   cleanup=GAMES[g]($('#gm'),seed,v=>mp&&send({t:'prog',v}),v=>{
-   if(mp){send({t:'score',v});$('#gm').insertAdjacentHTML('beforeend','<p>Your score: '+fm(g,v)+'<br>Waiting for your friend to finish...</p>')}
-   else{const b=best[g],nb=b==null||(LOW[g]?v<b:v>b);if(nb){best[g]=v;localStorage.best=JSON.stringify(best)}last={g,sc:{me:v},win:'solo',nb};view='res';draw()}})},100)}
+   if(mp){send({t:'score',v});$('#gm').insertAdjacentHTML('beforeend','<p>Your score: '+fm(g,v)+'<br>Waiting for '+on.opp+' to finish...</p>')}
+   else{const b=best[g],nb=b==null||(LOW[g]?v<b:v>b);if(nb){best[g]=v;localStorage.best=JSON.stringify(best)}last={g,sc:{me:v},win:'solo',nb};view='res';ui()}})},100)}
 function play(g){if(room&&n>1)send({t:'pick',g});else startGame(g,Math.floor(Math.random()*1e9),Date.now()+2500,false)}
-function home(){if(cleanup)cleanup();cleanup=null;if(cd)clearInterval(cd);view='home';draw()}
+function home(){if(cleanup)cleanup();cleanup=null;if(cd)clearInterval(cd);view='home';ui()}
 function share(){const u=location.origin+'/?r='+room;
- if(navigator.share)navigator.share({title:'Play with me!',text:'Join my game on Pocket Arcade',url:u}).catch(()=>{});
- else if(navigator.clipboard)navigator.clipboard.writeText(u).then(()=>{msg='Invite link copied! Send it to your friend.';draw()});else{msg=u;draw()}}
-function invite(){if(!room){want=1;send({t:'create'})}else share()}
-function draw(){const a=$('#a');if(view=='play')return;
- if(view=='res'){const d=last,g=d.g,T={me:'🎉 You win!',opp:'💛 Friend wins!',tie:"🤝 It's a tie!",solo:d.nb?'🏆 New personal best!':'Nice run!'}[d.win],
-  S={me:'Sweet victory. Rematch?',opp:'So close! Go for the rematch.',tie:'Evenly matched!',solo:best[g]!=null?'Your best: '+fm(g,best[g]):''}[d.win];
-  a.innerHTML=`<h1>${T}</h1><p>${S}</p><div class=pill>You: ${fm(g,d.sc.me)}${d.win!='solo'?' &nbsp;·&nbsp; Friend: '+fm(g,d.sc.opp):''}</div>${room&&n>1?`<div class=pill>Series: You ${wins.me} - ${wins.opp} Friend</div>`:''}<button onclick="play('${g}')">Play again</button><button onclick="home()">All games</button>${d.win=='solo'?'<button onclick="invite()">👥 Challenge a friend</button>':''}`;return}
- const link=room?location.origin+'/?r='+room:'';
- a.innerHTML=`<h1>🎮 Pocket Arcade</h1><p>Quick games. Play solo, or challenge a friend any time.</p>${msg?`<div class=pill>${msg}</div>`:''}
- ${room&&n>1?`<div class=pill>Friend connected · You ${wins.me} - ${wins.opp} Friend</div>`:room?`<div class=pill>Waiting for a friend to join...<br><small>${link}</small></div>`:''}
- <button onclick="invite()">${room?'📤 Share invite link':'👥 Invite a friend'}</button>
- <div class=grid>${Object.keys(G).map(g=>`<button class=card onclick="play('${g}')"><b>${G[g][0]}</b>${G[g][1]}<br><small>${G[g][2]}</small></button>`).join('')}</div>`}
-draw();conn();
+ if(navigator.share)navigator.share({title:'Tussle',text:(nm||'Your friend')+' challenged you on Tussle!',url:u}).catch(()=>{});
+ else if(navigator.clipboard)navigator.clipboard.writeText(u).then(()=>{msg='Invite link copied! Send it to your friend.';ui()});else{msg=u;ui()}}
+function invite(){if(!nm.trim()){msg='Type your name first!';ui();return}if(!room){want=1;send({t:'create'})}else share()}
+function joinNow(){const v=$('#nin').value.trim();if(!v)return;nm=v.slice(0,14);localStorage.name=nm;send({t:'join',code:pend})}
+function ui(){const a=$('#a');if(view=='play')return;const hero=
+'<svg viewBox="0 0 390 230" width="100%" aria-label="Two characters fighting in a dust cloud"><defs><g id="c"><circle cx="195" cy="150" r="62"/><circle cx="142" cy="166" r="46"/><circle cx="248" cy="166" r="48"/><circle cx="195" cy="190" r="40"/></g></defs><use href="#c" fill="#1a1a1a" stroke="#1a1a1a" stroke-width="9"/><use href="#c" fill="#fff6e0"/><g '+K+'><circle cx="125" cy="108" r="28" fill="#e5392f"/><circle cx="268" cy="104" r="28" fill="#2563c9"/><path d="M98 140L56 118M296 136L338 114" stroke-width="12" stroke-linecap="round"/><polygon points="241,60 220.9,70.7 227.5,92.5 205.7,85.9 195,106 184.3,85.9 162.5,92.5 169.1,70.7 149,60 169.1,49.3 162.5,27.5 184.3,34.1 195,14 205.7,34.1 227.5,27.5 220.9,49.3" fill="#ffc93c"/></g><g fill="#fff"><circle cx="117" cy="110" r="6"/><circle cx="133" cy="110" r="6"/><circle cx="260" cy="106" r="6"/><circle cx="276" cy="106" r="6"/></g><g fill="#1a1a1a"><circle cx="119" cy="112" r="3"/><circle cx="131" cy="112" r="3"/><circle cx="262" cy="108" r="3"/><circle cx="274" cy="108" r="3"/></g><text x="195" y="62" text-anchor="middle" font-family="Lilita One" font-size="21" fill="#e5392f" transform="rotate(-8 195 58)">POW!</text></svg>';
+ if(view=='name'){a.innerHTML='<h1><span style="color:#e5392f">TUS</span><span style="color:#2563c9">SLE</span></h1>'+hero+'<h2>You\'ve been challenged!</h2><p>Who\'s tussling?</p><input id="nin" maxlength="14" placeholder="Your name" autofocus><button class="b cta" onclick="joinNow()">JOIN THE FIGHT</button>';return}
+ if(view=='res'){const d=last,g=d.g,o=on.opp||'Friend',T={me:'YOU WIN!',opp:o.toUpperCase()+' WINS!',tie:"IT'S A TIE!",solo:d.nb?'NEW PERSONAL BEST!':'NICE RUN!'}[d.win];
+  a.innerHTML='<h2 style="font-size:40px">'+T+'</h2><div class="pill">'+(nm||'You')+': '+fm(g,d.sc.me)+(d.win!='solo'?'<br>'+o+': '+fm(g,d.sc.opp):'')+'</div>'+(room&&n>1?'<div class="pill">'+(nm||'You')+' '+wins.me+' – '+wins.opp+' '+o+'</div>':'')+'<button class="b" onclick="play(\''+g+'\')">Rematch</button><button class="b" onclick="home()">All games</button>'+(d.win=='solo'?'<button class="b" onclick="invite()">Challenge a friend</button>':'');return}
+ const o=on.opp||'Friend',link=room?location.origin+'/?r='+room:'';
+ a.innerHTML='<h1><span style="color:#e5392f">TUS</span><span style="color:#2563c9">SLE</span></h1>'+hero+'<div class="L" style="font-size:19px;margin:4px 0 10px">Settle it. Two players. One link.</div>'+(msg?'<div class="pill">'+msg+'</div>':'')
+ +(room&&n>1?'<div class="pill">'+(nm||'You')+' vs '+o+'</div>':room?'<div class="pill">Waiting for your friend to join…<br><small>'+link+'</small></div>':'')
+ +'<input id="nin" maxlength="14" placeholder="Your name" value="'+nm.replace(/"/g,'')+'" oninput="nm=this.value.slice(0,14);localStorage.name=nm"><button class="b cta" onclick="invite()">'+(room?'SHARE INVITE LINK':'CHALLENGE A FRIEND')+'</button><h2 style="text-align:left">PICK YOUR FIGHT</h2><div class="grid">'
+ +Object.keys(G).map(g=>'<button class="b k" style="background:'+G[g][2]+';color:'+G[g][3]+'" onclick="play(\''+g+'\')">'+G[g][4]+G[g][0]+'<small>'+G[g][1]+'</small></button>').join('')+'</div>'
+ +'<div class="pill" style="margin-top:22px"><div class="L" style="font-size:19px">RIVALRY RECORD</div>'+(nm||'You')+' '+wins.me+' – '+wins.opp+' '+o+'</div>'}
+ui();conn();
 if("serviceWorker"in navigator)navigator.serviceWorker.register("/sw.js");
 </script></body></html>
