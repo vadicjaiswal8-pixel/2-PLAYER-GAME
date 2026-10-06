@@ -22,67 +22,83 @@ input{font:900 20px Nunito;text-align:center;width:100%;padding:10px;border-radi
 #rm{position:absolute;top:-10px;left:50%;width:22px;height:42px;margin-left:-11px;background:#ffc93c;border:4px solid #1a1a1a;border-radius:8px;transition:left .08s}
 .ci{position:relative;width:168px;height:168px;border:4px solid #1a1a1a;border-radius:50%;background:#fff6e0;margin:10px auto;box-shadow:4px 4px 0 #1a1a1a}
 .ci span{position:absolute;line-height:1;cursor:pointer;transform:translate(-50%,-50%);color:#1a1a1a;padding:2px}
-.bad{animation:sh .3s}@keyframes sh{25%{transform:translateX(-8px)}75%{transform:translateX(8px)}}
+.k:last-child:nth-child(odd){grid-column:1/-1;transform:rotate(-1deg)}.bad{animation:sh .3s}@keyframes fly{from{transform:translateY(150px) scale(1.6);opacity:.3}to{transform:none;opacity:1}}@keyframes sh{25%{transform:translateX(-8px)}75%{transform:translateX(8px)}}
 </style></head><body><div id="a"></div><script>
-const $=s=>document.querySelector(s),shuf=(a,r)=>{for(let i=a.length-1;i>0;i--){const j=Math.floor(r()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a};
-const K='stroke="#1a1a1a" stroke-width="3"',V=b=>'<svg viewBox="0 0 80 80" width="84" height="84">'+b+'</svg>';
-const G={tug:['Tug of War','Tap like mad','#e5392f','#fff6e0',V('<path d="M8 46Q40 36 72 46" stroke="#1a1a1a" stroke-width="5" fill="none"/><rect x="36" y="38" width="8" height="18" fill="#ffc93c" '+K+'/><circle cx="12" cy="38" r="9" fill="#fff6e0" '+K+'/><circle cx="68" cy="38" r="9" fill="#2563c9" '+K+'/>')],
-spot:['Spot the Match','Find the twin','#ffc93c','#1a1a1a',V('<circle cx="28" cy="40" r="24" fill="#fff6e0" '+K+'/><circle cx="52" cy="40" r="24" fill="#fff6e0" fill-opacity=".7" '+K+'/><polygon points="18,30 21,37 28,37 22,41 24,48 18,44 12,48 14,41 8,37 15,37" fill="#2563c9"/><path d="M40 33L46 40L40 47L34 40Z" fill="#e5392f" '+K+'/>')],
-draw:['Quick Draw','Wait… now!','#ff7a2f','#1a1a1a',V('<path d="M8 54Q40 74 72 54Q58 52 56 36Q40 26 24 36Q22 52 8 54Z" fill="#fff6e0" '+K+'/><text x="40" y="22" text-anchor="middle" font-family="Lilita One" font-size="24">!</text>')]};
-G.darts=['Darts','Time your throw','#2563c9','#fff6e0',V('<circle cx="38" cy="44" r="30" fill="#fff6e0" '+K+'/><circle cx="38" cy="44" r="21" fill="#e5392f" '+K+'/><circle cx="38" cy="44" r="12" fill="#fff6e0" '+K+'/><circle cx="38" cy="44" r="4" fill="#1a1a1a"/><path d="M38 44L68 12" stroke="#1a1a1a" stroke-width="4" stroke-linecap="round"/><path d="M62 10L72 8L70 18Z" fill="#ffc93c" '+K+'/>')];
-G.archery=['Archery','Mind the wind','#2f9e5b','#fff6e0',V('<path d="M56 8Q22 40 56 72" stroke="#1a1a1a" stroke-width="5" fill="none"/><path d="M56 8L56 72M10 40L66 40" stroke="#1a1a1a" stroke-width="3"/><path d="M66 32L78 40L66 48Z" fill="#ffc93c" '+K+'/><path d="M10 40L4 33M10 40L4 47" stroke="#e5392f" stroke-width="4"/>')];
-const LOW={tug:0,spot:1,draw:1,darts:0,archery:0},F={darts:v=>v+' pts',archery:v=>v+' pts',tug:v=>v+' taps',spot:v=>(v/1000).toFixed(1)+' s',draw:v=>v>=9999?'Too early':v+' ms'};
-const fm=(g,v)=>v==null||v>=1e9||v<0?'—':F[g](v);
+const $=s=>document.querySelector(s),K='stroke="#1a1a1a" stroke-width="3"',V=b=>'<svg viewBox="0 0 80 80" width="84" height="84">'+b+'</svg>';
 const rng=s=>()=>{s|=0;s=s+0x6D2B79F5|0;let t=Math.imul(s^s>>>15,1|s);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296};
-const timer=(ms,done)=>{const end=Date.now()+ms,iv=setInterval(()=>{const l=Math.max(0,Math.ceil((end-Date.now())/1000));$('#ts').textContent=l;if(Date.now()>=end){clearInterval(iv);done()}},100);return()=>clearInterval(iv)};
-const aim=(el,seed,prog,done,N,wnd,rings)=>{const r=rng(seed),P=[];for(let i=0;i<N;i++)P.push([1.4+r()*1.2,1.1+r()*1.2,r()*6.28,r()*6.28,wnd?(r()*2-1)*45:0]);
- let i=0,tot=0,raf,st=performance.now(),dead=0;
- el.innerHTML='<div class="sc" id="tc"></div><div class="pill" id="wd"></div><div id="bd" style="position:relative;width:260px;height:260px;margin:0 auto"><svg viewBox="-130 -130 260 260" width="260" height="260">'+rings.map((c,k)=>'<circle r="'+(120-k*24)+'" fill="'+c+'" stroke="#1a1a1a" stroke-width="3"/>').join('')+'</svg><div id="ch" style="position:absolute;width:26px;height:26px;border:4px solid #1a1a1a;border-radius:50%;background:#ffffff88"></div></div><button class="b cta" id="th">THROW</button>';
- const lab=()=>{$('#tc').textContent=(wnd?'Arrow ':'Dart ')+Math.min(i+1,N)+' / '+N+' · '+tot+' pts';const w=P[Math.min(i,N-1)][4];$('#wd').textContent=wnd?'Wind '+(w>0?'→ ':'← ')+Math.abs(Math.round(w)):'Stop the crosshair on the bullseye'};
- const pos=()=>{const t=(performance.now()-st)/1000,p=P[Math.min(i,N-1)];return[Math.cos(t*p[0]+p[2])*100,Math.sin(t*p[1]+p[3])*100]};
- const loop=()=>{if(dead||i>=N)return;const[x,y]=pos(),c=$('#ch');c.style.left=(117+x)+'px';c.style.top=(117+y)+'px';raf=requestAnimationFrame(loop)};
- $('#th').onpointerdown=()=>{if(i>=N)return;const[x,y]=pos(),hx=x+P[i][4],s=Math.max(0,Math.round(100*(1-Math.hypot(hx,y)/120)));tot+=s;
-  $('#bd').insertAdjacentHTML('beforeend','<div style="position:absolute;width:12px;height:12px;border-radius:50%;background:#1a1a1a;border:2px solid #ffc93c;left:'+(124+hx)+'px;top:'+(124+y)+'px"></div>');
-  i++;prog(tot);if(i>=N){$('#th').disabled=true;done(tot)}else st=performance.now();lab()};
- lab();loop();return()=>{dead=1;cancelAnimationFrame(raf)}};
-let tc=0,oc=0;const rope=()=>{const m=$('#rm');if(m)m.style.left=Math.max(4,Math.min(96,50+(tc-oc)*2.5))+'%'};
-const GAMES={
-darts(el,seed,prog,done){return aim(el,seed,prog,done,6,0,['#fff6e0','#e5392f','#fff6e0','#e5392f','#1a1a1a'])},
-archery(el,seed,prog,done){return aim(el,seed,prog,done,5,1,['#fff6e0','#1a1a1a','#2563c9','#e5392f','#ffc93c'])},
-tug(el,seed,prog,done){tc=oc=0;el.innerHTML='<div class="big" id="ts">15</div><div class="rope"><div id="rm"></div></div><div class="L">'+(on.opp?nm+' vs '+on.opp:'Pull!')+'</div><button id="tb" class="tap">PULL!</button><div class="sc" id="tc">0</div>';
- const tb=$('#tb');tb.onpointerdown=()=>{tc++;$('#tc').textContent=tc;rope();prog(tc)};
- return timer(15000,()=>{tb.disabled=true;done(tc)})},
-spot(el,seed,prog,done){const r=rng(seed),S='★♥♣☂☾♞⚑✂☎♫⚓✿❄☀♛✈'.split('');let n=0,pen=0,t0=Date.now();
- const rd=()=>{const p=shuf(S.slice(),r),sh=p[0],ring=l=>'<div class="ci">'+shuf(l,r).map((g,i)=>{const a=(i*60+r()*30)*Math.PI/180,d=24+r()*14;return '<span data-g="'+g+'" style="left:'+(50+d*Math.cos(a))+'%;top:'+(50+d*Math.sin(a))+'%;font-size:'+(24+r()*20)+'px;transform:translate(-50%,-50%) rotate('+Math.floor(r()*360)+'deg)">'+g+'</span>'}).join('')+'</div>';
-  el.innerHTML='<div class="sc">Match '+(n+1)+' / 8</div>'+ring(p.slice(1,6).concat(sh))+ring(p.slice(6,11).concat(sh));
-  el.querySelectorAll('span').forEach(s=>s.onpointerdown=()=>{if(s.dataset.g==sh){n++;prog(n);n==8?done(Date.now()-t0+pen):rd()}else{pen+=1000;el.classList.remove('bad');void el.offsetWidth;el.classList.add('bad')}})};
- rd();return()=>{}},
-draw(el,seed,prog,done){const r=rng(seed),dl=2000+Math.floor(r()*3000);let st=0,t0,fd=0;
- el.innerHTML='<button id="rb" class="tap rd">WAIT…</button>';const b=$('#rb');
- const to=setTimeout(()=>{st=1;t0=Date.now();b.textContent='DRAW!';b.className='tap gr'},dl),fin=setTimeout(()=>{if(!fd){fd=1;done(9999)}},dl+4000);
- b.onpointerdown=()=>{if(fd)return;fd=1;clearTimeout(to);clearTimeout(fin);if(!st){b.textContent='Too early!';done(9999)}else{const ms=Date.now()-t0;b.textContent=ms+' ms';done(ms)}};
- return()=>{clearTimeout(to);clearTimeout(fin)}}};
-let ws,off=0,room=null,n=1,wins={me:0,opp:0},view='home',msg='',cleanup=null,last=null,want=0,cd=null,pend=null,cur='',on={me:'',opp:''},nm=localStorage.name||'',best=JSON.parse(localStorage.best||'{}'),
+const DT='<svg viewBox="0 0 40 90" width="20" height="45"><polygon points="20,2 24,26 16,26" fill="#c9c9c9" stroke="#1a1a1a" stroke-width="2"/><rect x="15" y="26" width="10" height="26" fill="#2563c9" stroke="#1a1a1a" stroke-width="2"/><rect x="18" y="52" width="4" height="12" fill="#1a1a1a"/><polygon points="20,60 4,86 20,76 36,86" fill="#e5392f" stroke="#1a1a1a" stroke-width="2"/></svg>';
+const AR='<svg viewBox="0 0 40 110" width="20" height="55"><rect x="18" y="14" width="4" height="78" fill="#8a5a2b" stroke="#1a1a1a" stroke-width="2"/><polygon points="20,0 28,18 12,18" fill="#c9c9c9" stroke="#1a1a1a" stroke-width="2"/><polygon points="18,80 6,102 18,92" fill="#e5392f" stroke="#1a1a1a" stroke-width="2"/><polygon points="22,80 34,102 22,92" fill="#e5392f" stroke="#1a1a1a" stroke-width="2"/></svg>';
+const BOW='<svg viewBox="0 -38 200 128" width="170" height="109"><path d="M20 10Q100 86 180 10" fill="none" stroke="#8a5a2b" stroke-width="8" stroke-linecap="round"/><path d="M20 10L100 44L180 10" fill="none" stroke="#1a1a1a" stroke-width="2.5"/><g id="nk"><rect x="98" y="-24" width="4" height="68" fill="#8a5a2b" stroke="#1a1a1a" stroke-width="2"/><polygon points="100,-37 109,-21 91,-21" fill="#c9c9c9" stroke="#1a1a1a" stroke-width="2"/><polygon points="98,30 88,50 98,42" fill="#e5392f" stroke="#1a1a1a" stroke-width="2"/><polygon points="102,30 112,50 102,42" fill="#e5392f" stroke="#1a1a1a" stroke-width="2"/></g></svg>';
+const DTB=DT.replace('width="20" height="45"','width="36" height="80"');
+const G={
+spot:['Spot the Match','Be first to find the twin','#ffc93c','#1a1a1a',V('<circle cx="28" cy="40" r="24" fill="#fff6e0" '+K+'/><circle cx="52" cy="40" r="24" fill="#fff6e0" fill-opacity=".7" '+K+'/><polygon points="18,30 21,37 28,37 22,41 24,48 18,44 12,48 14,41 8,37 15,37" fill="#2563c9"/><path d="M40 33L46 40L40 47L34 40Z" fill="#e5392f" '+K+'/>')],
+draw:['Quick Draw','Wait… now!','#ff7a2f','#1a1a1a',V('<path d="M8 54Q40 74 72 54Q58 52 56 36Q40 26 24 36Q22 52 8 54Z" fill="#fff6e0" '+K+'/><text x="40" y="22" text-anchor="middle" font-family="Lilita One" font-size="24">!</text>')],
+darts:['Darts','Take turns, one dart each','#2563c9','#fff6e0',V('<circle cx="38" cy="44" r="30" fill="#fff6e0" '+K+'/><circle cx="38" cy="44" r="21" fill="#e5392f" '+K+'/><circle cx="38" cy="44" r="12" fill="#fff6e0" '+K+'/><circle cx="38" cy="44" r="4" fill="#1a1a1a"/><path d="M38 44L68 12" stroke="#1a1a1a" stroke-width="4" stroke-linecap="round"/><path d="M62 10L72 8L70 18Z" fill="#ffc93c" '+K+'/>')],
+archery:['Archery','Mind the wind','#2f9e5b','#fff6e0',V('<path d="M56 8Q22 40 56 72" stroke="#1a1a1a" stroke-width="5" fill="none"/><path d="M56 8L56 72M10 40L66 40" stroke="#1a1a1a" stroke-width="3"/><path d="M66 32L78 40L66 48Z" fill="#ffc93c" '+K+'/><path d="M10 40L4 33M10 40L4 47" stroke="#e5392f" stroke-width="4"/>')],
+pizza:['Pizza Memory','Remember it. Rebuild it.','#f4a261','#1a1a1a',V('<circle cx="40" cy="42" r="30" fill="#e0a458" '+K+'/><circle cx="40" cy="42" r="23" fill="#ffd966"/><circle cx="31" cy="36" r="6" fill="#c0392b"/><circle cx="48" cy="34" r="6" fill="#c0392b"/><circle cx="42" cy="52" r="6" fill="#c0392b"/><circle cx="54" cy="48" r="4" fill="#2d2d2d"/><circle cx="28" cy="50" r="4" fill="#2d2d2d"/>')]};
+const HOW={spot:'Two circles, one matching symbol.<br>Be the FIRST to tap it to win the point.<br>Wrong tap = locked out for 1 second.<br>First to 5 points wins!',
+draw:'Wait for the screen to turn green.<br>When it says DRAW, tap FIRST to win the point.<br>Tap too early and your friend gets the point.<br>First to 3 points wins!',
+darts:'You and your friend take turns, one dart each.<br>On your turn a crosshair sweeps the board. Tap THROW to stop it near the bullseye.<br>5 darts each. Highest total wins!',
+archery:'You and your friend take turns, one arrow each.<br>Wind pushes your arrow sideways, so aim against it. Tap SHOOT to fire.<br>5 arrows each. Highest total wins!',
+pizza:'A pizza appears for 4 seconds. Memorize the toppings!<br>Then you both get a plain pizza. Add the same toppings and press DONE.<br>Wrong pizza = locked out for 2 seconds.<br>First correct pizza wins the point. First to 3 wins!'};
+const TG={pep:(x,y)=>'<circle cx="'+x+'" cy="'+y+'" r="10" fill="#c0392b" stroke="#1a1a1a" stroke-width="2"/>',
+mush:(x,y)=>'<path d="M'+(x-10)+' '+(y+4)+'A10 10 0 0 1 '+(x+10)+' '+(y+4)+'Z" fill="#fff6e0" stroke="#1a1a1a" stroke-width="2"/><rect x="'+(x-3)+'" y="'+(y+4)+'" width="6" height="7" fill="#fff6e0" stroke="#1a1a1a" stroke-width="2"/>',
+olive:(x,y)=>'<circle cx="'+x+'" cy="'+y+'" r="8" fill="#2d2d2d" stroke="#1a1a1a" stroke-width="2"/><circle cx="'+x+'" cy="'+y+'" r="3" fill="#ffd966"/>',
+onion:(x,y)=>'<circle cx="'+x+'" cy="'+y+'" r="9" fill="#e9d3f0" stroke="#7b3f8c" stroke-width="3"/>',
+ham:(x,y)=>'<rect x="'+(x-8)+'" y="'+(y-8)+'" width="16" height="16" rx="3" fill="#f4a6b8" stroke="#1a1a1a" stroke-width="2"/>',
+basil:(x,y)=>'<ellipse cx="'+x+'" cy="'+y+'" rx="10" ry="6" fill="#2f7d3a" stroke="#1a1a1a" stroke-width="2" transform="rotate(-30 '+x+' '+y+')"/>',
+pepper:(x,y)=>'<circle cx="'+x+'" cy="'+y+'" r="8" fill="none" stroke="#2f9e5b" stroke-width="5"/>'};
+const pz=it=>'<svg viewBox="-110 -110 220 220" width="250" height="250"><circle r="104" fill="#e0a458" stroke="#1a1a1a" stroke-width="4"/><circle r="88" fill="#e5392f"/><circle r="82" fill="#ffd966"/>'+it.map(o=>TG[o.t](o.x,o.y)).join('')+'</svg>';
+const ringH=(l,r)=>'<div class="ci">'+l.map((g,i)=>{const a=(i*60+r()*30)*Math.PI/180,d=24+r()*14;return '<span data-g="'+g+'" style="left:'+(50+d*Math.cos(a))+'%;top:'+(50+d*Math.sin(a))+'%;font-size:'+(24+r()*20)+'px;transform:translate(-50%,-50%) rotate('+Math.floor(r()*360)+'deg)">'+g+'</span>'}).join('')+'</div>';
+let ws,off=0,room=null,n=1,wins={me:0,opp:0},view='home',msg='',last=null,want=0,cd=null,pend=null,cur='',on={me:'',opp:''},nm=localStorage.name||'',introG='',lk=0,closed=1,X={},
  pid=localStorage.pid||(localStorage.pid=Math.random().toString(36).slice(2)+Date.now().toString(36));
 const send=o=>ws&&ws.readyState==1&&ws.send(JSON.stringify({...o,pid,name:nm||'Player'}));
+const aimG=()=>cur=='darts'||cur=='archery';
+function sb(p){const o=$('#op');if(!o)return;const k=p?Object.keys(p).find(x=>x!=pid):0,a=p&&p[pid]||0,b=k?p[k]:0;o.textContent=aimG()?nm+': '+a+' pts · '+on.opp+': '+b+' pts':nm+' '+a+' – '+b+' '+on.opp}
+function shake(){const e=$('#gm');if(e){e.classList.remove('bad');void e.offsetWidth;e.classList.add('bad')}}
 function conn(){ws=new WebSocket((location.protocol=='https:'?'wss://':'ws://')+location.host);
  ws.onopen=()=>{const c=new URLSearchParams(location.search).get('r')||localStorage.room;if(c){if(nm)send({t:'join',code:c});else{pend=c;view='name';ui()}}};
- ws.onmessage=e=>{const d=JSON.parse(e.data);
-  if(d.t=='err'){msg=d.err;room=null;localStorage.removeItem('room');history.replaceState(null,'','/');view=view=='play'?view:'home';if(view!='play')ui()}
-  else if(d.t=='room'){room=d.code;n=d.n;wins=d.wins;on=d.names||on;localStorage.room=room;msg='';history.replaceState(null,'','/');if(view=='name')view='home';if(want&&n==1){want=0;share()}if(view!='play')ui()}
-  else if(d.t=='go'){off=d.now-Date.now();startGame(d.g,d.seed,d.startAt-off,true)}
-  else if(d.t=='prog'){oc=d.v;if(cur=='tug')rope();const o=$('#op');if(o&&cur!='tug'&&cur!='draw')o.textContent=on.opp+': '+d.v+(cur=='spot'?' / 8':' pts')}
-  else if(d.t=='res'){view='res';last=d;if(cleanup)cleanup();ui()}};
+ ws.onmessage=e=>{const d=JSON.parse(e.data),t=d.t;
+  if(t=='err'){msg=d.err;room=null;localStorage.removeItem('room');history.replaceState(null,'','/');if(view!='play'){view='home';ui()}}
+  else if(t=='room'){room=d.code;n=d.n;wins=d.wins;on=d.names||on;localStorage.room=room;msg='';history.replaceState(null,'','/');if(view=='name')view='home';if(want&&n==1){want=0;share()}if(view!='play')ui()}
+  else if(t=='intro'){introG=d.g;view='intro';ui()}
+  else if(t=='dgo'){off=d.now-Date.now();startGame(d.g,d.startAt-off)}
+  else if(t=='res'){view='res';last=d;if(cd)clearInterval(cd);cancelAnimationFrame(X.raf);ui()}
+  else if(view=='play')duel(d)};
  ws.onclose=()=>setTimeout(conn,1500)}
-function startGame(g,seed,at,mp){if(cleanup)cleanup();if(cd)clearInterval(cd);cur=g;view='play';
- $('#a').innerHTML='<h2>'+G[g][0]+'</h2><div class="pill" id="op" style="'+(mp&&g!='tug'?'':'display:none')+'">'+on.opp+': ready</div><div class="big" id="cd"></div><div id="gm"></div>';
- cd=setInterval(()=>{const l=at-Date.now();if(l>0){$('#cd').textContent=Math.ceil(l/1000);return}
-  clearInterval(cd);$('#cd').textContent=g=='draw'?'':'GO!';
-  cleanup=GAMES[g]($('#gm'),seed,v=>mp&&send({t:'prog',v}),v=>{
-   if(mp){send({t:'score',v});$('#gm').insertAdjacentHTML('beforeend','<p>Your score: '+fm(g,v)+'<br>Waiting for '+on.opp+' to finish...</p>')}
-   else{const b=best[g],nb=b==null||(LOW[g]?v<b:v>b);if(nb){best[g]=v;localStorage.best=JSON.stringify(best)}last={g,sc:{me:v},win:'solo',nb};view='res';ui()}})},100)}
-function play(g){if(room&&n>1)send({t:'pick',g});else startGame(g,Math.floor(Math.random()*1e9),Date.now()+2500,false)}
-function home(){if(cleanup)cleanup();cleanup=null;if(cd)clearInterval(cd);view='home';ui()}
+function startGame(g,at){if(cd)clearInterval(cd);cur=g;view='play';closed=1;X={};
+ $('#a').innerHTML='<h2>'+G[g][0]+'</h2><div class="pill" id="op"></div><div class="big" id="cd"></div><div id="gm"></div>';sb();
+ cd=setInterval(()=>{const l=at-Date.now();if(l>0){$('#cd').textContent=Math.ceil(l/1000);return}clearInterval(cd);$('#cd').textContent='GO!'},100)}
+function aimInit(){const R=cur=='darts'?['#fff6e0','#e5392f','#fff6e0','#e5392f','#1a1a1a']:['#fff6e0','#1a1a1a','#2563c9','#e5392f','#ffc93c'];
+ $('#gm').innerHTML='<div class="sc" id="st"></div><div class="pill" id="wd" style="display:none"></div><div id="bd" style="position:relative;width:260px;height:260px;margin:0 auto"><svg viewBox="-130 -130 260 260" width="260" height="260">'+R.map((c,k)=>'<circle r="'+(120-k*24)+'" fill="'+c+'" '+K+'/>').join('')+'</svg><div id="ch" style="display:none;position:absolute;width:26px;height:26px;border:4px solid #1a1a1a;border-radius:50%;background:#ffffff88"></div></div><div id="wp" style="margin:6px 0;line-height:0;min-height:90px"></div><button class="b cta" id="th" disabled>'+(cur=='darts'?'THROW':'SHOOT')+'</button>';
+ $('#th').onpointerdown=()=>{if(!X.mine||X.sent)return;X.sent=1;const[x,y]=cpos();send({t:'in',i:X.i,x,y});$('#th').disabled=true}}
+const cpos=()=>{const t=(performance.now()-X.st)/1000,p=X.p;return[Math.round(Math.cos(t*p[0]+p[2])*100),Math.round(Math.sin(t*p[1]+p[3])*100)]};
+function cloop(){if(!X.mine||X.sent)return;const[x,y]=cpos(),c=$('#ch');if(c){c.style.left=(117+x)+'px';c.style.top=(117+y)+'px'}X.raf=requestAnimationFrame(cloop)}
+function pzr(){$('#pzm').innerHTML=pz(X.it);for(const t in X.cnt)$('#n_'+t).textContent=X.cnt[t]}
+function duel(d){const t=d.t,c=$('#cd');
+ if(t=='sround'){closed=0;const r=rng(d.seed);if(c)c.textContent='';$('#gm').innerHTML='<div class="sc">Round '+d.k+'</div>'+ringH(d.A,r)+ringH(d.B,r);
+  $('#gm').querySelectorAll('span').forEach(s=>s.onpointerdown=()=>{if(closed||Date.now()<lk)return;send({t:'in',k:d.k,g:s.dataset.g})})}
+ else if(t=='lock'){lk=Date.now()+(d.ms||1000);shake();if(c)c.textContent='Wrong! Locked '+(d.ms||1000)/1000+'s'}
+ else if(t=='dwait'){X.k=d.k;closed=0;if(c)c.textContent='';$('#gm').innerHTML='<button id="rb" class="tap rd">WAIT…</button>';$('#rb').onpointerdown=()=>{if(!closed)send({t:'in',k:X.k})}}
+ else if(t=='ddraw'){const b=$('#rb');if(b){b.textContent='DRAW!';b.className='tap gr'}}
+ else if(t=='pshow'){closed=1;X.k=d.k;if(X.tm)clearInterval(X.tm);const end=Date.now()+d.ms;$('#gm').innerHTML='<div id="pzt">'+pz(d.it)+'</div>';
+  X.tm=setInterval(()=>{const l=Math.ceil((end-Date.now())/1000),e=$('#cd');if(e)e.textContent=l>0?'Memorize! '+l:'';if(l<=0)clearInterval(X.tm)},200)}
+ else if(t=='pplay'){X.k=d.k;X.it=[];X.cnt={};d.ty.forEach(y=>X.cnt[y]=0);closed=0;if(c)c.textContent='Build it!';
+  $('#gm').innerHTML='<div id="pzm">'+pz([])+'</div><div style="display:flex;flex-wrap:wrap;gap:2px;justify-content:center">'+d.ty.map(y=>'<button class="b" style="margin:4px;padding:6px 10px" data-t="'+y+'"><svg viewBox="-14 -14 28 28" width="34" height="34">'+TG[y](0,0)+'</svg><br><span id="n_'+y+'">0</span></button>').join('')+'</div><button class="b" id="un">Undo</button><button class="b" id="dn" style="background:#e5392f;color:#fff6e0;font-size:20px">DONE!</button>';
+  document.querySelectorAll('[data-t]').forEach(b=>b.onpointerdown=()=>{if(closed)return;const y=b.dataset.t,a=Math.random()*6.28,r=Math.sqrt(Math.random())*72;X.it.push({t:y,x:Math.round(Math.cos(a)*r),y:Math.round(Math.sin(a)*r)});X.cnt[y]++;pzr()});
+  $('#un').onpointerdown=()=>{const o=X.it.pop();if(o){X.cnt[o.t]--;pzr()}};$('#dn').onpointerdown=()=>{if(!closed&&Date.now()>=lk)send({t:'in',k:X.k,counts:X.cnt})}}
+ else if(t=='spoint'){closed=1;sb(d.pts);const b=$('#rb');if(b)b.disabled=true;
+  if(c)c.textContent=d.w==null?'Time up! No point':cur=='draw'?(d.why=='early'?(d.by==pid?'Too early! Point to '+on.opp:on.opp+' jumped the gun!'):(d.w==pid?'You were faster! '+d.ms+' ms':on.opp+' was faster · '+d.ms+' ms')):(d.w==pid?'You got it!':on.opp+' got it!')}
+ else if(t=='aturn'){if(d.i==0||!$('#bd'))aimInit();cancelAnimationFrame(X.raf);X.i=d.i;X.p=d.p;X.mine=d.who==pid;X.sent=0;X.st=performance.now();sb(d.pts);
+  $('#st').textContent=X.mine?'YOUR TURN!':on.opp+(cur=='archery'?' is aiming…':' is throwing…');
+  if(cur=='archery'){const w=$('#wd');w.style.display='';w.textContent='Wind '+(d.wind>0?'→ ':'← ')+Math.abs(d.wind)}
+  $('#ch').style.display=X.mine?'':'none';$('#th').disabled=!X.mine;$('#wp').innerHTML=X.mine?(cur=='archery'?BOW:DTB):'';if(X.mine)cloop()}
+ else if(t=='athrown'){cancelAnimationFrame(X.raf);$('#ch').style.display='none';$('#wp').innerHTML='';$('#th').disabled=true;sb(d.pts);
+  if(!d.miss){let m=cur=='archery'?AR:DT;if(d.who!=pid)m=m.replace(/#e5392f/g,'#2563c9');$('#bd').insertAdjacentHTML('beforeend','<div style="position:absolute;left:'+(120+d.hx)+'px;top:'+(129+d.hy)+'px;animation:fly .22s ease-out"><div style="transform:rotate('+Math.round(Math.random()*16-8)+'deg);transform-origin:10px 0;line-height:0">'+m+'</div></div>')}
+  $('#st').textContent=(d.who==pid?'You':on.opp)+(d.miss?' missed!':' scored '+d.s+'!')}}
+function play(g){if(!(room&&n>1)){msg='Tussle is a 2-player game, so invite a friend first!';view='home';ui();return}send({t:'pick',g})}
+function ready(){const b=$('#rbtn');send({t:'ready'});b.textContent='Waiting for '+(on.opp||'friend')+'…';b.disabled=true}
+function home(){if(cd)clearInterval(cd);cancelAnimationFrame(X.raf);view='home';ui()}
 function share(){const u=location.origin+'/?r='+room;
  if(navigator.share)navigator.share({title:'Tussle',text:(nm||'Your friend')+' challenged you on Tussle!',url:u}).catch(()=>{});
  else if(navigator.clipboard)navigator.clipboard.writeText(u).then(()=>{msg='Invite link copied! Send it to your friend.';ui()});else{msg=u;ui()}}
@@ -91,9 +107,11 @@ function joinNow(){const v=$('#nin').value.trim();if(!v)return;nm=v.slice(0,14);
 function ui(){const a=$('#a');if(view=='play')return;const hero=
 '<svg viewBox="0 0 390 230" width="100%" aria-label="Two characters fighting in a dust cloud"><defs><g id="c"><circle cx="195" cy="150" r="62"/><circle cx="142" cy="166" r="46"/><circle cx="248" cy="166" r="48"/><circle cx="195" cy="190" r="40"/></g></defs><use href="#c" fill="#1a1a1a" stroke="#1a1a1a" stroke-width="9"/><use href="#c" fill="#fff6e0"/><g '+K+'><circle cx="125" cy="108" r="28" fill="#e5392f"/><circle cx="268" cy="104" r="28" fill="#2563c9"/><path d="M98 140L56 118M296 136L338 114" stroke-width="12" stroke-linecap="round"/><polygon points="241,60 220.9,70.7 227.5,92.5 205.7,85.9 195,106 184.3,85.9 162.5,92.5 169.1,70.7 149,60 169.1,49.3 162.5,27.5 184.3,34.1 195,14 205.7,34.1 227.5,27.5 220.9,49.3" fill="#ffc93c"/></g><g fill="#fff"><circle cx="117" cy="110" r="6"/><circle cx="133" cy="110" r="6"/><circle cx="260" cy="106" r="6"/><circle cx="276" cy="106" r="6"/></g><g fill="#1a1a1a"><circle cx="119" cy="112" r="3"/><circle cx="131" cy="112" r="3"/><circle cx="262" cy="108" r="3"/><circle cx="274" cy="108" r="3"/></g><text x="195" y="62" text-anchor="middle" font-family="Lilita One" font-size="21" fill="#e5392f" transform="rotate(-8 195 58)">POW!</text></svg>';
  if(view=='name'){a.innerHTML='<h1><span style="color:#e5392f">TUS</span><span style="color:#2563c9">SLE</span></h1>'+hero+'<h2>You\'ve been challenged!</h2><p>Who\'s tussling?</p><input id="nin" maxlength="14" placeholder="Your name" autofocus><button class="b cta" onclick="joinNow()">JOIN THE FIGHT</button>';return}
- if(view=='res'){const d=last,g=d.g,o=on.opp||'Friend',T={me:'YOU WIN!',opp:o.toUpperCase()+' WINS!',tie:"IT'S A TIE!",solo:d.nb?'NEW PERSONAL BEST!':'NICE RUN!'}[d.win];
-  a.innerHTML='<h2 style="font-size:40px">'+T+'</h2><div class="pill">'+(nm||'You')+': '+fm(g,d.sc.me)+(d.win!='solo'?'<br>'+o+': '+fm(g,d.sc.opp):'')+'</div>'+(room&&n>1?'<div class="pill">'+(nm||'You')+' '+wins.me+' – '+wins.opp+' '+o+'</div>':'')+'<button class="b" onclick="play(\''+g+'\')">Rematch</button><button class="b" onclick="home()">All games</button>'+(d.win=='solo'?'<button class="b" onclick="invite()">Challenge a friend</button>':'');return}
- const o=on.opp||'Friend',link=room?location.origin+'/?r='+room:'';
+ if(view=='intro'){const g=introG;a.innerHTML='<h2>HOW TO PLAY</h2><div style="margin:8px auto;transform:scale(1.5);height:130px;padding-top:24px">'+G[g][4]+'</div><h2 style="font-size:34px">'+G[g][0]+'</h2><div class="pill" style="text-align:left;font-size:17px;word-break:normal">'+HOW[g]+'</div><button class="b cta" id="rbtn" onclick="ready()">I\'M READY!</button><button class="b" onclick="home()">Back</button>';return}
+ const o=on.opp||'Friend';
+ if(view=='res'){const d=last,g=d.g,T={me:'YOU WIN!',opp:o.toUpperCase()+' WINS!',tie:"IT'S A TIE!",left:o.toUpperCase()+' LEFT'}[d.win];
+  a.innerHTML='<h2 style="font-size:40px">'+T+'</h2><div class="pill">'+(nm||'You')+': '+d.sc.me+(aimG()?' pts':'')+'<br>'+o+': '+d.sc.opp+(aimG()?' pts':'')+'</div>'+(room&&n>1?'<div class="pill">'+(nm||'You')+' '+wins.me+' – '+wins.opp+' '+o+'</div><button class="b" onclick="play(\''+g+'\')">Rematch</button>':'')+'<button class="b" onclick="home()">All games</button>';return}
+ const link=room?location.origin+'/?r='+room:'';
  a.innerHTML='<h1><span style="color:#e5392f">TUS</span><span style="color:#2563c9">SLE</span></h1>'+hero+'<div class="L" style="font-size:19px;margin:4px 0 10px">Settle it. Two players. One link.</div>'+(msg?'<div class="pill">'+msg+'</div>':'')
  +(room&&n>1?'<div class="pill">'+(nm||'You')+' vs '+o+'</div>':room?'<div class="pill">Waiting for your friend to join…<br><small>'+link+'</small></div>':'')
  +'<input id="nin" maxlength="14" placeholder="Your name" value="'+nm.replace(/"/g,'')+'" oninput="nm=this.value.slice(0,14);localStorage.name=nm"><button class="b cta" onclick="invite()">'+(room?'SHARE INVITE LINK':'CHALLENGE A FRIEND')+'</button><h2 style="text-align:left">PICK YOUR FIGHT</h2><div class="grid">'
