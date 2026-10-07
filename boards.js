@@ -179,12 +179,25 @@ const SB = {
     SH.forEach((len, id) => { for (;;) { const h = Math.random() < 0.5, x = rnd(h ? SN - len + 1 : SN), y = rnd(h ? SN : SN - len + 1), cells = []; for (let k = 0; k < len; k++) cells.push(h ? y * SN + x + k : (y + k) * SN + x); if (cells.every(c => b[c] < 0)) { cells.forEach(c => b[c] = id); ships.push(cells); break; } } });
     return { b, ships };
   },
+  build(list) {
+    if (!Array.isArray(list) || list.length != SH.length) return null;
+    const b = Array(100).fill(-1), ships = [];
+    for (const o of list) {
+      const id = +o.id, x = +o.x, y = +o.y, h = !!o.h;
+      if (!Number.isInteger(id) || id < 0 || id >= SH.length || ships[id] || !Number.isInteger(x) || !Number.isInteger(y)) return null;
+      const len = SH[id]; if (x < 0 || y < 0 || (h ? x + len > SN || y >= SN : y + len > SN || x >= SN)) return null;
+      const cells = []; for (let k = 0; k < len; k++) cells.push(h ? y * SN + x + k : (y + k) * SN + x);
+      if (cells.some(c => b[c] >= 0)) return null; cells.forEach(c => b[c] = id); ships[id] = cells;
+    }
+    return ships.every(Boolean) ? { b, ships } : null;
+  },
   init: () => ({ ph: 'place', p: [SB.rand(), SB.rand()], rdy: [0, 0], sh: [Array(100).fill(0), Array(100).fill(0)], sunk: [[], []] }),
   free: rd => rd.s.ph == 'place',
   move(rd, i, d) {
     const s = rd.s;
     if (s.ph == 'place') {
       if (s.rdy[i]) return;
+      if (d.place) { const p = SB.build(d.place); if (!p) return; s.p[i] = p; if (!d.ready) return { stay: 1 }; }
       if (d.rand) { s.p[i] = SB.rand(); return { stay: 1 }; }
       if (d.ready) { s.rdy[i] = 1; if (s.rdy[0] && s.rdy[1]) { s.ph = 'fire'; return { turn: 0 }; } return { stay: 1 }; }
       return;

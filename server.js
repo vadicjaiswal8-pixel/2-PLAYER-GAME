@@ -2,9 +2,11 @@ const http = require('http'), fs = require('fs'), path = require('path');
 const { WebSocketServer } = require('ws');
 const BG = require('./boards');
 const rooms = {};
-const T = { '/manifest.json': 'application/json', '/sw.js': 'text/javascript', '/icon-192.png': 'image/png', '/icon-512.png': 'image/png', '/og.png': 'image/png', '/b.js': 'text/javascript' };
+const T = { '/manifest.json': 'application/json', '/sw.js': 'text/javascript', '/icon-192.png': 'image/png', '/icon-512.png': 'image/png', '/og.png': 'image/png', '/b.js': 'text/javascript', '/logo.png': 'image/png' };
 const srv = http.createServer((q, s) => {
-  const p = q.url.split('?')[0];
+  let p = q.url.split('?')[0];
+  if (p == '/favicon.ico') p = '/icon-192.png';
+  if (p == '/.well-known/assetlinks.json' && process.env.ASSETLINKS) { s.writeHead(200, { 'Content-Type': 'application/json' }); return s.end(process.env.ASSETLINKS); }
   if (p == '/health') { s.writeHead(200); return s.end('ok'); }
   const f = T[p] ? p.slice(1) : 'index.html';
   fs.readFile(path.join(__dirname, f), (e, d) => {
