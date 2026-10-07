@@ -216,6 +216,13 @@ function act(ws, d) {
   } else if (d.t == 'ready' && r.pending) {
     r.pending.ready[x.pid] = 1;
     if (live(r).every(y => r.pending.ready[y.pid])) begin(r, r.pending.g);
+  } else if (d.t == 'quit') {
+    const rd = r.round, o = live(r).find(y => y != x);
+    if (r.pending) { r.pending = null; if (o && !o.bot) send(o.ws, { t: 'home', msg: (x.name || 'Your friend') + ' backed out.' }); }
+    if (rd && !rd.done) {
+      rd.done = 1; clearInterval(rd.iv);
+      if (o && !o.bot) { r.wins[o.pid] = (r.wins[o.pid] || 0) + 1; send(o.ws, { t: 'res', g: rd.g, left: 1, sc: { me: rd.pts[o.pid] || 0, opp: rd.pts[x.pid] || 0 }, win: 'me' }); info(r); }
+    }
   } else if (d.t == 'in' && r.round && !r.round.done) G[r.round.g].msg(r, r.round, x, d);
 }
 wss.on('connection', ws => {

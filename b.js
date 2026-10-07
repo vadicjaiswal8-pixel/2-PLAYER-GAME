@@ -24,12 +24,12 @@ function seaSvg(w,ships,marks){let s='<rect width="300" height="300" rx="10" fil
  return '<svg viewBox="-2 -2 304 304" width="100%" style="max-width:'+w+'px;display:block;margin:6px auto;border:3px solid #1a1a1a;border-radius:12px;background:#0e7490;touch-action:none">'+s+'</svg>'}
 const cellAt=(e,box)=>{const sv=box.querySelector('svg'),r=sv.getBoundingClientRect(),k=304/r.width;return[Math.floor(((e.clientX-r.left)*k-2)/CS),Math.floor(((e.clientY-r.top)*k-2)/CS)]};
 const BR={
-c4(d,me,mine){const W=50;const cells=d.g.map((v,i)=>{const r=Math.floor(i/7),c=i%7,cx=c*W+W/2+5,cy=r*W+W/2+5,col=v<0?'#fff6e0':v==me?'#e5392f':'#2563c9',hl=d.line&&d.line.includes(i);return '<circle cx="'+cx+'" cy="'+cy+'" r="20" fill="'+col+'" stroke="'+(hl?'#ffc93c':'#1a1a1a')+'" stroke-width="'+(hl?6:3)+'"/>'+(i==d.last?'<circle cx="'+cx+'" cy="'+cy+'" r="7" fill="none" stroke="#fff" stroke-width="3"/>':'')}).join('');
+c4(d,me,mine){const W=50;const cells=d.g.map((v,i)=>{const r=Math.floor(i/7),c=i%7,cx=c*W+W/2+5,cy=r*W+W/2+5,col=v<0?'#fff6e0':v==me?'#e5392f':'#2563c9',hl=d.line&&d.line.includes(i);const dc='<circle cx="'+cx+'" cy="'+cy+'" r="20" fill="'+col+'" stroke="'+(hl?'#ffc93c':'#1a1a1a')+'" stroke-width="'+(hl?6:3)+'"/>'+(i==d.last?'<circle cx="'+cx+'" cy="'+cy+'" r="7" fill="none" stroke="#fff" stroke-width="3"/>':'');return i==d.last?'<g><animateTransform attributeName="transform" type="translate" from="0 -'+(cy+30)+'" to="0 0" dur=".4s" calcMode="spline" keyTimes="0;1" keySplines=".3 0 .7 1" fill="freeze"/>'+dc+'</g>':dc}).join('');
  $('#bb').innerHTML='<svg viewBox="0 0 360 310" width="100%" style="max-width:360px"><rect x="2" y="2" width="356" height="306" rx="16" fill="#f4a261" stroke="#1a1a1a" stroke-width="4"/>'+cells+[0,1,2,3,4,5,6].map(c=>'<rect data-c="'+c+'" x="'+(c*W+5)+'" y="0" width="'+W+'" height="310" fill="transparent" style="cursor:pointer"/>').join('')+'</svg>';
  $('#bb').querySelectorAll('rect[data-c]').forEach(e=>e.onpointerdown=()=>{if(mine&&d.win==null)send({t:'in',c:+e.dataset.c})})},
 gomoku(d,me,mine){const N=13,S=26,P=18,L=(N-1)*S+2*P;let s='<rect x="2" y="2" width="'+(L-4)+'" height="'+(L-4)+'" rx="12" fill="#f4d9a0" stroke="#1a1a1a" stroke-width="4"/>';
  for(let i=0;i<N;i++){const p=P+i*S;s+='<path d="M'+P+' '+p+'H'+(L-P)+'M'+p+' '+P+'V'+(L-P)+'" stroke="#1a1a1a" stroke-width="1.5"/>'}
- d.g.forEach((v,i)=>{if(v<0)return;const x=P+(i%N)*S,y=P+Math.floor(i/N)*S,hl=d.line&&d.line.includes(i);s+='<circle cx="'+x+'" cy="'+y+'" r="11" fill="'+(v==me?'#e5392f':'#2563c9')+'" stroke="'+(hl?'#ffc93c':'#1a1a1a')+'" stroke-width="'+(hl?5:2.5)+'"/>'+(i==d.last?'<circle cx="'+x+'" cy="'+y+'" r="4" fill="#fff"/>':'')});
+ d.g.forEach((v,i)=>{if(v<0)return;const x=P+(i%N)*S,y=P+Math.floor(i/N)*S,hl=d.line&&d.line.includes(i);s+='<circle cx="'+x+'" cy="'+y+'" r="11" fill="'+(v==me?'#e5392f':'#2563c9')+'" stroke="'+(hl?'#ffc93c':'#1a1a1a')+'" stroke-width="'+(hl?5:2.5)+'">'+(i==d.last?'<animate attributeName="r" from="2" to="11" dur=".18s" fill="freeze"/>':'')+'</circle>'+(i==d.last?'<circle cx="'+x+'" cy="'+y+'" r="4" fill="#fff"/>':'')});
  $('#bb').innerHTML='<svg id="gsv" viewBox="0 0 '+L+' '+L+'" width="100%" style="max-width:380px">'+s+'</svg>';
  $('#gsv').onpointerdown=e=>{if(!mine||d.win!=null)return;const r=e.currentTarget.getBoundingClientRect(),k=L/r.width,x=Math.round(((e.clientX-r.left)*k-P)/S),y=Math.round(((e.clientY-r.top)*k-P)/S);if(x>=0&&x<N&&y>=0&&y<N&&d.g[y*N+x]<0)send({t:'in',x,y})}},
 dots(d,me,mine){const S=56,P=22,L=5*S+2*P,col=v=>v==me?'#e5392f':'#2563c9';let s='';
@@ -65,6 +65,8 @@ sea(d,me,mine){
 function bs(d){const me=d.ids.indexOf(pid),mine=d.turn==me,pl=cur=='sea'&&d.ph=='place';
  if(!$('#bb')){$('#gm').innerHTML='<div class="sc" id="st"></div><div id="bb"></div>';const c=$('#cd');if(c)c.textContent=''}
  $('#st').textContent=d.win!=null?(d.win==me?'You win!':on.opp+' wins!'):pl?(d.rdy[me]?'Waiting for '+on.opp+'…':'Arrange your fleet'):mine?'YOUR TURN':on.opp+' is thinking…';
+ $('#st').className='sc'+(mine&&d.win==null&&!pl?' myturn':'');
  BR[cur](d,me,mine);
  const k=d.turn+'|'+(d.last==null?'':JSON.stringify(d.last))+'|'+(d.myshot?d.myshot.join('').length+d.myshot.reduce((a,b)=>a+b,0):'');
- if(X.key!==undefined&&X.key!==k){snd(mine?'point':'pop');vib(10)}X.key=k}
+ const hits=d.myshot?d.myshot.concat(d.eshot).filter(v=>v==2).length:0;
+ if(X.key!==undefined&&X.key!==k){snd(cur=='sea'?(hits>(X.hits||0)?'boom':'splash'):({c4:'drop',gomoku:'stone',dots:'tap',uttt:'pop'})[cur]);vib(10)}X.key=k;X.hits=hits}
