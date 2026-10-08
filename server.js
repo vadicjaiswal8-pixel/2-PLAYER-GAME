@@ -35,7 +35,7 @@ function join(ws, c, pid, name) {
   if (!x) { if (r.p.length >= 2) return send(ws, { t: 'err', err: 'That room is full.' }); x = { pid }; r.p.push(x); }
   x.ws = ws; if (name) x.name = clean(name); ws.r = r; ws.x = x; info(r);
 }
-const SY = '★♥♣☂☾♞⚑✂☎♫⚓✿❄☀♛✈'.split(''), TOP = ['pep', 'mush', 'olive', 'pepper', 'onion', 'ham', 'basil'];
+const SY = '★♥♣☂☾♞⚑✂☎♫⚓✿❄☀♛✈'.split(''), TOP = ['pep', 'mush', 'basil', 'tomato', 'onion', 'fish'];
 const shuf = a => { for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; };
 const after = (r, rd, ms, f) => setTimeout(() => { if (r.round === rd && !rd.done) f(); }, ms);
 function award(r, rd, w, extra) {
@@ -98,8 +98,8 @@ function sstep(r, rd) {
     b.vx *= .985; b.vy *= .985; b.x += b.vx * dt; b.y += b.vy * dt;
   });
   const dx = B[1].x - B[0].x, dy = B[1].y - B[0].y, d = Math.hypot(dx, dy) || 1;
-  if (d < 40) {
-    const nx = dx / d, ny = dy / d, ov = 40 - d; B[0].x -= nx * ov / 2; B[0].y -= ny * ov / 2; B[1].x += nx * ov / 2; B[1].y += ny * ov / 2;
+  if (d < 52) {
+    const nx = dx / d, ny = dy / d, ov = 52 - d; B[0].x -= nx * ov / 2; B[0].y -= ny * ov / 2; B[1].x += nx * ov / 2; B[1].y += ny * ov / 2;
     const rv = (B[1].vx - B[0].vx) * nx + (B[1].vy - B[0].vy) * ny;
     if (rv < 0) { const j = -1.15 * rv / 2; B[0].vx -= j * nx; B[0].vy -= j * ny; B[1].vx += j * nx; B[1].vy += j * ny; rd.ev = 1; }
     for (let i = 0; i < 2; i++) if (now < B[i].du) { const sg = i == 0 ? 1 : -1; B[1 - i].vx += sg * nx * 260; B[1 - i].vy += sg * ny * 260; }
@@ -116,15 +116,17 @@ const G = {
   pizza: {
     to: 3,
     next(r, rd) {
-      rd.k++; const k = rd.k, ty = shuf(TOP.slice()).slice(0, rd.k < 3 ? 3 : 4), it = []; rd.cnt = {}; rd.open = 0; rd.lock = {};
-      for (const t of ty) { const c = 1 + Math.floor(Math.random() * 4); rd.cnt[t] = c; for (let i = 0; i < c; i++) { const a = Math.random() * 6.28, d = Math.sqrt(Math.random()) * 72; it.push({ t, x: Math.round(Math.cos(a) * d), y: Math.round(Math.sin(a) * d) }); } }
-      bc(r, { t: 'pshow', k, ty, it, ms: 4000 });
-      after(r, rd, 4200, () => { if (rd.k != k) return; rd.open = 1; bc(r, { t: 'pplay', k, ty: TOP }); after(r, rd, 45000, () => { if (rd.k == k && rd.open) award(r, rd, null, { why: 'timeout' }); }); });
+      rd.k++; const k = rd.k, n = rd.k < 3 ? 4 : 5; rd.tgt = Array.from({ length: n }, () => TOP[Math.floor(Math.random() * TOP.length)]);
+      rd.open = 0; rd.lock = {}; bc(r, { t: 'pshow', k, slots: rd.tgt, ms: 4000 });
+      after(r, rd, 4200, () => { if (rd.k != k) return; rd.open = 1; bc(r, { t: 'pplay', k, n, pal: TOP }); after(r, rd, 50000, () => { if (rd.k == k && rd.open) award(r, rd, null, { why: 'timeout' }); }); });
     },
     msg(r, rd, x, d) {
-      if (!rd.open || d.k != rd.k || (rd.lock[x.pid] || 0) > Date.now()) return; const c = d.counts || {};
-      if (Object.keys(rd.cnt).every(t => c[t] == rd.cnt[t]) && Object.keys(c).every(t => !c[t] || rd.cnt[t])) award(r, rd, x.pid);
-      else { rd.lock[x.pid] = Date.now() + 2000; send(x.ws, { t: 'lock', ms: 2000 }); }
+      if (!rd.open || d.k != rd.k) return; const s = Array.isArray(d.slots) ? d.slots.slice(0, rd.tgt.length) : [];
+      if (d.done) {
+        if ((rd.lock[x.pid] || 0) > Date.now()) return;
+        if (s.length == rd.tgt.length && rd.tgt.every((t, i) => s[i] === t)) award(r, rd, x.pid);
+        else { rd.lock[x.pid] = Date.now() + 2000; send(x.ws, { t: 'lock', ms: 2000 }); }
+      } else { const f = rd.tgt.map((t, i) => s[i] ? 1 : 0); for (const y of live(r)) if (y !== x) send(y.ws, { t: 'pprog', k: rd.k, filled: f }); }
     }
   },
   darts: aimG(0), archery: aimG(1),
@@ -158,11 +160,14 @@ function hear(r, bot, m) {
     const sh = m.A.find(g => m.B.includes(g)), tap = (g, ms) => bt(ms, () => say({ t: 'in', k: m.k, g }));
     const t = [rr(1800, 3600), rr(900, 2100), rr(600, 1400)][L];
     if (Math.random() < [0.2, 0.08, 0.03][L]) { tap('x', rr(900, 1400)); tap(sh, t + 1500); } else tap(sh, t);
-  } else if (m.t == 'pshow') { bot.tgt = {}; m.it.forEach(o => bot.tgt[o.t] = (bot.tgt[o.t] || 0) + 1); }
+  } else if (m.t == 'pshow') { bot.tgt = m.slots.slice(); }
   else if (m.t == 'pplay' && bot.tgt) {
-    const c = { ...bot.tgt }, tot = Object.values(c).reduce((a, b) => a + b, 0), think = (1500 + tot * 350 + rr(0, 1200)) * [1.7, 1, 0.75][L];
-    if (Math.random() < [0.3, 0.15, 0.06][L]) { const t = Object.keys(c)[0], w = { ...c, [t]: c[t] + 1 }; bt(think, () => say({ t: 'in', k: m.k, counts: w })); bt(think + 2300, () => say({ t: 'in', k: m.k, counts: c })); }
-    else bt(think, () => say({ t: 'in', k: m.k, counts: c }));
+    const n = m.n, tgt = bot.tgt.slice(), cur = Array(n).fill(null), order = [...Array(n).keys()].sort(() => Math.random() - 0.5);
+    const think = (2200 + n * 600 + rr(0, 1200)) * [1.7, 1, 0.75][L], slip = Math.random() < [0.3, 0.15, 0.06][L], wi = order[n - 1];
+    const prog = done => say({ t: 'in', k: m.k, slots: cur.slice(), done });
+    order.forEach((idx, j) => bt(think * 0.9 * (j + 1) / n, () => { cur[idx] = slip && idx == wi ? m.pal.find(t => t != tgt[idx]) : tgt[idx]; prog(0); }));
+    bt(think, () => prog(1));
+    if (slip) { bt(think + 2300, () => { cur[wi] = tgt[wi]; prog(0); }); bt(think + 2700, () => prog(1)); }
   } else if (m.t == 'aturn' && m.who == 'BOT') {
     const w = m.wind || 0, sg = [38, 24, 13][L];
     bt(rr(1200, 2400), () => say({ t: 'in', i: m.i, x: Math.round(-w + gauss() * sg), y: Math.round(gauss() * sg) }));

@@ -1,3 +1,15 @@
+// ---- Tussle mascots: chubby fighters (sumo extras optional) ----
+function mascotSvg(col,o){o=o||{};const I='#1a1a1a',S='stroke="'+I+'" stroke-width="3.5" stroke-linejoin="round" stroke-linecap="round"',m=o.mood||'angry',ar=o.arms||'side';let s='';
+ if(ar=='side')s+='<circle cx="9" cy="94" r="9.5" fill="'+col+'" '+S+'/><circle cx="91" cy="94" r="9.5" fill="'+col+'" '+S+'/>';
+ else if(ar=='up')s+='<path d="M16 88L5 50M84 88L95 50" stroke="'+I+'" stroke-width="18" stroke-linecap="round" fill="none"/><path d="M16 88L5 50M84 88L95 50" stroke="'+col+'" stroke-width="11" stroke-linecap="round" fill="none"/><circle cx="5" cy="45" r="10" fill="'+col+'" '+S+'/><circle cx="95" cy="45" r="10" fill="'+col+'" '+S+'/>';
+ s+='<path d="M14 84Q6 44 34 30Q50 24 66 30Q94 44 86 84Q84 118 50 120Q16 118 14 84Z" fill="'+col+'" '+S+'/><ellipse cx="50" cy="96" rx="24" ry="18" fill="#fff" opacity=".16"/><ellipse cx="27" cy="63" rx="6" ry="4" fill="#fff" opacity=".22"/><ellipse cx="73" cy="63" rx="6" ry="4" fill="#fff" opacity=".22"/>';
+ if(o.sumo)s+='<path d="M14 98Q50 112 86 98L87 110Q50 124 13 110Z" fill="#fff6e0" '+S+'/><path d="M42 110H58V129H42Z" fill="#fff6e0" '+S+'/>';
+ if(o.sumo)s+='<path d="M21 46Q18 21 50 19Q82 21 79 46Q68 35 50 35Q32 35 21 46Z" fill="#2b2b2b" '+S+'/><circle cx="50" cy="12" r="9" fill="#2b2b2b" '+S+'/><path d="M44 21H56" '+S+'/>';
+ if(m=='angry')s+='<ellipse cx="38" cy="55" rx="7.5" ry="8.5" fill="#fff" '+S+'/><ellipse cx="62" cy="55" rx="7.5" ry="8.5" fill="#fff" '+S+'/><circle cx="39.5" cy="57" r="4.2" fill="'+I+'"/><circle cx="60.5" cy="57" r="4.2" fill="'+I+'"/><circle cx="38" cy="54.5" r="1.5" fill="#fff"/><circle cx="59" cy="54.5" r="1.5" fill="#fff"/><path d="M26 43L45 50M74 43L55 50" stroke="'+I+'" stroke-width="6" stroke-linecap="round"/><path d="M43 71Q50 64 57 71" fill="none" '+S+'/>';
+ else if(m=='happy')s+='<path d="M29 46Q37 41 45 46M55 46Q63 41 71 46" fill="none" '+S+'/><path d="M31 57Q38 49 45 57M55 57Q62 49 69 57" fill="none" '+S+'/><path d="M37 65Q50 84 63 65Z" fill="#7a1d1d" '+S+'/><ellipse cx="50" cy="73" rx="5" ry="3" fill="#ff8aa0"/>';
+ else s+='<path d="M32 49l12 12m0-12l-12 12M56 49l12 12m0-12l-12 12" fill="none" '+S+'/><path d="M40 72Q45 66 50 72Q55 78 60 72" fill="none" '+S+'/>';
+ return s}
+function mascotUri(col,sumo){return 'data:image/svg+xml;charset=utf-8,'+encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" viewBox="-4 -2 108 134" width="216" height="268">'+mascotSvg(col,{sumo:sumo,arms:'side'})+'</svg>')}
 // Board game renderers (client). Uses globals from index.html: $, pid, cur, on, X, send, snd, vib
 const BG={c4:1,gomoku:1,dots:1,uttt:1,sea:1};
 const SHN=[5,4,3,3,2],CS=30;
