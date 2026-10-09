@@ -142,12 +142,12 @@ const G = {
 };
 const rr = (a, b) => a + Math.random() * (b - a), gauss = () => (Math.random() + Math.random() + Math.random() - 1.5) * 2;
 function addBot(r, lvl) {
-  let bot = r.p.find(y => y.bot);
+  const RN = ['Sleepy Rex (bot)', 'Rex (bot)', 'King Rex (bot)']; let bot = r.p.find(y => y.bot);
   if (!bot) {
-    bot = { pid: 'BOT', name: 'Rex (bot)', bot: 1 };
+    bot = { pid: 'BOT', name: RN[lvl], bot: 1 };
     bot.ws = { readyState: 1, r, x: bot, send: m => hear(r, bot, JSON.parse(m)) };
     r.p.push(bot); bot.lvl = lvl; info(r);
-  } else bot.lvl = lvl;
+  } else { bot.lvl = lvl; bot.name = RN[lvl]; info(r); }
 }
 function dropBot(r) {
   const rd = r.round; if (rd && !rd.done) { rd.done = 1; clearInterval(rd.iv); }
