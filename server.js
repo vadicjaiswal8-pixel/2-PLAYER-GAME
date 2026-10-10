@@ -2,7 +2,7 @@ const http = require('http'), fs = require('fs'), path = require('path');
 const { WebSocketServer } = require('ws');
 const BG = require('./boards');
 const rooms = {};
-const T = { '/manifest.json': 'application/json', '/sw.js': 'text/javascript', '/icon-192.png': 'image/png', '/icon-512.png': 'image/png', '/og.png': 'image/png', '/b.js': 'text/javascript', '/logo.png': 'image/png' };
+const T = { '/manifest.json': 'application/json', '/sw.js': 'text/javascript', '/icon-192.png': 'image/png', '/icon-512.png': 'image/png', '/og.png': 'image/png', '/b.js': 'text/javascript', '/meta.js': 'text/javascript', '/logo.png': 'image/png' };
 const srv = http.createServer((q, s) => {
   let p = q.url.split('?')[0];
   if (p == '/favicon.ico') p = '/icon-192.png';
@@ -48,7 +48,7 @@ function endDuel(r) {
   const rd = r.round; if (!rd || rd.done) return; rd.done = 1; clearInterval(rd.iv);
   const L = live(r); let win = null;
   if (L.length == 2) { const a = rd.pts[L[0].pid] || 0, b = rd.pts[L[1].pid] || 0; if (a != b) { win = a > b ? L[0].pid : L[1].pid; r.wins[win] = (r.wins[win] || 0) + 1; } }
-  for (const x of L) { const o = L.find(y => y != x); send(x.ws, { t: 'res', g: rd.g, sc: { me: rd.pts[x.pid] || 0, opp: o ? (rd.pts[o.pid] || 0) : 0 }, win: L.length < 2 ? 'left' : win == null ? 'tie' : win == x.pid ? 'me' : 'opp' }); }
+  for (const x of L) { const o = L.find(y => y != x); send(x.ws, { t: 'res', g: rd.g, op: o ? o.pid : null, sc: { me: rd.pts[x.pid] || 0, opp: o ? (rd.pts[o.pid] || 0) : 0 }, win: L.length < 2 ? 'left' : win == null ? 'tie' : win == x.pid ? 'me' : 'opp' }); }
   info(r);
 }
 function thr(r, rd, w, x, y, miss) {
@@ -173,7 +173,7 @@ function hear(r, bot, m) {
     bt(rr(1200, 2400), () => say({ t: 'in', i: m.i, x: Math.round(-w + gauss() * sg), y: Math.round(gauss() * sg) }));
   }
 }
-const FAST = process.env.FAST;
+const FAST = process.env.FAST, ER = [[0, 1, 4], [0, 3, 5], [3, 5, 0]];
 const bview = (r, rd, def, res) => { for (const y of live(r)) { const k = rd.ids.indexOf(y.pid); send(y.ws, { t: 'bs', g: rd.g, ids: rd.ids, turn: rd.turn, win: res && res.win != null ? res.win : null, ...def.view(rd, k) }); } };
 const isFree = (def, rd) => def.free && def.free(rd);
 function watch(r, rd, def) { const mc = rd.mc; after(r, rd, 60000, () => { if (rd.mc != mc || !rd.open || isFree(def, rd)) return; rd.open = 0; award(r, rd, rd.ids[1 - rd.turn], { why: 'timeout' }); }); }
@@ -226,8 +226,14 @@ function act(ws, d) {
     if (r.pending) { r.pending = null; if (o && !o.bot) send(o.ws, { t: 'home', msg: (x.name || 'Your friend') + ' backed out.' }); }
     if (rd && !rd.done) {
       rd.done = 1; clearInterval(rd.iv);
-      if (o && !o.bot) { r.wins[o.pid] = (r.wins[o.pid] || 0) + 1; send(o.ws, { t: 'res', g: rd.g, left: 1, sc: { me: rd.pts[o.pid] || 0, opp: rd.pts[x.pid] || 0 }, win: 'me' }); info(r); }
+      if (o && !o.bot) { r.wins[o.pid] = (r.wins[o.pid] || 0) + 1; send(o.ws, { t: 'res', g: rd.g, op: x.pid, left: 1, sc: { me: rd.pts[o.pid] || 0, opp: rd.pts[x.pid] || 0 }, win: 'me' }); info(r); }
     }
+  } else if (d.t == 'emote') {
+    const e = d.e, o = live(r).find(y => y != x);
+    if (!Number.isInteger(e) || e < 0 || e > 5 || !o || Date.now() - (x.em || 0) < 1200) return;
+    x.em = Date.now();
+    if (!o.bot) send(o.ws, { t: 'emote', e });
+    else if (Math.random() < 0.8) setTimeout(() => { if (r.p.includes(o) && live(r).includes(x)) send(x.ws, { t: 'emote', e: ER[o.lvl ?? 1][Math.floor(Math.random() * 3)] }); }, 700 + Math.random() * 900);
   } else if (d.t == 'in' && r.round && !r.round.done) G[r.round.g].msg(r, r.round, x, d);
 }
 wss.on('connection', ws => {

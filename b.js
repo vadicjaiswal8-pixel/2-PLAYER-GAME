@@ -8,7 +8,19 @@ function mascotSvg(col,o){o=o||{};const I='#1a1a1a',S='stroke="'+I+'" stroke-wid
  if(m=='angry')s+='<ellipse cx="38" cy="55" rx="7.5" ry="8.5" fill="#fff" '+S+'/><ellipse cx="62" cy="55" rx="7.5" ry="8.5" fill="#fff" '+S+'/><circle cx="39.5" cy="57" r="4.2" fill="'+I+'"/><circle cx="60.5" cy="57" r="4.2" fill="'+I+'"/><circle cx="38" cy="54.5" r="1.5" fill="#fff"/><circle cx="59" cy="54.5" r="1.5" fill="#fff"/><path d="M26 43L45 50M74 43L55 50" stroke="'+I+'" stroke-width="6" stroke-linecap="round"/><path d="M43 71Q50 64 57 71" fill="none" '+S+'/>';
  else if(m=='happy')s+='<path d="M29 46Q37 41 45 46M55 46Q63 41 71 46" fill="none" '+S+'/><path d="M31 57Q38 49 45 57M55 57Q62 49 69 57" fill="none" '+S+'/><path d="M37 65Q50 84 63 65Z" fill="#7a1d1d" '+S+'/><ellipse cx="50" cy="73" rx="5" ry="3" fill="#ff8aa0"/>';
  else if(m!='none')s+='<path d="M32 49l12 12m0-12l-12 12M56 49l12 12m0-12l-12 12" fill="none" '+S+'/><path d="M40 72Q45 66 50 72Q55 78 60 72" fill="none" '+S+'/>';
+ if(!o.sumo&&!o.nohat&&col=='#e5392f'&&window.Meta&&Meta.hat())s+=hatSvg(Meta.hat());
  return s}
+// ---- Hats (cosmetics) drawn on the player's red mascot ----
+function hatSvg(id){const I='#1a1a1a',S='stroke="'+I+'" stroke-width="3.5" stroke-linejoin="round" stroke-linecap="round"';
+ const H={
+ cap:'<path d="M29 35Q29 8 50 8Q71 8 71 35Z" fill="#ffc93c" '+S+'/><path d="M62 29Q88 27 93 38Q76 41 62 36Z" fill="#e0a800" '+S+'/><circle cx="50" cy="8" r="3.5" fill="#e0a800" '+S+'/><path d="M50 10V32" stroke="#e0a800" stroke-width="2.5"/>',
+ beanie:'<circle cx="50" cy="3" r="8" fill="#fff6e0" '+S+'/><path d="M27 36Q27 8 50 8Q73 8 73 36Z" fill="#2563c9" '+S+'/><rect x="25" y="28" width="50" height="12" rx="6" fill="#1d4fa0" '+S+'/><path d="M34 30V38M42 30V38M50 30V38M58 30V38M66 30V38" stroke="#2563c9" stroke-width="2.5"/>',
+ chef:'<path d="M29 29Q14 23 22 10Q27 0 40 5Q50 -5 60 5Q74 0 78 10Q86 23 71 29Z" fill="#fff6e0" '+S+'/><rect x="30" y="26" width="40" height="13" rx="3" fill="#fff6e0" '+S+'/><path d="M42 12V24M58 12V24" stroke="#d8cdb4" stroke-width="2.5"/>',
+ band:'<path d="M20 42Q50 28 80 42L80 33Q50 19 20 33Z" fill="#fff6e0" '+S+'/><rect x="41" y="27" width="18" height="11" rx="3" fill="#9aa5b1" '+S+'/><path d="M80 36L95 28M80 39L97 44" stroke="'+I+'" stroke-width="9" stroke-linecap="round"/><path d="M80 36L95 28M80 39L97 44" stroke="#fff6e0" stroke-width="4" stroke-linecap="round"/>',
+ cowboy:'<path d="M31 31Q26 6 42 8Q50 15 58 8Q74 6 69 31Z" fill="#a9703a" '+S+'/><path d="M6 35Q50 54 94 35Q88 23 76 30Q50 21 24 30Q12 23 6 35Z" fill="#c98b4b" '+S+'/><path d="M32 26Q50 32 68 26" fill="none" stroke="#e5392f" stroke-width="4"/>',
+ viking:'<path d="M32 26Q8 28 5 2Q18 14 38 16Z" fill="#fff6e0" '+S+'/><path d="M68 26Q92 28 95 2Q82 14 62 16Z" fill="#fff6e0" '+S+'/><path d="M27 36Q27 9 50 9Q73 9 73 36Z" fill="#aab4c0" '+S+'/><rect x="26" y="28" width="48" height="9" rx="3" fill="#7c8794" '+S+'/><circle cx="50" cy="32" r="2.6" fill="#ffc93c"/><path d="M40 14Q50 11 58 15" fill="none" stroke="#fff" stroke-width="3" opacity=".5"/>',
+ wizard:'<path d="M32 33Q44 20 54 -14Q62 10 70 33Z" fill="#5b4bd5" '+S+'/><path d="M18 36Q50 48 82 36Q50 26 18 36Z" fill="#4c3bb5" '+S+'/><path d="M35 29Q52 34 68 28" fill="none" stroke="#ffc93c" stroke-width="3.5"/><path d="M52 4l2.4 5.2 5.6.6-4.2 3.8 1.2 5.6-5-2.8-5 2.8 1.2-5.6-4.2-3.8 5.6-.6z" fill="#ffc93c" stroke="'+I+'" stroke-width="2" stroke-linejoin="round"/>'};
+ return H[id]||''}
 // ---- Rex the bot: purple boss, 3 levels (0 easy, 1 medium, 2 hard) ----
 const REXC='#8b5cf6';
 function rexSvg(lv,o){o=o||{};const I='#1a1a1a',S='stroke="'+I+'" stroke-width="3.5" stroke-linejoin="round" stroke-linecap="round"';let s=mascotSvg(REXC,{mood:'none',arms:o.arms||'side'});
