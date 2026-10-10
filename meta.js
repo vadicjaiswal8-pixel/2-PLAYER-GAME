@@ -106,7 +106,8 @@ document.addEventListener('pointerdown',e=>{const t=document.getElementById('etr
 
 // ---------- stats / stars / daily ----------
 const GN=g=>(G[g]||[g])[0];
-function dailyDef(){const s=todayS();let h=0;for(let i=0;i<s.length;i++)h=(h*31+s.charCodeAt(i))>>>0;h=Math.imul(h^h>>>15,2246822507)>>>0;return{g:GAMES10[h%GAMES10.length],lv:(h>>>8)%3,date:s}}
+function dailyDef(){const s=todayS();let h=0;for(let i=0;i<s.length;i++)h=(h*31+s.charCodeAt(i))>>>0;h=Math.imul(h^h>>>15,2246822507)>>>0;const dy=ST.dy;if(!dy.cl||dy.cl.d!=s){dy.cl={d:s,lv:lvl0()>=4?2:1};sv()}   // starts at Rex (Medium); King Rex from player Lv 4, locked in for the day
+ return{g:GAMES10[h%GAMES10.length],lv:dy.cl.lv,date:s}}
 const DR=[4,5,6,8,10,12,20];
 function dyStreak(){const d=ST.dy,t=todayS();return d.last==t||d.last==yestS()?d.streak:0}
 const dyDone=()=>ST.dy.last==todayS();
