@@ -172,6 +172,7 @@ function fstep(r, rd) {
     const g = fg(rd, p.x);
     if (now >= p.stun) p.x += FSP * (p.sm || 1) * (now < p.boost ? 1.5 : 1) * dt;
     const gr = g == 1 ? p.y <= FR + .5 : p.y >= FH - FR - .5;
+    if (p.jb > now && gr && now >= p.stun) { p.jb = 0; p.vy = g * FJV; }   // buffered tap: counts if you press up to 220ms before landing
     if (p.jump) { p.jump = 0; if (gr && now >= p.stun) p.vy = g * FJV; }
     p.vy += -g * FGV * dt; p.y += p.vy * dt;
     if (p.y < FR) { p.y = FR; if (p.vy < 0) p.vy = 0; } if (p.y > FH - FR) { p.y = FH - FR; if (p.vy > 0) p.vy = 0; }
@@ -197,7 +198,7 @@ G.flip = {
     bc(r, { t: 'fstart', k: rd.k, ids: rd.ids, L: FL, wait: 1400, c: rd.course.map(o => o.t == 'g' ? [0, o.x] : o.t == 's' ? [1, o.x, o.s] : [2, o.x, Math.round(o.y)]) });
     after(r, rd, 1400, () => { rd.iv = setInterval(() => fstep(r, rd), 1000 / 60); });
   },
-  msg(r, rd, x, d) { const i = rd.ids ? rd.ids.indexOf(x.pid) : -1; if (i >= 0 && d.j && rd.fp) rd.fp[i].jump = 1; }
+  msg(r, rd, x, d) { const i = rd.ids ? rd.ids.indexOf(x.pid) : -1; if (i >= 0 && d.j && rd.fp) rd.fp[i].jb = Date.now() + 220; }
 };
 Object.assign(G, require('./race')({ award, after, bc }));
 const rr = (a, b) => a + Math.random() * (b - a), gauss = () => (Math.random() + Math.random() + Math.random() - 1.5) * 2;

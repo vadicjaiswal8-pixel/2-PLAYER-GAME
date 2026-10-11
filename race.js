@@ -9,14 +9,15 @@ module.exports = function (C) {
   const live = (r, rd, k, f) => () => { if (rd.k === k && rd.open) f(); };   // guard stale timers from earlier rounds
 
   // ================= HURDLE SPRINT =================
-  const HL = 1100, HH = [180, 340, 500, 660, 820, 980], STR = 13, AIR = 650;
+  const HL = 1100, HH = [180, 340, 500, 660, 820, 980], STR = 13, AIR = 950;
   function hact(rd, i, a, now) {
     const p = rd.p[i]; if (now < p.stun) return;
     if (a == 'j') { if (now >= p.air) p.air = now + AIR; return; }
     if (a === p.last || now - p.lt < 65) return;
     p.last = a; p.lt = now; p.x += STR;
     while (p.hh < HH.length && p.x >= HH[p.hh]) {
-      if (now > p.air) { p.stun = now + 700; p.x = Math.max(0, p.x - 26); rd.ev.push([i, 1]); }
+      if (now > p.air) { p.stun = now + 550; p.x = Math.max(0, p.x - 20); rd.ev.push([i, 1]); }
+      else rd.ev.push([i, 2]);
       p.hh++;
     }
   }
@@ -28,7 +29,7 @@ module.exports = function (C) {
       if (!p.bot) return;
       if (now >= p.nt) { p.nt = now + 1000 / rate * rnd(.8, 1.25); hact(rd, i, p.last == 0 ? 1 : 0, now); }
       if (p.hh < HH.length) {
-        if (!p.jt[p.hh]) p.jt[p.hh] = { d: .325 * rate * STR + gauss() * sg, skip: Math.random() < miss };
+        if (!p.jt[p.hh]) p.jt[p.hh] = { d: (AIR / 2000) * rate * STR + gauss() * sg, skip: Math.random() < miss };
         const j = p.jt[p.hh], dist = HH[p.hh] - p.x;
         if (!j.done && dist <= j.d) { j.done = 1; if (!j.skip) hact(rd, i, 'j', now); }
       }
@@ -42,7 +43,7 @@ module.exports = function (C) {
     next(r, rd) {
       clearInterval(rd.iv); rd.k++; const k = rd.k; rd.ids = Object.keys(rd.pts); rd.open = 1; rd.t0 = Date.now() + 2400; rd.ev = [];
       rd.p = rd.ids.map(id => ({ x: 0, last: -1, lt: 0, stun: 0, air: 0, hh: 0, nt: 0, jt: [], bot: isB(r, id) }));
-      bc(r, { t: 'rhs', k, ids: rd.ids, L: HL, H: HH, now: Date.now(), startAt: rd.t0 });
+      bc(r, { t: 'rhs', k, ids: rd.ids, L: HL, H: HH, air: AIR, now: Date.now(), startAt: rd.t0 });
       rd.iv = setInterval(() => htick(r, rd, k), 50);
       after(r, rd, 2400 + 45000, live(r, rd, k, () => { const [a, b] = rd.p; fin(r, rd, a.x == b.x ? null : rd.ids[a.x > b.x ? 0 : 1]); }));
     },
@@ -60,7 +61,8 @@ module.exports = function (C) {
     const c = stc(e, p.k, p.w), l = c - p.w / 2, ol = Math.max(l, p.l), orr = Math.min(l + p.w, p.l + p.w), ov = orr - ol;
     let nl = ol, nw = ov, perf = 0, fell = 0;
     if (ov < 4) { fell = 1; nl = l; nw = p.w; }
-    else if (Math.abs(l - p.l) <= 4) { nl = p.l; nw = p.w; perf = 1; p.perf++; }
+    else if (Math.abs(l - p.l) <= 4) { nl = p.l; nw = p.w; perf = 1; p.perf++; p.st++; if (p.st >= 3 && nw < 96) { const g = Math.min(8, 96 - nw); nw += g; nl = Math.max(0, Math.min(SW - nw, nl - g / 2)); } }
+    if (!perf) p.st = 0;
     if (!fell) { p.l = nl; p.w = nw; p.k++; p.ts = now; } else p.fell = 1;
     bc(r, { t: 'twu', k: rd.k, i, h: p.k, l: nl, w: nw, perf, fell, pn: p.perf });
     if (rd.p.every(q => q.fell)) after(r, rd, 1300, live(r, rd, rd.k, () => tend(r, rd)));
@@ -80,7 +82,7 @@ module.exports = function (C) {
     to: 1,
     next(r, rd) {
       rd.k++; const k = rd.k; rd.ids = Object.keys(rd.pts); rd.open = 1; rd.t0 = Date.now() + 2400;
-      rd.p = rd.ids.map(id => ({ k: 0, l: 102, w: 96, fell: 0, perf: 0, ts: rd.t0, bot: isB(r, id) }));
+      rd.p = rd.ids.map(id => ({ k: 0, l: 102, w: 96, fell: 0, perf: 0, st: 0, ts: rd.t0, bot: isB(r, id) }));
       bc(r, { t: 'tws', k, ids: rd.ids, now: Date.now(), startAt: rd.t0, dur: DUR, l: 102, w: 96 });
       rd.p.forEach((p, i) => { if (p.bot) tbot(r, rd, i, k); });
       after(r, rd, 2400 + DUR, live(r, rd, k, () => tend(r, rd)));
@@ -96,9 +98,9 @@ module.exports = function (C) {
   const SN = 42;
   const sideAt = row => row & 1 ? 0 : 1;
   function smove(r, rd, i, s, now) {
-    const p = rd.p[i]; if (now < rd.t0 || now < p.stun || now - p.lt < 80) return false; p.lt = now;
+    const p = rd.p[i]; if (now < rd.t0 || now < p.stun || now - p.lt < 50) return false; p.lt = now;
     const t = rd.rows[p.r + 1];
-    if (t & (1 << s)) { p.r++; p.side = s; } else { p.r = Math.max(0, p.r - 2); p.side = p.r ? sideAt(rd.rows[p.r]) : s; p.stun = now + 550; rd.ev.push([i, 1]); }
+    if (t & (1 << s)) { p.r++; p.side = s; } else { p.r = Math.max(0, p.r - 2); p.side = p.r ? sideAt(rd.rows[p.r]) : s; p.stun = now + 350; rd.ev.push([i, 1]); }
     sbc(r, rd); if (p.r >= SN) fin(r, rd, rd.ids[i]); return true;
   }
   const sbc = (r, rd) => { const now = Date.now(); bc(r, { t: 'sku', k: rd.k, p: rd.p.map(p => [p.r, p.side, now < p.stun ? 1 : 0]), ev: rd.ev.splice(0) }); };

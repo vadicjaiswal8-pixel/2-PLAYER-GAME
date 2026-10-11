@@ -247,7 +247,7 @@ function duel(d){const t=d.t,c=$('#cd');
 const FHc=130,FSPR={};
 function fspr(opp){const k=opp?(isBot()?'r'+rexLv():'b'):'m'+(Meta.hat()||'');if(!FSPR[k]){const im=new Image();im.src=opp?(isBot()?rexUri(rexLv()):mascotUri('#2563c9',0)):mascotUri('#e5392f',0);FSPR[k]=im}return FSPR[k]}
 function fJump(e){if(e&&e.preventDefault)e.preventDefault();const f=X.f;if(!f||Date.now()<f.t0||f.over)return;send({t:'in',j:1});snd('tap');f.sq=Date.now()}
-document.addEventListener('keydown',e=>{if(view=='play'&&cur=='flip'&&X.f&&(e.key==' '||e.key=='ArrowUp')){e.preventDefault();fJump()}});
+document.addEventListener('keydown',e=>{if(view=='play'&&cur=='flip'&&X.f&&(e.key==' '||e.key=='ArrowUp'||e.key=='w')){e.preventDefault();fJump()}});
 function fInit(d){const c=$('#cd');if(c)c.textContent='';cancelAnimationFrame(X.raf);
  X.f={ids:d.ids,me:d.ids.indexOf(pid),L:d.L,c:d.c,gates:d.c.filter(o=>o[0]==0).map(o=>o[1]),p:null,dp:null,t0:Date.now()+d.wait,over:0,fl:[]};closed=0;
  $('#gm').innerHTML='<canvas id="cv" width="680" height="680" style="width:100%;max-width:340px;touch-action:none;border:4px solid #1a1a1a;border-radius:16px;background:#fff6e0;box-shadow:4px 4px 0 #1a1a1a;display:block;margin:0 auto"></canvas><button class="b cta" id="fj" style="width:70%;height:70px">JUMP!</button>';
