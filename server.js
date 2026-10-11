@@ -40,9 +40,16 @@ const shuf = a => { for (let i = a.length - 1; i > 0; i--) { const j = Math.floo
 const after = (r, rd, ms, f) => setTimeout(() => { if (r.round === rd && !rd.done) f(); }, ms);
 function award(r, rd, w, extra) {
   clearInterval(rd.iv); rd.open = 0; if (w) rd.pts[w] = (rd.pts[w] || 0) + 1;
-  bc(r, { t: 'spoint', w, pts: rd.pts, ...extra });
+  bc(r, { t: 'spoint', w, pts: rd.pts, to: G[rd.g].to, ...extra });
+  rexEmote(r, w);
   if (w && rd.pts[w] >= G[rd.g].to) return after(r, rd, 1400, () => endDuel(r));
   after(r, rd, 1900, () => G[rd.g].next(r, rd));
+}
+// Rex sometimes reacts to a point with an emote, in his own style
+function rexEmote(r, w) {
+  const b = r.p.find(y => y.bot), h = hum(r)[0]; if (!b || !h || !h.ws || Math.random() > 0.4) return;
+  const L = b.lvl ?? 1, won = w === b.pid, t = won ? [[4, 0], [5, 0], [5, 3]][L] : [[1, 4], [1, 2], [2, 1]][L];
+  setTimeout(() => { if (r.p.includes(b) && live(r).includes(h)) send(h.ws, { t: 'emote', e: t[Math.floor(Math.random() * 2)] }); }, 500 + Math.random() * 700);
 }
 function endDuel(r) {
   const rd = r.round; if (!rd || rd.done) return; rd.done = 1; clearInterval(rd.iv);

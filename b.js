@@ -7,6 +7,8 @@ function mascotSvg(col,o){o=o||{};const I='#1a1a1a',S='stroke="'+I+'" stroke-wid
  if(o.sumo)s+='<path d="M21 46Q18 21 50 19Q82 21 79 46Q68 35 50 35Q32 35 21 46Z" fill="#2b2b2b" '+S+'/><circle cx="50" cy="12" r="9" fill="#2b2b2b" '+S+'/><path d="M44 21H56" '+S+'/>';
  if(m=='angry')s+='<ellipse cx="38" cy="55" rx="7.5" ry="8.5" fill="#fff" '+S+'/><ellipse cx="62" cy="55" rx="7.5" ry="8.5" fill="#fff" '+S+'/><circle cx="39.5" cy="57" r="4.2" fill="'+I+'"/><circle cx="60.5" cy="57" r="4.2" fill="'+I+'"/><circle cx="38" cy="54.5" r="1.5" fill="#fff"/><circle cx="59" cy="54.5" r="1.5" fill="#fff"/><path d="M26 43L45 50M74 43L55 50" stroke="'+I+'" stroke-width="6" stroke-linecap="round"/><path d="M43 71Q50 64 57 71" fill="none" '+S+'/>';
  else if(m=='happy')s+='<path d="M29 46Q37 41 45 46M55 46Q63 41 71 46" fill="none" '+S+'/><path d="M31 57Q38 49 45 57M55 57Q62 49 69 57" fill="none" '+S+'/><path d="M37 65Q50 84 63 65Z" fill="#7a1d1d" '+S+'/><ellipse cx="50" cy="73" rx="5" ry="3" fill="#ff8aa0"/>';
+ else if(m=='smug')s+='<path d="M30 57a8 6.5 0 0 1 16 0Z" fill="#fff" '+S+'/><path d="M54 57a8 6.5 0 0 1 16 0Z" fill="#fff" '+S+'/><circle cx="41" cy="55.5" r="2.8" fill="'+I+'"/><circle cx="65" cy="55.5" r="2.8" fill="'+I+'"/><path d="M27 52H48M52 52H73" fill="none" '+S+'/><path d="M40 70Q52 77 63 64" fill="none" '+S+'/>';
+ else if(m=='shock')s+='<ellipse cx="38" cy="55" rx="8.5" ry="10" fill="#fff" '+S+'/><ellipse cx="62" cy="55" rx="8.5" ry="10" fill="#fff" '+S+'/><circle cx="38" cy="56" r="3" fill="'+I+'"/><circle cx="62" cy="56" r="3" fill="'+I+'"/><path d="M28 40Q38 33 47 40M53 40Q62 33 72 40" fill="none" '+S+'/><ellipse cx="50" cy="75" rx="5.5" ry="7.5" fill="#7a1d1d" '+S+'/>';
  else if(m!='none')s+='<path d="M32 49l12 12m0-12l-12 12M56 49l12 12m0-12l-12 12" fill="none" '+S+'/><path d="M40 72Q45 66 50 72Q55 78 60 72" fill="none" '+S+'/>';
  if(!o.sumo&&!o.nohat&&col=='#e5392f'&&window.Meta&&Meta.hat())s+=hatSvg(Meta.hat());
  return s}
@@ -30,6 +32,10 @@ function rexSvg(lv,o){o=o||{};const I='#1a1a1a',S='stroke="'+I+'" stroke-width="
  else if(lv==1){s+=eye(38,2)+eye(62,2)+'<path d="M27 40Q36 36 45 45M73 46L55 49" fill="none" stroke="'+I+'" stroke-width="6" stroke-linecap="round"/><path d="M40 70Q52 78 63 66" fill="none" '+S+'/><circle cx="63" cy="66" r="1.8" fill="'+I+'"/>'}
  else{s+='<path d="M24 45L46 52M76 45L54 52" stroke="'+I+'" stroke-width="6" stroke-linecap="round"/><path d="M25 52H47Q47 66 40 66H32Q25 66 25 58Z" fill="#111" '+S+'/><path d="M53 52H75V58Q75 66 68 66H60Q53 66 53 52Z" fill="#111" '+S+'/><path d="M47 55H53" '+S+'/><path d="M29 55L36 55M57 55L64 55" stroke="#fff" stroke-width="2.5" stroke-linecap="round" opacity=".7"/><path d="M36 68Q50 84 64 68Z" fill="#fff" '+S+'/><path d="M50 69V78" stroke="'+I+'" stroke-width="2"/>'
   +'<path d="M27 32L30 8L41 21L50 3L59 21L70 8L73 32Z" fill="#ffc93c" '+S+'/><circle cx="30" cy="8" r="3.4" fill="#e5392f" '+S+'/><circle cx="50" cy="3" r="3.4" fill="#2563c9" '+S+'/><circle cx="70" cy="8" r="3.4" fill="#e5392f" '+S+'/><path d="M28 27H72" stroke="'+I+'" stroke-width="2.5"/>'}
+ if(o.mood){const P='<ellipse cx="50" cy="72" rx="15" ry="8" fill="'+REXC+'"/>';
+  if(o.mood=='sad')s+=P+'<path d="M28 44Q37 50 46 46M72 44Q63 50 54 46" fill="none" '+S+'/><path d="M41 77Q50 69 59 77" fill="none" '+S+'/><path d="M67 60Q71 68 67 70Q63 68 67 60Z" fill="#7dd3fc" stroke="'+I+'" stroke-width="2"/>';
+  else if(o.mood=='hype')s+=P+'<path d="M28 42Q37 38 46 44M72 42Q63 38 54 44" fill="none" '+S+'/><path d="M38 69Q50 86 62 69Z" fill="#7a1d1d" '+S+'/>';
+  else if(o.mood=='smug')s+=P+'<path d="M27 47L46 51M73 47L54 51" fill="none" '+S+'/><path d="M40 73Q52 79 64 65" fill="none" '+S+'/>'}
  return s}
 function isBot(){return !!on.bot}
 function rexLv(){const n=on.opp||'';return n.indexOf('Sleepy')>=0?0:n.indexOf('King')>=0?2:1}
@@ -37,12 +43,69 @@ function OC(){return isBot()?REXC:'#2563c9'}
 function rexUri(lv){return 'data:image/svg+xml;charset=utf-8,'+encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" viewBox="-4 -16 108 148" width="216" height="296">'+rexSvg(lv)+'</svg>')}
 function rexAv(lv,sz){return '<span class="av" style="background:'+REXC+';overflow:hidden;width:'+sz+'px;height:'+sz+'px"><svg viewBox="12 -16 76 76" width="'+sz+'" height="'+sz+'">'+rexSvg(lv)+'</svg></span>'}
 function oppAv(sz){return isBot()?rexAv(rexLv(),sz):'<span class="av" style="background:#2563c9;width:'+sz+'px;height:'+sz+'px">'+((on.opp||'?')[0]).toUpperCase()+'</span>'}
-const LN=[{start:['zzz... let\'s play!','Be gentle with me!'],mine:['Oof! Nice one!','Ooh, good!'],his:['Oh! I did it?','Yay, me!'],win:['I won?! Rematch?'],lose:['You\'re so good!','Nice game!']},
-{start:['Let\'s dance.','Bring it on!'],mine:['Not bad.','Hm. Lucky.'],his:['Gotcha.','Easy.'],win:['GG. Rematch?'],lose:['Hmph. Again!','You got me.']},
-{start:['Too easy.','Kneel.'],mine:['A fluke.','Hmph.'],his:['Too slow.','Bow down.'],win:['Long live the king!'],lose:['Impossible!!','This changes nothing.']}];
-let rbT=0;
-function rexSay(k){if(!isBot()||!LN[rexLv()][k])return;const L=LN[rexLv()][k],t=L[Math.floor(Math.random()*L.length)];let b=document.getElementById('rbub');if(!b){b=document.createElement('div');b.id='rbub';document.body.appendChild(b)}
- b.innerHTML='<svg viewBox="12 -16 76 76" width="34" height="34" style="flex:none">'+rexSvg(rexLv())+'</svg><span>'+t+'</span>';b.style.display='flex';clearTimeout(rbT);rbT=setTimeout(()=>{b.style.display='none'},2300)}
+const LN=[
+{start:['zzz... oh! Let\'s play!','*yawn* Ready when you are.','Be gentle with me!','Five more minutes... kidding, go!'],
+ mine:['Oof! Nice one!','Ooh, good!','Wow, you\'re quick!','Ow! Well played!','I blinked. Sorry!'],
+ his:['Oh! I did it?','Yay, me!','Was that me? Cool!','Haha, lucky me!'],
+ lead:['I\'m winning?! Wake me up!','Wait, am I ahead?'],trail:['Uh oh, I\'m behind...','My hat feels heavy.'],
+ level:['We\'re even! Whoa!','Tied! Don\'t go easy on me.'],streak:['Two in a row?! Dreams do come true.','Is this a dream?'],
+ mpMine:['One more and you win... no pressure!','You\'re about to win! Yikes.'],mpHis:['Match point for me?! I\'m nervous!','Don\'t look, I\'m nervous.'],
+ think:['Hmm... where was I?','Let me think... zzz','Ooh, a hard one.'],
+ win:['I won?! Rematch?','No way! I won! Again?'],lose:['You\'re so good!','Nice game! Teach me?','Okay, you win. Nap time.']},
+{start:['Let\'s dance.','Bring it on!','Show me what you\'ve got.','Warm-up\'s over.'],
+ mine:['Not bad.','Hm. Lucky.','Okay, okay. Nice.','That one\'s yours.','Noted.'],
+ his:['Gotcha.','Easy.','Too slow!','That one\'s mine.','Nice try.'],
+ lead:['I\'m in front. Keep up!','Scoreboard doesn\'t lie.'],trail:['Alright, now it\'s on.','You\'re ahead... for now.'],
+ level:['All square. Now it gets fun.','Back to even. Good.'],streak:['That\'s two. Want a third?','On a roll!'],
+ mpMine:['Match point for you. Sweating yet? Me too.','You\'re one away. Interesting.'],mpHis:['Match point. Choke time?','One more and it\'s mine.'],
+ think:['Hmm, interesting move.','Let me think...','Oh, you\'re sneaky.'],
+ win:['GG. Rematch?','Good game. Better luck next time.'],lose:['Hmph. Again!','You got me. Rematch?','Nice one. I want a rematch.']},
+{start:['Too easy.','Kneel.','You dare challenge the king?','Make your move, peasant.'],
+ mine:['A fluke.','Hmph.','Enjoy it. It won\'t last.','The crown is unmoved.','Insolent!'],
+ his:['Too slow.','Bow down.','Predictable.','As expected.','The king scores.'],
+ lead:['The throne is mine.','Behold my dominion.'],trail:['You dare lead the king?!','This will not stand.'],
+ level:['Even? Unacceptable.','A brief rebellion.'],streak:['Bow. Again.','Absolute rule.'],
+ mpMine:['Impossible... one more?!','You are close. Too close.'],mpHis:['The final blow approaches.','Prepare for defeat.'],
+ think:['Hmm. A worthy move.','The king ponders.','Calculating your doom.'],
+ win:['Long live the king!','As the prophecy foretold.'],lose:['Impossible!!','This changes nothing.','Guards! ...fine, you win.']}];
+// one line per game for each Rex level, said at the start of a match
+const LG={sumo:['Mind the edge... zzz','Let\'s shove!','Off the platform you go.'],darts:['Hit the board, not me!','Bullseye or bust.','I never miss.'],archery:['Is it windy? I forgot.','Watch the wind.','The wind obeys me.'],flip:['Wheee! Gravity is silly.','Don\'t fall upward!','The ceiling is my home.'],pizza:['Mmm, pizza...','Extra toppings, please.','I have memorized every topping.'],spot:['I see... circles.','Eyes sharp!','My eyes miss nothing.'],c4:['Four... is that a lot?','Four in a row? Let\'s see.','Your defeat has four sides.'],gomoku:['Five stones, got it.','Think five moves ahead.','Five in a row. Mine.'],dots:['Dot to dot, fun!','Don\'t give me boxes.','I\'ll take the boxes.'],uttt:['So many boards...','Nine boards, one winner.','Nine boards. I own them all.'],sea:['Is that a ship?','Sink or swim!','Your fleet is doomed.'],hurdle:['Hurdles? I\'ll nap over them.','Jump high!','Watch me fly over.'],stack:['Don\'t knock it over!','Steady hands.','My towers touch the sky.'],sky:['Up, up, up!','Pick the right cloud.','The sky belongs to me.'],fruit:['Yum, fruit!','Beware the bombs!','Sliced, diced, defeated.']};
+let rbT=0,rbLast={},rbAt=0,RXS={m:0,h:0};
+function rexSay(k,mood,g){if(!isBot())return;const lv=rexLv();let L=LN[lv][k];if(k=='start'&&g&&LG[g]&&Math.random()<.65)L=[LG[g][lv]];if(!L)return;
+ let i=Math.floor(Math.random()*L.length);if(L.length>1&&rbLast[k]===i)i=(i+1)%L.length;rbLast[k]=i;
+ let b=document.getElementById('rbub');if(!b){b=document.createElement('div');b.id='rbub';document.body.appendChild(b)}
+ b.innerHTML='<svg viewBox="8 -14 84 100" width="38" height="45" style="flex:none">'+rexSvg(lv,{mood:mood||''})+'</svg><span>'+L[i]+'</span>';b.style.top=typeof view!='undefined'&&view=='res'?'160px':'';b.style.display='flex';rbAt=Date.now();clearTimeout(rbT);rbT=setTimeout(()=>{b.style.display='none'},2600)}
+// Rex reacts to the score after each round of a best-of match
+function rexReact(d){if(!isBot()||!d.w||!(d.to>1))return;const me=d.pts[pid]||0,hi=d.pts.BOT||0,to=d.to,mine=d.w==pid;
+ if(mine){RXS.m++;RXS.h=0}else{RXS.h++;RXS.m=0}
+ let k=mine?'mine':'his',mood=mine?'sad':'smug';
+ if(mine&&me==to-1){k='mpMine';mood='sad'}else if(!mine&&hi==to-1){k='mpHis';mood='hype'}
+ else if(!mine&&RXS.h>=2){k='streak';mood='hype'}
+ else if(me==hi){k='level';mood=mine?'sad':'smug'}
+ else if(hi>me){k=mine?'mine':'lead';mood=mine?'sad':'smug'}
+ else{k=mine?'trail':'his';mood=mine?'sad':'smug'}
+ rexSay(k,mood)}
+// Rex mutters while thinking in board games
+function rexThink(d){if(!isBot()||!d.ids||d.win!=null||d.ids[d.turn]!='BOT'||Date.now()-rbAt<4500||Math.random()>.16)return;rexSay('think','smug')}
+// ---- Red and Blue have names and personalities. You are always Blaze, your rival is always Frost. ----
+const CH={red:{n:'Blaze',col:'#e5392f',ink:'#c92b21',
+  score:['BOOM!','Too hot to handle!','Feel the burn!','Yes! Again!','Light it up!'],
+  concede:['Argh! Not fair!','I was about to!','Ow, that stings!','No no no!'],
+  win:['I\'M ON FIRE!','Told you I\'d win!','Burn bright!'],lose:['Rematch! Right now!','That was luck!','I\'m not done!']},
+ blue:{n:'Frost',col:'#2563c9',ink:'#1d4fa0',
+  score:['Cool.','Right on time.','Ice cold.','Easy. Stay calm.','As planned.'],
+  concede:['Hm. Noted.','Fair point.','Just warming up.','Interesting.'],
+  win:['Stay frosty.','Cool game.','Calm wins.'],lose:['Well played. Again?','The tide turns.','Hm, you\'re good.']}};
+let chLast={};
+function chLine(w,k){const L=CH[w][k];let i=Math.floor(Math.random()*L.length);if(L.length>1&&chLast[w+k]===i)i=(i+1)%L.length;chLast[w+k]=i;return L[i]}
+function chSay(w,k,mood){let b=document.getElementById('rbub');if(!b){b=document.createElement('div');b.id='rbub';document.body.appendChild(b)}
+ b.innerHTML='<svg viewBox="8 -14 84 100" width="38" height="45" style="flex:none">'+mascotSvg(CH[w].col,{mood:mood,arms:'none',nohat:w=='blue'})+'</svg><span>'+chLine(w,k)+'</span>';b.style.top=typeof view!='undefined'&&view=='res'?'160px':'';b.style.display='flex';rbAt=Date.now();clearTimeout(rbT);rbT=setTimeout(()=>{b.style.display='none'},2400)}
+// vs a friend: after a round, the character who scored gloats, or the other one groans
+function charReact(d){if(isBot()||!d.w||!(d.to>1)||Math.random()>.7)return;const mine=d.w==pid,sc=mine?'red':'blue',lo=mine?'blue':'red';
+ if(Math.random()<.6)chSay(sc,'score',sc=='red'?'happy':'smug');else chSay(lo,'concede',Math.random()<.5?'shock':'sad')}
+// caption under the result banner (friend matches, and your wins against Rex)
+function charCap(d){if(d.left||(d.win!='me'&&d.win!='opp'))return '';const w=d.win=='me'?'red':'blue';if(isBot()&&w=='blue')return '';
+ return '<div class="L" style="font-size:18px;margin:0 0 6px;color:'+CH[w].ink+'">'+CH[w].n+': “'+chLine(w,'win')+'”</div>'}
 function mascotUri(col,sumo){return 'data:image/svg+xml;charset=utf-8,'+encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" viewBox="-4 -2 108 134" width="216" height="268">'+mascotSvg(col,{sumo:sumo,arms:'side'})+'</svg>')}
 // Board game renderers (client). Uses globals from index.html: $, pid, cur, on, X, send, snd, vib
 const BG={c4:1,gomoku:1,dots:1,uttt:1,sea:1};
