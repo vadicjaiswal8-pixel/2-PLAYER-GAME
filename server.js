@@ -2,7 +2,7 @@ const http = require('http'), fs = require('fs'), path = require('path');
 const { WebSocketServer } = require('ws');
 const BG = require('./boards');
 const rooms = {};
-const T = { '/manifest.json': 'application/json', '/sw.js': 'text/javascript', '/icon-192.png': 'image/png', '/icon-512.png': 'image/png', '/og.png': 'image/png', '/b.js': 'text/javascript', '/meta.js': 'text/javascript', '/logo.png': 'image/png' };
+const T = { '/manifest.json': 'application/json', '/sw.js': 'text/javascript', '/icon-192.png': 'image/png', '/icon-512.png': 'image/png', '/og.png': 'image/png', '/b.js': 'text/javascript', '/racec.js': 'text/javascript', '/meta.js': 'text/javascript', '/logo.png': 'image/png' };
 const srv = http.createServer((q, s) => {
   let p = q.url.split('?')[0];
   if (p == '/favicon.ico') p = '/icon-192.png';
@@ -140,6 +140,66 @@ const G = {
     }
   }
 };
+
+// ---- Flip Run: race through a spiky course; gravity flips at purple gates ----
+const FH = 130, FR = 14, FGV = 1100, FJV = 360, FSP = 230, FL = 4200;
+function fcourse(d) {
+  const it = []; let x = 520, gnd = 0, since = 0; const gmin = Math.max(185, 265 - d * 30);
+  while (x < FL - 450) {
+    const r = Math.random();
+    if (since >= 3 && r < 0.3) { it.push({ t: 'g', x }); gnd ^= 1; since = 0; x += gmin + 90; continue; }
+    if (r < 0.42) { const h = FR + (Math.random() < 0.5 ? 0 : 52); it.push({ t: 'o', x, y: gnd == 0 ? h : FH - h }); }
+    else { it.push({ t: 's', x, s: gnd }); if (d >= 1 && Math.random() < 0.2) it.push({ t: 's', x: x + 62, s: gnd }); }
+    since++; x += gmin + Math.random() * 110;
+  }
+  return it;
+}
+const fg = (rd, x) => rd.course.filter(o => o.t == 'g' && o.x <= x).length % 2 ? -1 : 1;
+function fbot(rd, i, p, now) {
+  if (now < p.stun) return; const L = rd.lvl ?? 1, c = rd.course, g = fg(rd, p.x);
+  const grounded = g == 1 ? p.y <= FR + .5 : p.y >= FH - FR - .5; if (!grounded) return;
+  let k = c.findIndex((o, j) => o.t == 's' && o.x > p.x - 8 && j > (p.skipTo ?? -1));
+  if (k < 0) return; const o = c[k];
+  if (!p.dec || p.dec.k != k) { let e = k; while (c[e + 1] && c[e + 1].t == 's' && c[e + 1].x - c[e].x < 90) e++; p.dec = { k, e, skip: Math.random() < [0.15, 0.06, 0.02][L], at: (e > k ? 96 : 80) + gauss() * [24, 13, 6][L] }; }
+  if (o.x - p.x <= p.dec.at && fg(rd, o.x) == g) { if (!p.dec.skip) p.jump = 1; p.skipTo = p.dec.e; }
+}
+function fstep(r, rd) {
+  if (r.round !== rd || rd.done) return clearInterval(rd.iv);
+  const dt = 1 / 60, now = Date.now(), ev = []; rd.tick++;
+  rd.ids.forEach((id, i) => {
+    const p = rd.fp[i];
+    if (r.p.some(y => y.pid == id && y.bot)) fbot(rd, i, p, now);
+    const g = fg(rd, p.x);
+    if (now >= p.stun) p.x += FSP * (p.sm || 1) * (now < p.boost ? 1.5 : 1) * dt;
+    const gr = g == 1 ? p.y <= FR + .5 : p.y >= FH - FR - .5;
+    if (p.jump) { p.jump = 0; if (gr && now >= p.stun) p.vy = g * FJV; }
+    p.vy += -g * FGV * dt; p.y += p.vy * dt;
+    if (p.y < FR) { p.y = FR; if (p.vy < 0) p.vy = 0; } if (p.y > FH - FR) { p.y = FH - FR; if (p.vy > 0) p.vy = 0; }
+    for (let k = 0; k < rd.course.length; k++) {
+      const o = rd.course[k]; if (o.x < p.x - 40) continue; if (o.x > p.x + 40) break;
+      if (o.t == 's') { const dw = o.s == 0 ? p.y : FH - p.y; if (Math.abs(p.x - o.x) < 22 && dw < 38 && now >= p.inv) { p.stun = now + 700; p.inv = now + 1700; p.x = Math.max(60, p.x - 50); ev.push([i, 1]); } }
+      else if (o.t == 'o' && !rd.got[i].has(k) && Math.hypot(p.x - o.x, p.y - o.y) < 26) { rd.got[i].add(k); p.boost = now + 1300; ev.push([i, 2]); }
+    }
+  });
+  const fin = rd.fp.map((p, i) => [p.x, i]).filter(a => a[0] >= FL).sort((a, b) => b[0] - a[0])[0];
+  if (fin || rd.tick > 60 * 50) {
+    clearInterval(rd.iv); const w = fin ? rd.ids[fin[1]] : (rd.fp[0].x == rd.fp[1].x ? null : rd.ids[rd.fp[0].x > rd.fp[1].x ? 0 : 1]);
+    bc(r, { t: 'fs', p: rd.fp.map(p => [p.x | 0, p.y | 0, 0, 0, 0]), ev }); return award(r, rd, w, {});
+  }
+  if (rd.tick % 3 == 0 || ev.length) bc(r, { t: 'fs', p: rd.fp.map(p => [p.x | 0, p.y | 0, now < p.stun ? 1 : 0, now < p.boost ? 1 : 0, now < p.inv ? 1 : 0]), ev });
+}
+G.flip = {
+  to: 2,
+  next(r, rd) {
+    clearInterval(rd.iv); rd.k++; rd.ids = Object.keys(rd.pts); rd.course = fcourse(rd.k - 1); rd.tick = 0;
+    const b = r.p.find(y => y.bot), sm = b ? [0.95, 0.99, 1.03][rd.lvl ?? 1] : 1;
+    rd.fp = rd.ids.map(id => ({ x: 60, y: FR, vy: 0, stun: 0, boost: 0, inv: 0, jump: 0, sm: r.p.some(y => y.pid == id && y.bot) ? sm : 1 })); rd.got = rd.ids.map(() => new Set());
+    bc(r, { t: 'fstart', k: rd.k, ids: rd.ids, L: FL, wait: 1400, c: rd.course.map(o => o.t == 'g' ? [0, o.x] : o.t == 's' ? [1, o.x, o.s] : [2, o.x, Math.round(o.y)]) });
+    after(r, rd, 1400, () => { rd.iv = setInterval(() => fstep(r, rd), 1000 / 60); });
+  },
+  msg(r, rd, x, d) { const i = rd.ids ? rd.ids.indexOf(x.pid) : -1; if (i >= 0 && d.j && rd.fp) rd.fp[i].jump = 1; }
+};
+Object.assign(G, require('./race')({ award, after, bc }));
 const rr = (a, b) => a + Math.random() * (b - a), gauss = () => (Math.random() + Math.random() + Math.random() - 1.5) * 2;
 function addBot(r, lvl) {
   const RN = ['Sleepy Rex (bot)', 'Rex (bot)', 'King Rex (bot)']; let bot = r.p.find(y => y.bot);
