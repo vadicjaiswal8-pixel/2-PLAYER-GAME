@@ -2,7 +2,7 @@ const http = require('http'), fs = require('fs'), path = require('path');
 const { WebSocketServer } = require('ws');
 const BG = require('./boards');
 const rooms = {};
-const T = { '/manifest.json': 'application/json', '/sw.js': 'text/javascript', '/icon-192.png': 'image/png', '/icon-512.png': 'image/png', '/og.png': 'image/png', '/b.js': 'text/javascript', '/racec.js': 'text/javascript', '/meta.js': 'text/javascript', '/logo.png': 'image/png' };
+const T = { '/manifest.json': 'application/json', '/sw.js': 'text/javascript', '/icon-192.png': 'image/png', '/icon-512.png': 'image/png', '/og.png': 'image/png', '/b.js': 'text/javascript', '/racec.js': 'text/javascript', '/mergec.js': 'text/javascript', '/meta.js': 'text/javascript', '/logo.png': 'image/png' };
 const srv = http.createServer((q, s) => {
   let p = q.url.split('?')[0];
   if (p == '/favicon.ico') p = '/icon-192.png';
@@ -17,6 +17,9 @@ const srv = http.createServer((q, s) => {
 });
 const wss = new WebSocketServer({ server: srv, maxPayload: 4096 });
 const send = (w, o) => w && w.readyState == 1 && w.send(JSON.stringify(o));
+const BADW = /(fuck|shit|bitch|cunt|nigg|slut|whore|rape|porn|dick|cock|pussy|asshole|chut|gand|madarchod|behenchod|bhosd|randi|lund|mc\b|bc\b)/i;
+const chatClean = m => { m = String(m || '').normalize('NFKC').replace(/[\u0000-\u001f<>]/g, '').replace(/\s+/g, ' ').trim().slice(0, 40); return !m || BADW.test(m.replace(/[^\p{L}\p{N}]/gu, '')) || BADW.test(m) ? '' : m; };
+const RS = [['Zzz... what?', 'Hehe, okay.', 'I am trying!'], ['Talk is cheap!', 'Nice one, friend.', 'Bring it on.'], ['Words will not save you.', 'Cute. Keep typing.', 'I read that. Still winning.']];
 const live = r => r.p.filter(x => x.ws && x.ws.readyState == 1);
 const hum = r => live(r).filter(x => !x.bot);
 const bc = (r, o) => { for (const y of live(r)) send(y.ws, o); };
@@ -208,6 +211,7 @@ G.flip = {
   msg(r, rd, x, d) { const i = rd.ids ? rd.ids.indexOf(x.pid) : -1; if (i >= 0 && d.j && rd.fp) rd.fp[i].jb = Date.now() + 220; }
 };
 Object.assign(G, require('./race')({ award, after, bc }));
+Object.assign(G, require('./merge')({ award, after, bc }));
 const rr = (a, b) => a + Math.random() * (b - a), gauss = () => (Math.random() + Math.random() + Math.random() - 1.5) * 2;
 function addBot(r, lvl) {
   const RN = ['Sleepy Rex (bot)', 'Rex (bot)', 'King Rex (bot)']; let bot = r.p.find(y => y.bot);
@@ -302,6 +306,12 @@ function act(ws, d) {
     x.em = Date.now();
     if (!o.bot) send(o.ws, { t: 'emote', e });
     else if (Math.random() < 0.8) setTimeout(() => { if (r.p.includes(o) && live(r).includes(x)) send(x.ws, { t: 'emote', e: ER[o.lvl ?? 1][Math.floor(Math.random() * 3)] }); }, 700 + Math.random() * 900);
+  } else if (d.t == 'say') {
+    const o = live(r).find(y => y != x), m = chatClean(d.m);
+    if (!m || !o || Date.now() - (x.em || 0) < 1200) return;
+    x.em = Date.now();
+    if (!o.bot) send(o.ws, { t: 'say', m });
+    else if (Math.random() < 0.7) { const L = RS[o.lvl ?? 1]; setTimeout(() => { if (r.p.includes(o) && live(r).includes(x)) send(x.ws, { t: 'say', m: L[Math.floor(Math.random() * L.length)] }); }, 900 + Math.random() * 1100); }
   } else if (d.t == 'in' && r.round && !r.round.done) G[r.round.g].msg(r, r.round, x, d);
 }
 wss.on('connection', ws => {
