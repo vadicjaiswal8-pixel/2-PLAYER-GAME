@@ -3,8 +3,8 @@
 // and the phones only send "aim here" / "drop" / "shake". Same blob sequence for both players, so it is a fair fight.
 module.exports = function (C) {
   const { award, after, bc } = C;
-  const W = 200, H = 320, LINE = 62, SPAWN = 24, STEP = 1 / 60, GRAV = 1100, TMAX = 8, STONE = 13, ROUND = 150000;
-  const RR = []; for (let t = 0; t <= TMAX; t++) RR.push(8 + t * 2.6);
+  const W = 240, H = 312, LINE = 58, SPAWN = 26, STEP = 1 / 60, GRAV = 1100, TMAX = 8, STONE = 13, ROUND = 120000;
+  const RR = []; for (let t = 0; t <= TMAX; t++) RR.push(9 + t * 2.9);
   const ATK = [0, 0, 0, 0, 1, 1, 2, 3, 4];             // junk sent when a merge creates this tier
   const rnd = (a, b) => a + Math.random() * (b - a), gauss = () => (Math.random() + Math.random() + Math.random() - 1.5) * 2;
   const clamp = (v, a, b) => v < a ? a : v > b ? b : v;
@@ -41,7 +41,8 @@ module.exports = function (C) {
     }
   }
 
-  function send(rd, i, atk) {                         // junk goes to the other jar, first cancelling what is coming at me
+  function send(rd, i, atk) {                         // attacks are switched off: each player has their own jar and the race is on score
+    return;
     const b = rd.bx[i], o = rd.bx[1 - i]; if (atk <= 0) return;
     const c = Math.min(b.inc, atk); b.inc -= c; atk -= c;
     const stones = o.it.reduce((n, q) => n + (q.j ? 1 : 0), 0) + o.q.length; atk = Math.min(atk, Math.max(0, 8 - stones - o.inc));
@@ -130,7 +131,7 @@ module.exports = function (C) {
         b.it.push({ id: b.nid++, x, y: STONE + 2, vx: rnd(-20, 20), vy: 60, t: 0, r: STONE, j: 1, hp: 2, age: 0 });
       }
       phys(b, STEP / 2); phys(b, STEP / 2);
-      for (const o of b.it) { if (o.vx * o.vx + o.vy * o.vy < 36) { o.vx = 0; o.vy = 0; } }
+      for (const o of b.it) { if (o.vx * o.vx + o.vy * o.vy < 144) { o.vx = 0; o.vy = 0; } }
       merges(rd, i);
       let over = false; for (const o of b.it) { o.age += STEP; if (o.age > 1.3 && o.y - o.r < LINE) over = true; }
       if (over && st >= b.nodz) b.dz += STEP; else b.dz = Math.max(0, b.dz - STEP * 2.5);

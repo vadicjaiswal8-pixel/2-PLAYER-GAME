@@ -2,7 +2,8 @@
 // The server runs the physics for both jars. This file only draws them, smooths the snapshots and sends aim / drop / shake.
 const MC = (function () {
   const BC = ['#ff6b9d', '#ff9f1c', '#ffd93c', '#8ac926', '#17a58a', '#4cc9f0', '#2563c9', '#9b5de5', '#e5392f'];
-  const FONT = 'Lilita One,sans-serif', CW = 340, CH = 372, JX = 8, JY = 42, OX = 226, OY = 42, OS = 0.5;
+  const FONT = 'Lilita One,sans-serif', CW = 360, JX = 5, JY = 5;
+  let CH = 470;
   const sn = () => Date.now() + (X.r ? X.r.so : 0);
   const names = () => [nm || 'You', on.opp || 'Friend'];
   const tn = (f, d, ty, v, sl, dl) => { try { if (Meta.sfxOn()) tone(f, d, ty, v, sl, dl) } catch (e) { } };
@@ -71,47 +72,37 @@ const MC = (function () {
     let y = r.Hh - rad; for (const o of its) { const R = o.t >= 9 ? r.SR : r.RR[o.t], dx = Math.abs(x - o.x), m = rad + R; if (dx < m) { const yc = o.y - Math.sqrt(m * m - dx * dx); if (yc < y) y = yc } } return y;
   }
   function draw(x, r, now) {
-    const rt = sn() - 90, me = r.me, op = 1 - me, cp = r.cur; if (!cp) return;
-    const [n0, n1] = names(), OCc = OC();
-    // top bar
-    x.fillStyle = '#1a1a1a'; x.beginPath(); x.roundRect(8, 6, 324, 28, 12); x.fill();
-    x.font = '400 15px ' + FONT; x.textAlign = 'left'; x.fillStyle = '#ff9f9f'; x.fillText(n0.slice(0, 9) + '  ' + cp[me].s.toLocaleString('en-US'), 18, 26);
-    x.textAlign = 'right'; x.fillStyle = '#c9b8ff'; x.fillStyle = OCc; x.fillText(n1.slice(0, 9) + '  ' + cp[op].s.toLocaleString('en-US'), 322, 26);
-    // ---- my jar ----
-    const my = items(r, me, rt), mp = jar(x, r, me, JX, JY, 1, '#fffaf0'), W = r.W;
+    const rt = sn() - 90, me = r.me, op = 1 - me, cp = r.cur; if (!cp) return; const s = r.sc, W = r.W;
+    const [n0, n1] = names();
+    // ---- my jar (big, full width) ----
+    const my = items(r, me, rt), mp = jar(x, r, me, JX, JY, s, '#fffaf0');
     const held = mp && now >= r.hide && mp.l == 0 && !r.over;
     if (held) {
       const rad = r.RR[mp.c], ax = Math.max(rad, Math.min(W - rad, r.aim)), ly = land(r, my, ax, rad);
-      x.strokeStyle = 'rgba(26,26,26,.35)'; x.lineWidth = 2; x.setLineDash([3, 5]); x.beginPath(); x.moveTo(ax, r.SP + rad); x.lineTo(ax, ly - rad + 2); x.stroke(); x.setLineDash([]);
+      x.strokeStyle = 'rgba(26,26,26,.35)'; x.lineWidth = 2 / s; x.setLineDash([3, 5]); x.beginPath(); x.moveTo(ax, r.SP + rad); x.lineTo(ax, ly - rad + 2); x.stroke(); x.setLineDash([]);
       x.globalAlpha = .28; blob(x, ax, ly, rad, mp.c); x.globalAlpha = 1;
     }
     drawItems(x, r, my, now, me);
     if (held) blob(x, Math.max(r.RR[mp.c], Math.min(W - r.RR[mp.c], r.aim)), r.SP, r.RR[mp.c], mp.c, { look: 0 });
-    else if (mp && mp.l > 0 && !r.over) { x.font = '400 13px ' + FONT; x.textAlign = 'center'; txt(x, 'SHAKING...', W / 2, r.SP + 6, '#9b5de5', 14) }
+    else if (mp && mp.l > 0 && !r.over) txt(x, 'SHAKING...', W / 2, r.SP + 6, '#9b5de5', 16);
     if (r.ghost && now - r.ghost.t < 320) { const u = (now - r.ghost.t) / 1000, g = r.ghost; blob(x, g.x, r.SP + .5 * 1100 * u * u, r.RR[g.c], g.c) }
     fxDraw(x, r, now, me);
-    // next chip + incoming junk chip
-    x.restore(); SC = 1; x.save(); x.beginPath(); x.rect(0, 0, W, r.Hh); x.clip();
-    x.fillStyle = '#ffc93c'; x.strokeStyle = '#1a1a1a'; x.lineWidth = 2.5; x.beginPath(); x.roundRect(5, 5, 66, 22, 11); x.fill(); x.stroke(); x.font = '400 12px ' + FONT; x.textAlign = 'left'; x.fillStyle = '#1a1a1a'; x.fillText('NEXT', 12, 21); blob(x, 54, 16, Math.min(9, r.RR[mp.n] * .8), mp.n);
-    if (mp.i > 0) { x.fillStyle = '#e5392f'; x.beginPath(); x.roundRect(W - 78, 5, 73, 22, 11); x.fill(); x.stroke(); x.fillStyle = '#fff6e0'; x.textAlign = 'center'; x.fillText('+' + mp.i + ' JUNK', W - 41, 21) }
-    if (mp.z > .4 && Math.floor(now / 160) % 2) txt(x, 'DANGER!', W / 2, r.LN + 28, '#ff6b6b', 20);
-    x.restore(); x.lineWidth = 4; x.strokeStyle = '#1a1a1a'; x.beginPath(); x.roundRect(-2, -2, W + 4, r.Hh + 4, 10); x.stroke(); x.restore(); SC = 1;
-    // ---- opponent jar (small) ----
-    const ot = items(r, op, rt), opp = jar(x, r, op, OX, OY, OS, '#f1e6c8');
+    jarEnd(x, r, me, s);
+    // next chip
+    SC = 1; x.fillStyle = '#ffc93c'; x.strokeStyle = '#1a1a1a'; x.lineWidth = 2.5; x.beginPath(); x.roundRect(JX + 8, JY + 8, 82, 28, 14); x.fill(); x.stroke();
+    x.font = '400 14px ' + FONT; x.textAlign = 'left'; x.fillStyle = '#1a1a1a'; x.fillText('NEXT', JX + 17, JY + 28); blob(x, JX + 68, JY + 22, 10, mp.n, { look: 0 });
+    if (mp.z > .4 && Math.floor(now / 160) % 2) txt(x, 'DANGER!', JX + W * s / 2, JY + r.LN * s + 34, '#ff6b6b', 24);
+    // ---- opponent: small floating card, top right ----
+    const os = 84 / W, ow = W * os, oh = r.Hh * os, px = CW - JX - ow - 14, py = JY + 12;
+    x.save(); x.globalAlpha = .9; x.fillStyle = '#f1e6c8'; x.strokeStyle = '#1a1a1a'; x.lineWidth = 3.5; x.beginPath(); x.roundRect(px - 7, py - 7, ow + 14, oh + 38, 12); x.fill(); x.stroke();
+    const opp = jar(x, r, op, px, py, os, '#f1e6c8'), ot = items(r, op, rt);
     drawItems(x, r, ot, now, op);
     if (!r.over && opp.l == 0) blob(x, Math.max(r.RR[opp.c], Math.min(W - r.RR[opp.c], opp.a)), r.SP, r.RR[opp.c], opp.c);
     fxDraw(x, r, now, op);
-    x.restore(); x.lineWidth = 4; x.strokeStyle = '#1a1a1a'; x.beginPath(); x.roundRect(OX - 2 * OS, OY - 2 * OS, (W + 4) * OS, (r.Hh + 4) * OS, 8); x.stroke(); x.restore(); SC = 1;
-    // ---- side panel ----
-    const my0 = OY + r.Hh * OS + 14;
-    blob(x, OX + 18, my0 + 18, 14, 4, { col: OCc, crown: 0 }); x.font = '400 14px ' + FONT; x.textAlign = 'left'; x.fillStyle = '#1a1a1a'; x.fillText(n1.slice(0, 8), OX + 38, my0 + 15);
-    x.font = '900 11px Nunito,sans-serif'; x.fillStyle = '#1a1a1a99'; x.fillText(opp.z > .3 ? 'in danger!' : 'playing', OX + 38, my0 + 29);
-    const left = Math.max(0, Math.ceil(cp[me].tl / 1000));
-    txt(x, Math.floor(left / 60) + ':' + String(left % 60).padStart(2, '0'), OX + 50, my0 + 66, left < 20 ? '#ff6b6b' : '#fff6e0', 26);
-    x.font = '900 11px Nunito,sans-serif'; x.textAlign = 'center'; x.fillStyle = '#1a1a1a99'; x.fillText('time left', OX + 50, my0 + 80);
-    // junk meter (mine)
-    x.fillStyle = '#1a1a1a'; x.font = '400 13px ' + FONT; x.textAlign = 'center'; x.fillText(mp.i > 0 ? 'JUNK COMING' : 'NO JUNK', OX + 50, my0 + 102);
-    for (let k = 0; k < 12; k++) { const gx = OX + 8 + (k % 6) * 17, gy = my0 + 116 + Math.floor(k / 6) * 17; SC = 1; if (k < mp.i) blob(x, gx, gy, 7, 9); else { x.beginPath(); x.arc(gx, gy, 6, 0, 7); x.strokeStyle = '#1a1a1a33'; x.lineWidth = 1.5; x.stroke() } }
+    jarEnd(x, r, op, os); SC = 1;
+    x.font = '400 13px ' + FONT; x.textAlign = 'center'; x.fillStyle = '#1a1a1a'; x.fillText(n1.slice(0, 7) + '  ' + opp.s.toLocaleString('en-US'), px + ow / 2, py + oh + 20);
+    if (opp.z > .3) { x.fillStyle = '#e5392f'; x.font = '400 11px ' + FONT; x.fillText('in danger!', px + ow / 2, py + oh + 32) }
+    x.restore();
   }
   function drawItems(x, r, its, now, i) {
     const born = r.born[i], seen = r.seen[i];
@@ -135,12 +126,13 @@ const MC = (function () {
   // ---------- messages ----------
   function init(d) {
     const c = $('#cd'); if (c) c.textContent = ''; cancelAnimationFrame(X.raf);
-    const r = X.r = { g: 'blob', k: d.k, ids: d.ids, me: d.ids.indexOf(pid), so: d.now - Date.now(), t0: d.startAt, over: 0, H: CH, W: d.W, Hh: d.H, LN: d.LN, SP: d.SP, RR: d.RR, SR: d.SR, sn: [], cur: null, fx: [], shk: [0, 0], born: [new Map(), new Map()], seen: [0, 0], aim: d.W / 2, hide: 0, lastS: 0, down: 0, ghost: null, lbl: '' };
+    const sc = (CW - 2 * JX) / d.W; CH = Math.ceil(d.H * sc + 2 * JY);
+    const r = X.r = { sc, g: 'blob', k: d.k, ids: d.ids, me: d.ids.indexOf(pid), so: d.now - Date.now(), t0: d.startAt, over: 0, H: CH, W: d.W, Hh: d.H, LN: d.LN, SP: d.SP, RR: d.RR, SR: d.SR, sn: [], cur: null, fx: [], shk: [0, 0], born: [new Map(), new Map()], seen: [0, 0], aim: d.W / 2, hide: 0, lastS: 0, down: 0, ghost: null, lbl: '' };
     closed = 0;
     $('#gm').innerHTML = '<canvas id="cv" width="' + CW * 2 + '" height="' + CH * 2 + '" style="width:100%;max-width:' + CW + 'px;touch-action:none;border:4px solid #1a1a1a;border-radius:16px;background:#fff6e0;box-shadow:4px 4px 0 #1a1a1a;display:block;margin:0 auto"></canvas>'
-      + '<button class="b cta" id="bsh" style="background:#8ecae6;color:#1a1a1a;margin:12px auto 0;display:block;width:100%;max-width:' + CW + 'px">SHAKE</button>'
+      + '<div style="display:flex;align-items:center;gap:10px;max-width:' + CW + 'px;margin:12px auto 0"><div style="flex:none;min-width:108px;background:#fff6e0;border:4px solid #1a1a1a;border-radius:16px;padding:4px 10px;box-shadow:3px 3px 0 #1a1a1a;text-align:center;line-height:1.15;color:#1a1a1a"><small id="mnm" style="font:900 12px Nunito"></small><br><b id="msc" style="font:400 21px Lilita One,sans-serif">0</b></div><div id="mtm" style="flex:1;text-align:center;font:400 32px Lilita One,sans-serif;color:#fff6e0;-webkit-text-stroke:6px #1a1a1a;paint-order:stroke fill">2:30</div><button class="b cta" id="bsh" style="flex:none;width:auto;min-width:124px;margin:0;background:#8ecae6;color:#1a1a1a">SHAKE</button></div>'
       + '<small style="display:block;text-align:center;font-weight:900;margin-top:6px">' + (fine() ? 'Move the mouse to aim, click to drop. Keys: ◀ ▶ aim, Space drop, S shake' : 'Slide your finger to aim, lift to drop. SHAKE settles your pile') + '</small>';
-    const cv = $('#cv'), pos = e => { const b = cv.getBoundingClientRect(), lx = (e.clientX - b.left) / b.width * CW; r.aim = Math.max(0, Math.min(d.W, lx - JX)) };
+    const cv = $('#cv'), pos = e => { const b = cv.getBoundingClientRect(), lx = (e.clientX - b.left) / b.width * CW; r.aim = Math.max(0, Math.min(d.W, (lx - JX) / sc)) };
     const go = () => { if (!r.cur) return; const cp = r.cur[r.me]; if (r.over || sn() < r.t0 || Date.now() < r.hide || cp.l > 0) return; const rad = r.RR[cp.c], ax = Math.max(rad, Math.min(r.W - rad, r.aim)); send({ t: 'in', k: r.k, a: 'd', x: Math.round(ax * 10) / 10 }); r.hide = Date.now() + 400; r.ghost = { t: Date.now(), x: ax, c: cp.c }; snd('drop') };
     const aimSend = () => { const n = Date.now(); if (n - r.lastS > 55) { r.lastS = n; send({ t: 'in', k: r.k, a: 'm', x: Math.round(r.aim * 10) / 10 }) } };
     cv.onpointermove = e => { if (e.pointerType == 'mouse' || r.down) { pos(e); aimSend() } };
@@ -158,6 +150,8 @@ const MC = (function () {
     const x = cv.getContext('2d'), now = Date.now(); x.setTransform(2, 0, 0, 2, 0, 0); x.clearRect(0, 0, CW, CH); draw(x, r, now);
     const w = r.t0 - sn(); if (w > 0) { const n = Math.ceil(w / 800); x.fillStyle = '#1a1a1acc'; x.fillRect(0, 0, CW, CH); txt(x, n > 2 ? 'READY' : n > 1 ? 'SET' : 'GO!', CW / 2, CH / 2 + 14, '#ffc93c', 54) }
     const b = $('#bsh'); if (b && r.cur) { const cp = r.cur[r.me], l = cp.l > 0 ? 'SHAKING...' : cp.h > 0 ? 'SHAKE · ' + Math.ceil(cp.h / 1000) + 's' : 'SHAKE'; if (l != r.lbl) { r.lbl = l; b.textContent = l; b.style.opacity = cp.h > 0 || cp.l > 0 ? .55 : 1 } }
+    if (r.cur) { const me = r.me, l2 = Math.max(0, Math.ceil(r.cur[me].tl / 1000)), tm = Math.floor(l2 / 60) + ':' + String(l2 % 60).padStart(2, '0'), sc2 = r.cur[me].s.toLocaleString('en-US'), q = tm + '|' + sc2;
+      if (q != r.dq) { r.dq = q; const a = $('#mtm'), c = $('#msc'), n = $('#mnm'); if (a) { a.textContent = tm; a.style.color = l2 < 20 ? '#ff6b6b' : '#fff6e0' } if (c) c.textContent = sc2; if (n) n.textContent = names()[0].slice(0, 10) } }
     X.raf = requestAnimationFrame(loop);
   }
   function upd(d) {
@@ -169,7 +163,6 @@ const MC = (function () {
       const [k, i] = e, mine = i == me;
       if (k == 'm') { const [, , ex, ey, T, ch] = e, col = T > 8 ? '#ffc93c' : BC[Math.min(8, T)]; r.fx.push({ k: 'ring', i, x: ex, y: ey, t: now, d: 520, r: T > 8 ? 34 : r.RR[Math.min(8, T)], c: col });
         if (mine) { tn(260 + T * 75, .11, 'sine', .17, 420 + T * 95); if (ch >= 2) { r.fx.push({ k: 'txt', i, x: ex, y: ey - 14, t: now, d: 900, s: 'CHAIN x' + ch, c: '#ffc93c', z: 18 }); tn(500 + ch * 90, .12, 'triangle', .13, 0, .08) } if (T >= 6) { snd('point'); vib(25) } if (T > 8) { snd('win'); vib([40, 30, 80]) } } }
-      else if (k == 'j') { if (mine) { r.fx.push({ k: 'txt', i: 1 - i, x: r.W / 2, y: 120, t: now, d: 1000, s: 'JUNK +' + e[2], c: '#ff9f9f', z: 20 }); snd('hit') } else { r.fx.push({ k: 'txt', i: me, x: r.W / 2, y: 120, t: now, d: 1000, s: 'JUNK +' + e[2] + ' INCOMING', c: '#ff6b6b', z: 17 }); snd('bad'); vib([30, 30, 30]) } }
       else if (k == 's') { r.shk[i] = now; if (mine) snd('whoosh') }
       else if (k == 'c') { r.fx.push({ k: 'dust', i, x: e[2], y: e[3], t: now, d: 380 }); if (mine) snd('stone') }
       else if (k == 'x') { r.fx.push({ k: 'dust', i, x: e[2], y: e[3], t: now, d: 480 }); if (mine) snd('boom') }
