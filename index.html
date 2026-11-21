@@ -74,8 +74,8 @@ const HOW={flip:'Your blob runs by itself. Tap JUMP to hop over the spikes.<br>G
 sumo:'Drag to move your blob. Press DASH to ram your friend!<br>The arena keeps shrinking, so knock them off the edge.<br>Best of 3 rounds.',
 spot:'Two circles, one matching symbol.<br>Be the FIRST to tap it to win the point.<br>Wrong tap = locked out for 1 second.<br>First to 5 points wins!',
 draw:'Wait for the screen to turn green.<br>When it says DRAW, tap FIRST to win the point.<br>Tap too early and your friend gets the point.<br>First to 3 points wins!',
-darts:'You and your friend take turns, one dart each.<br>On your turn a crosshair sweeps the board. Tap THROW to stop it near the bullseye.<br>5 darts each. Highest total wins!',
-archery:'You and your friend take turns, one arrow each.<br>Wind pushes your arrow sideways, so aim against it. Tap SHOOT to fire.<br>5 arrows each. Highest total wins!',
+darts:'You and your friend take turns, one dart each.<br>On your turn a line sweeps up and down. Tap to lock the height.<br>Then a line sweeps sideways. Tap again to lock the spot.<br>Your dart lands where the two lines cross, so aim for the bullseye! 5 darts each. Highest total wins!',
+archery:'You and your friend take turns, one arrow each.<br>A line sweeps up and down: tap to lock the height. Then a line sweeps sideways: tap to lock the spot.<br>Wind pushes your arrow sideways, so aim against it. 5 arrows each. Highest total wins!',
 pizza:'A pizza appears for 4 seconds. Memorize which topping goes on which spot!<br>Then drag toppings from the tray onto the spots of a plain pizza. Tap a placed topping to remove it.<br>Press DONE when it matches. A wrong pizza locks you out for 2 seconds.<br>First correct pizza wins the point. First to 3 wins!'};
 const TG={pep:(x,y)=>'<circle cx="'+x+'" cy="'+y+'" r="10" fill="#c0392b" stroke="#1a1a1a" stroke-width="2"/>',
 mush:(x,y)=>'<path d="M'+(x-10)+' '+(y+4)+'A10 10 0 0 1 '+(x+10)+' '+(y+4)+'Z" fill="#fff6e0" stroke="#1a1a1a" stroke-width="2"/><rect x="'+(x-3)+'" y="'+(y+4)+'" width="6" height="7" fill="#fff6e0" stroke="#1a1a1a" stroke-width="2"/>',
@@ -211,11 +211,21 @@ function conn(){ws=new WebSocket((location.protocol=='https:'?'wss://':'ws://')+
 function startGame(g,at){if(cd)clearInterval(cd);cur=g;view='play';Meta.onView();closed=1;const q=$('#qt');if(q)q.style.display='flex';if(lv!='play'){lv='play';try{history.pushState({a:1},'')}catch(e){}}cancelAnimationFrame(X.raf);X={};
  $('#a').innerHTML='<h2>'+G[g][0]+'</h2><div class="pill" id="op"></div><div class="big" id="cd"></div><div id="gm"></div>';sb();if(BG[g])$('#op').style.display='none';
  cd=setInterval(()=>{const l=at-Date.now();const e=$('#cd');if(l>0){const v=Math.ceil(l/1000);if(e.textContent!=v){snd('tick');e.textContent=v;e.classList.remove('cdp');void e.offsetWidth;e.classList.add('cdp')}return}clearInterval(cd);e.textContent='GO!';e.classList.remove('cdp');void e.offsetWidth;e.classList.add('cdp');snd('go')},100)}
+const fine=()=>{try{return matchMedia('(pointer:fine)').matches}catch(e){return false}};
+const tri=(sp,t,ph)=>{const u=(((sp*t+ph)%400)+400)%400;return Math.round((u<200?u-100:300-u)*10)/10};
+function aimBtn(){const b=$('#th');if(!b)return;b.textContent=!X.mine?'WAIT FOR YOUR TURN':X.stage==0?'TAP: LOCK HEIGHT':X.stage==1?'TAP: LOCK SIDE':'...';b.disabled=!X.mine||X.stage>1}
 function aimInit(){const R=cur=='darts'?['#fff6e0','#e5392f','#fff6e0','#e5392f','#1a1a1a']:['#fff6e0','#1a1a1a','#2563c9','#e5392f','#ffc93c'];
- $('#gm').innerHTML='<div class="sc" id="st"></div><div class="pill" id="wd" style="display:none"></div><button class="b cta" id="th" disabled style="margin:2px 0 8px">'+(cur=='darts'?'THROW':'SHOOT')+'</button><div id="bd" style="position:relative;width:260px;height:260px;margin:0 auto"><svg viewBox="-130 -130 260 260" width="260" height="260">'+R.map((c,k)=>'<circle r="'+(120-k*24)+'" fill="'+c+'" '+K+'/>').join('')+'</svg><div id="ch" style="display:none;position:absolute;width:26px;height:26px;border:4px solid #1a1a1a;border-radius:50%;background:#ffffff88"></div></div><div id="wp" style="margin:6px 0;line-height:0;min-height:60px"></div>';
- $('#th').onpointerdown=()=>{if(!X.mine||X.sent)return;X.sent=1;snd('whoosh');send({t:'in',i:X.i,e:(performance.now()-X.st)/1000});$('#th').disabled=true}}
-const cpos=()=>{const t=(performance.now()-X.st)/1000,p=X.p;return[Math.round(Math.cos(t*p[0]+p[2])*100),Math.round(Math.sin(t*p[1]+p[3])*100)]};
-function cloop(){if(!X.mine||X.sent)return;const[x,y]=cpos(),c=$('#ch');if(c){c.style.left=(117+x)+'px';c.style.top=(117+y)+'px'}X.raf=requestAnimationFrame(cloop)}
+ const LN='position:absolute;display:none;pointer-events:none;background:#1a1a1a8c;box-shadow:0 0 0 1px #ffffff66';
+ $('#gm').innerHTML='<div class="sc" id="st"></div><div class="pill" id="wd" style="display:none"></div><button class="b cta" id="th" disabled style="margin:2px 0 8px"></button><div id="bd" style="position:relative;width:260px;height:260px;margin:0 auto;touch-action:manipulation"><svg viewBox="-130 -130 260 260" width="260" height="260">'+R.map((c,k)=>'<circle r="'+(120-k*24)+'" fill="'+c+'" '+K+'/>').join('')+'</svg><div id="ly" style="'+LN+';left:0;width:260px;height:3px;margin-top:-1px;border-radius:2px"></div><div id="lx" style="'+LN+';top:0;height:260px;width:3px;margin-left:-1px;border-radius:2px"></div><div id="ch" style="display:none;position:absolute;width:26px;height:26px;border:4px solid #1a1a1a;border-radius:50%;background:#ffffff88"></div></div><div id="wp" style="margin:6px 0;line-height:0;min-height:60px"></div><div class="small" id="ah" style="margin-top:4px;font-weight:800;opacity:.7"></div>';
+ $('#th').onpointerdown=aimPress;$('#bd').onpointerdown=aimPress}
+function aimPress(e){if(e&&e.preventDefault)e.preventDefault();if(!X.mine||X.sent||X.stage>1)return;const now=performance.now();if(now-(X.lp||0)<220)return;X.lp=now;const t=(now-X.st)/1000;
+ if(X.stage==0){X.ey=t;X.ly=tri(X.p.sy,t,X.p.py);X.t1=X.st+t*1000;X.stage=1;snd('pop');vib(12);send({t:'in',i:X.i,s:1,e:t})}
+ else{X.lx=tri(X.p.sx,t-X.ey,X.p.px);X.stage=2;X.sent=1;snd('whoosh');vib(20);send({t:'in',i:X.i,s:2,e:t});const c=$('#ch');if(c){c.style.display='';c.style.left=(117+X.lx)+'px';c.style.top=(117+X.ly)+'px'}}
+ aimBtn()}
+function aloop(){if(X.stage==null||X.done)return;const now=performance.now(),ly=$('#ly'),lx=$('#lx');if(!ly)return;
+ const y=X.stage==0?tri(X.p.sy,(now-X.st)/1000,X.p.py):X.ly;ly.style.display='block';ly.style.top=(130+y)+'px';ly.style.background=X.stage>=1?'#2f9e5bb3':'#1a1a1a8c';
+ if(X.stage>=1){const x=X.stage==1?tri(X.p.sx,(now-X.t1)/1000,X.p.px):X.lx;lx.style.display='block';lx.style.left=(130+x)+'px';lx.style.background=X.stage>=2?'#2f9e5bb3':'#1a1a1a8c'}else lx.style.display='none';
+ X.raf=requestAnimationFrame(aloop)}
 function pzr(){$('#pzm').innerHTML=pz(X.it);for(const t in X.cnt)$('#n_'+t).textContent=X.cnt[t]}
 function duel(d){const t=d.t,c=$('#cd');
  if(RC.msg(d)||MC.msg(d))return;
@@ -237,11 +247,12 @@ function duel(d){const t=d.t,c=$('#cd');
  else if(t=='pprog'){const f=d.filled,e=$('#opz');if(e){e.innerHTML=pzSvg(f.map(v=>v?'x':null),{w:84,slots:1,ghost:1});$('#opn').textContent=on.opp+' '+f.filter(Boolean).length+'/'+f.length}}
  else if(t=='spoint'){closed=1;if(X.f)X.f.over=1;RC.over();MC.over();sb(d.pts);if(isBot())rexReact(d);else charReact(d);if(cur=='sumo'&&d.w&&X.ids)X.fall={i:1-X.ids.indexOf(d.w),t:Date.now()};if(d.w){snd(d.w==pid?'point':'bad');vib(d.w==pid?40:[30,30,30])}const b=$('#rb');if(b)b.disabled=true;
   if(c)c.textContent=d.w==null?'Time up! No point':BG[cur]?(d.w==pid?'You win!':on.opp+' wins!'):cur=='flip'||cur=='hurdle'||cur=='sky'?(d.w==pid?'You got there first!':on.opp+' got there first!'):cur=='stack'?(d.w==pid?'Your tower is taller!':on.opp+' built higher!'):cur=='fruit'?(d.w==pid?'You sliced more!':on.opp+' sliced more!'):cur=='blob'?(d.w==pid?'You out-stacked them!':on.opp+' out-stacked you!'):cur=='draw'?(d.why=='early'?(d.by==pid?'Too early! Point to '+on.opp:on.opp+' jumped the gun!'):(d.w==pid?'You were faster! '+d.ms+' ms':on.opp+' was faster · '+d.ms+' ms')):(d.w==pid?'You got it!':on.opp+' got it!')}
- else if(t=='aturn'){if(d.i==0||!$('#bd'))aimInit();cancelAnimationFrame(X.raf);X.i=d.i;X.p=d.p;X.mine=d.who==pid;X.sent=0;X.st=performance.now();sb(d.pts);
+ else if(t=='aturn'){if(d.i==0||!$('#bd'))aimInit();cancelAnimationFrame(X.raf);X.i=d.i;X.p=d.p;X.mine=d.who==pid;X.sent=0;X.stage=0;X.done=0;X.lp=0;X.st=performance.now();X.t1=0;sb(d.pts);
   $('#st').textContent=X.mine?'YOUR TURN!':on.opp+(cur=='archery'?' is aiming…':' is throwing…');
   if(cur=='archery'){const w=$('#wd');w.style.display='';w.textContent='Wind '+(d.wind>0?'→ ':'← ')+Math.abs(d.wind)}
-  $('#ch').style.display=X.mine?'':'none';$('#th').disabled=!X.mine;$('#wp').innerHTML=X.mine?(cur=='archery'?BOW:DTB):'';if(X.mine)cloop()}
- else if(t=='athrown'){snd(d.miss?'bad':cur=='archery'?'twang':'hit');vib(30);cancelAnimationFrame(X.raf);$('#ch').style.display='none';$('#wp').innerHTML='';$('#th').disabled=true;sb(d.pts);
+  $('#ch').style.display='none';$('#ah').textContent=X.mine?(fine()?'Space or click also works':'Tap the board or the button'):'';$('#wp').innerHTML=X.mine?(cur=='archery'?BOW:DTB):'';aimBtn();aloop()}
+ else if(t=='alock'){if(d.i==X.i&&X.stage==0){X.ly=d.y;X.stage=1;X.t1=performance.now();snd('pop');aimBtn()}}
+ else if(t=='athrown'){snd(d.miss?'bad':cur=='archery'?'twang':'hit');vib(30);cancelAnimationFrame(X.raf);X.done=1;X.mine=0;$('#ch').style.display='none';$('#ly').style.display='none';$('#lx').style.display='none';$('#wp').innerHTML='';aimBtn();$('#ah').textContent='';sb(d.pts);
   if(!d.miss){let m=cur=='archery'?AR:DT;if(d.who!=pid)m=m.replace(/#e5392f/g,OC());$('#bd').insertAdjacentHTML('beforeend','<div style="position:absolute;left:'+(120+d.hx)+'px;top:'+(129+d.hy)+'px;animation:fly .22s ease-out"><div style="transform:rotate('+Math.round(Math.random()*16-8)+'deg);transform-origin:10px 0;line-height:0">'+m+'</div></div>')}
   $('#st').textContent=(d.who==pid?'You':on.opp)+(d.miss?' missed!':' scored '+d.s+'!')}}
 
@@ -249,6 +260,7 @@ function duel(d){const t=d.t,c=$('#cd');
 const FHc=130,FSPR={};
 function fspr(opp){const k=opp?(isBot()?'r'+rexLv():'b'):'m'+(Meta.hat()||'');if(!FSPR[k]){const im=new Image();im.src=opp?(isBot()?rexUri(rexLv()):mascotUri('#2563c9',0)):mascotUri('#e5392f',0);FSPR[k]=im}return FSPR[k]}
 function fJump(e){if(e&&e.preventDefault)e.preventDefault();const f=X.f;if(!f||Date.now()<f.t0||f.over)return;send({t:'in',j:1});snd('tap');f.sq=Date.now()}
+document.addEventListener('keydown',e=>{if(view=='play'&&aimG()&&X.mine&&(e.key==' '||e.key=='Enter')){e.preventDefault();aimPress()}});
 document.addEventListener('keydown',e=>{if(view=='play'&&cur=='flip'&&X.f&&(e.key==' '||e.key=='ArrowUp'||e.key=='w')){e.preventDefault();fJump()}});
 function fInit(d){const c=$('#cd');if(c)c.textContent='';cancelAnimationFrame(X.raf);
  X.f={ids:d.ids,me:d.ids.indexOf(pid),L:d.L,c:d.c,gates:d.c.filter(o=>o[0]==0).map(o=>o[1]),p:null,dp:null,t0:Date.now()+d.wait,over:0,fl:[]};closed=0;

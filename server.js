@@ -67,20 +67,28 @@ function thr(r, rd, w, x, y, miss) {
   rd.pts[w] += s; bc(r, { t: 'athrown', i: rd.i, who: w, hx, hy, s, pts: rd.pts, miss: !!miss });
   after(r, rd, 1600, () => G[rd.g].next(r, rd));
 }
+// Darts / Archery: two-step timing. A line sweeps up and down (tap to lock the height), then a line sweeps sideways (tap to lock the spot).
+const tri = (sp, t, ph) => { const u = (((sp * t + ph) % 400) + 400) % 400; return Math.round((u < 200 ? u - 100 : 300 - u) * 10) / 10; };
 const aimG = wind => ({
   next(r, rd) {
     rd.i = (rd.i === undefined ? -1 : rd.i) + 1; if (rd.i >= 10) return endDuel(r);
-    const w = Object.keys(rd.pts)[rd.i % 2], i = rd.i; rd.who = w; rd.open = 1; rd.t0 = Date.now(); rd.wind = wind ? Math.round((Math.random() * 2 - 1) * 45) : 0;
-    rd.p = [1.4 + Math.random() * 1.2, 1.1 + Math.random() * 1.2, Math.random() * 6.28, Math.random() * 6.28];
+    const w = Object.keys(rd.pts)[rd.i % 2], i = rd.i, m = 1 + 0.06 * (i >> 1), base = wind ? 300 : 250;
+    rd.who = w; rd.open = 1; rd.t0 = Date.now(); rd.wind = wind ? Math.round((Math.random() * 2 - 1) * 45) : 0; rd.stage = 0; rd.e1 = 0; rd.ly = 0;
+    rd.p = { sy: Math.round((base + Math.random() * 70) * m), sx: Math.round((base + Math.random() * 70) * m), py: Math.round(Math.random() * 400), px: Math.round(Math.random() * 400) };
     bc(r, { t: 'aturn', i, who: w, wind: rd.wind, p: rd.p, pts: rd.pts });
-    after(r, rd, 15000, () => { if (rd.i == i && rd.open) thr(r, rd, w, 0, 0, true); });
+    after(r, rd, 16000, () => { if (rd.i == i && rd.open) thr(r, rd, w, 0, 0, true); });
   },
   msg(r, rd, x, d) {
     if (!rd.open || d.i != rd.i || x.pid != rd.who) return;
     if (x.bot) return thr(r, rd, x.pid, +d.x || 0, +d.y || 0);
-    const el = (Date.now() - rd.t0) / 1000; let e = Number(d.e); if (!isFinite(e)) return;
-    e = Math.max(Math.max(0, Math.min(e, el)), el - 1.2); const p = rd.p;
-    thr(r, rd, x.pid, Math.round(Math.cos(e * p[0] + p[2]) * 100), Math.round(Math.sin(e * p[1] + p[3]) * 100));
+    const el = (Date.now() - rd.t0) / 1000; let e = Number(d.e); if (!isFinite(e)) return; const p = rd.p;
+    if (d.s == 1 && rd.stage == 0) {
+      e = Math.max(Math.max(0, Math.min(e, el)), el - 1); rd.e1 = e; rd.ly = tri(p.sy, e, p.py); rd.stage = 1;
+      bc(r, { t: 'alock', i: rd.i, y: rd.ly, e1: e });
+    } else if (d.s == 2 && rd.stage == 1) {
+      e = Math.max(Math.max(rd.e1, Math.min(e, el)), el - 1);
+      thr(r, rd, x.pid, tri(p.sx, e - rd.e1, p.px), rd.ly);
+    }
   }
 });
 const SC = 160;
