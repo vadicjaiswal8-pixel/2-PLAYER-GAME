@@ -12,7 +12,19 @@ const MC = (function () {
   const txt = (x, t, cx, cy, col, sz, al) => { x.font = '400 ' + sz + 'px ' + FONT; x.textAlign = al || 'center'; x.lineWidth = 4; x.strokeStyle = '#1a1a1a'; x.lineJoin = 'round'; x.strokeText(t, cx, cy); x.fillStyle = col || '#fff6e0'; x.fillText(t, cx, cy) };
 
   // ---------- drawing ----------
+  const SPR = new Map();
+  function sprite(t, r) {                                  // each blob is drawn once into a tiny canvas, then stamped (much lighter on phones)
+    const key = t + '|' + r.toFixed(1) + '|' + SC.toFixed(3); let e = SPR.get(key); if (e) return e;
+    const k = SC * 2, c = document.createElement('canvas'); c.width = Math.ceil(2.7 * r * k); c.height = Math.ceil(3 * r * k);
+    const g = c.getContext('2d'); g.scale(c.width / (2.7 * r), c.height / (3 * r)); g.translate(1.35 * r, 1.7 * r); blobRaw(g, 0, 0, r, t, {});
+    e = { c }; SPR.set(key, e); return e;
+  }
   function blob(x, cx, cy, r, t, o) {
+    o = o || {};
+    if (!o.col && t < 9 && !o.happy) { const e = sprite(t, r), sq = o.sq || 1; x.save(); x.translate(cx, cy); if (sq != 1) x.scale(sq, sq); x.drawImage(e.c, -1.35 * r, -1.7 * r, 2.7 * r, 3 * r); x.restore(); return }
+    blobRaw(x, cx, cy, r, t, o);
+  }
+  function blobRaw(x, cx, cy, r, t, o) {
     o = o || {}; const sq = o.sq || 1, lw = Math.max(1.6 / SC, r * 0.13), big = r * SC > 6;
     x.save(); x.translate(cx, cy); if (sq != 1) x.scale(sq, sq); x.lineJoin = 'round';
     if (t >= 9) {                                         // junk stone
@@ -72,37 +84,36 @@ const MC = (function () {
     let y = r.Hh - rad; for (const o of its) { const R = o.t >= 9 ? r.SR : r.RR[o.t], dx = Math.abs(x - o.x), m = rad + R; if (dx < m) { const yc = o.y - Math.sqrt(m * m - dx * dx); if (yc < y) y = yc } } return y;
   }
   function draw(x, r, now) {
-    const rt = sn() - 90, me = r.me, op = 1 - me, cp = r.cur; if (!cp) return; const s = r.sc, W = r.W;
-    const [n0, n1] = names();
-    // ---- my jar (big, full width) ----
-    const my = items(r, me, rt), mp = jar(x, r, me, JX, JY, s, '#fffaf0');
+    const rt = sn() - 110, me = r.me, op = 1 - me, cp = r.cur; if (!cp) return; const s = r.sc, W = r.W, jx = r.jx, jy = r.jy;
+    const [n0, n1] = names(), OCc = OC();
+    // ---- opponent strip (never covers your jar) ----
+    const opp = cp[op]; const top = opp.u == null ? r.Hh : opp.u;
+    const fill = Math.max(0, Math.min(1, (r.Hh - top) / (r.Hh - r.LN))); r.ofill = (r.ofill || 0) + (fill - (r.ofill || 0)) * .15;
+    x.fillStyle = '#f1e6c8'; x.strokeStyle = '#1a1a1a'; x.lineWidth = 3; x.beginPath(); x.roundRect(4, 4, CW - 8, 38, 14); x.fill(); x.stroke();
+    x.beginPath(); x.arc(24, 23, 12, 0, 7); x.fillStyle = OCc; x.fill(); x.stroke();
+    x.font = '400 15px ' + FONT; x.textAlign = 'left'; x.fillStyle = '#1a1a1a'; x.fillText(n1.slice(0, 8), 42, 20);
+    x.font = '400 13px ' + FONT; x.fillStyle = '#1a1a1a99'; x.fillText(opp.s.toLocaleString('en-US'), 42, 35);
+    const bx = 150, bw = CW - bx - 18; x.fillStyle = '#fff'; x.beginPath(); x.roundRect(bx, 15, bw, 16, 8); x.fill(); x.stroke();
+    const f2 = r.ofill, col = f2 > .85 ? '#e5392f' : f2 > .6 ? '#ff9f1c' : '#80b918'; if (f2 > .02) { x.fillStyle = col; x.beginPath(); x.roundRect(bx + 1.5, 16.5, Math.max(10, (bw - 3) * f2), 13, 6); x.fill() }
+    if (opp.z > .3 || f2 > .85) { x.font = '400 11px ' + FONT; x.textAlign = 'center'; x.fillStyle = '#fff6e0'; x.fillText('IN DANGER!', bx + bw / 2, 27.5) }
+    // ---- my jar (as big as the screen allows) ----
+    const my = items(r, me, rt), mp = jar(x, r, me, jx, jy, s, '#fffaf0');
     const held = mp && now >= r.hide && mp.l == 0 && !r.over;
     if (held) {
       const rad = r.RR[mp.c], ax = Math.max(rad, Math.min(W - rad, r.aim)), ly = land(r, my, ax, rad);
-      x.strokeStyle = 'rgba(26,26,26,.35)'; x.lineWidth = 2 / s; x.setLineDash([3, 5]); x.beginPath(); x.moveTo(ax, r.SP + rad); x.lineTo(ax, ly - rad + 2); x.stroke(); x.setLineDash([]);
-      x.globalAlpha = .28; blob(x, ax, ly, rad, mp.c); x.globalAlpha = 1;
+      x.strokeStyle = 'rgba(26,26,26,.4)'; x.lineWidth = 2 / s; x.setLineDash([3, 5]); x.beginPath(); x.moveTo(ax, r.SP + rad); x.lineTo(ax, ly - rad + 2); x.stroke(); x.setLineDash([]);
+      x.globalAlpha = .3; blob(x, ax, ly, rad, mp.c); x.globalAlpha = 1;
     }
     drawItems(x, r, my, now, me);
     if (held) blob(x, Math.max(r.RR[mp.c], Math.min(W - r.RR[mp.c], r.aim)), r.SP, r.RR[mp.c], mp.c, { look: 0 });
     else if (mp && mp.l > 0 && !r.over) txt(x, 'SHAKING...', W / 2, r.SP + 6, '#9b5de5', 16);
-    if (r.ghost && now - r.ghost.t < 320) { const u = (now - r.ghost.t) / 1000, g = r.ghost; blob(x, g.x, r.SP + .5 * 1100 * u * u, r.RR[g.c], g.c) }
+    if (r.ghost && now - r.ghost.t < 900) { const u = Math.min(.55, (now - r.ghost.t) / 1000), g = r.ghost; blob(x, g.x, r.SP + .5 * 1100 * u * u, r.RR[g.c], g.c) }
     fxDraw(x, r, now, me);
     jarEnd(x, r, me, s);
     // next chip
-    SC = 1; x.fillStyle = '#ffc93c'; x.strokeStyle = '#1a1a1a'; x.lineWidth = 2.5; x.beginPath(); x.roundRect(JX + 8, JY + 8, 82, 28, 14); x.fill(); x.stroke();
-    x.font = '400 14px ' + FONT; x.textAlign = 'left'; x.fillStyle = '#1a1a1a'; x.fillText('NEXT', JX + 17, JY + 28); blob(x, JX + 68, JY + 22, 10, mp.n, { look: 0 });
-    if (mp.z > .4 && Math.floor(now / 160) % 2) txt(x, 'DANGER!', JX + W * s / 2, JY + r.LN * s + 34, '#ff6b6b', 24);
-    // ---- opponent: small floating card, top right ----
-    const os = 84 / W, ow = W * os, oh = r.Hh * os, px = CW - JX - ow - 14, py = JY + 12;
-    x.save(); x.globalAlpha = .9; x.fillStyle = '#f1e6c8'; x.strokeStyle = '#1a1a1a'; x.lineWidth = 3.5; x.beginPath(); x.roundRect(px - 7, py - 7, ow + 14, oh + 38, 12); x.fill(); x.stroke();
-    const opp = jar(x, r, op, px, py, os, '#f1e6c8'), ot = items(r, op, rt);
-    drawItems(x, r, ot, now, op);
-    if (!r.over && opp.l == 0) blob(x, Math.max(r.RR[opp.c], Math.min(W - r.RR[opp.c], opp.a)), r.SP, r.RR[opp.c], opp.c);
-    fxDraw(x, r, now, op);
-    jarEnd(x, r, op, os); SC = 1;
-    x.font = '400 13px ' + FONT; x.textAlign = 'center'; x.fillStyle = '#1a1a1a'; x.fillText(n1.slice(0, 7) + '  ' + opp.s.toLocaleString('en-US'), px + ow / 2, py + oh + 20);
-    if (opp.z > .3) { x.fillStyle = '#e5392f'; x.font = '400 11px ' + FONT; x.fillText('in danger!', px + ow / 2, py + oh + 32) }
-    x.restore();
+    SC = 1; x.fillStyle = '#ffc93c'; x.strokeStyle = '#1a1a1a'; x.lineWidth = 2.5; x.beginPath(); x.roundRect(jx + 6, jy + 6, 78, 26, 13); x.fill(); x.stroke();
+    x.font = '400 13px ' + FONT; x.textAlign = 'left'; x.fillStyle = '#1a1a1a'; x.fillText('NEXT', jx + 14, jy + 24); blob(x, jx + 62, jy + 19, 9, mp.n, { look: 0 });
+    if (mp.z > .4 && Math.floor(now / 160) % 2) txt(x, 'DANGER!', jx + W * s / 2, jy + r.LN * s + 34, '#ff6b6b', 24);
   }
   function drawItems(x, r, its, now, i) {
     const born = r.born[i], seen = r.seen[i];
@@ -126,13 +137,17 @@ const MC = (function () {
   // ---------- messages ----------
   function init(d) {
     const c = $('#cd'); if (c) c.textContent = ''; cancelAnimationFrame(X.raf);
-    const sc = (CW - 2 * JX) / d.W; CH = Math.ceil(d.H * sc + 2 * JY);
-    const r = X.r = { sc, g: 'blob', k: d.k, ids: d.ids, me: d.ids.indexOf(pid), so: d.now - Date.now(), t0: d.startAt, over: 0, H: CH, W: d.W, Hh: d.H, LN: d.LN, SP: d.SP, RR: d.RR, SR: d.SR, sn: [], cur: null, fx: [], shk: [0, 0], born: [new Map(), new Map()], seen: [0, 0], aim: d.W / 2, hide: 0, lastS: 0, down: 0, ghost: null, lbl: '' };
+    const gm = $('#gm'); const h2 = document.querySelector('#a h2'); if (h2) h2.style.display = 'none'; const op0 = $('#op'); if (op0) op0.style.margin = '6px auto';
+    const top = gm.getBoundingClientRect().top, cwid = Math.min(CW, gm.clientWidth || CW), f = cwid / CW, vh = window.innerHeight || 700;
+    const availH = (vh - top - 8 - 76 - 36 - (fine() ? 26 : 0)) / f, TOPH = 46;              // room left for the canvas once the buttons are counted
+    const sc = Math.max(.9, Math.min((CW - 2 * JX) / d.W, (availH - TOPH - JY - 8) / d.H));
+    const jx = (CW - d.W * sc) / 2, jy = TOPH + 2; CH = Math.ceil(jy + d.H * sc + JY + 4);
+    const r = X.r = { sc, jx, jy, g: 'blob', k: d.k, ids: d.ids, me: d.ids.indexOf(pid), so: d.now - Date.now(), t0: d.startAt, over: 0, H: CH, W: d.W, Hh: d.H, LN: d.LN, SP: d.SP, RR: d.RR, SR: d.SR, sn: [], cur: null, fx: [], shk: [0, 0], born: [new Map(), new Map()], seen: [0, 0], aim: d.W / 2, hide: 0, lastS: 0, down: 0, ghost: null, lbl: '' };
     closed = 0;
     $('#gm').innerHTML = '<canvas id="cv" width="' + CW * 2 + '" height="' + CH * 2 + '" style="width:100%;max-width:' + CW + 'px;touch-action:none;border:4px solid #1a1a1a;border-radius:16px;background:#fff6e0;box-shadow:4px 4px 0 #1a1a1a;display:block;margin:0 auto"></canvas>'
-      + '<div style="display:flex;align-items:center;gap:10px;max-width:' + CW + 'px;margin:12px auto 0"><div style="flex:none;min-width:108px;background:#fff6e0;border:4px solid #1a1a1a;border-radius:16px;padding:4px 10px;box-shadow:3px 3px 0 #1a1a1a;text-align:center;line-height:1.15;color:#1a1a1a"><small id="mnm" style="font:900 12px Nunito"></small><br><b id="msc" style="font:400 21px Lilita One,sans-serif">0</b></div><div id="mtm" style="flex:1;text-align:center;font:400 32px Lilita One,sans-serif;color:#fff6e0;-webkit-text-stroke:6px #1a1a1a;paint-order:stroke fill">2:30</div><button class="b cta" id="bsh" style="flex:none;width:auto;min-width:124px;margin:0;background:#8ecae6;color:#1a1a1a">SHAKE</button></div>'
-      + '<small style="display:block;text-align:center;font-weight:900;margin-top:6px">' + (fine() ? 'Move the mouse to aim, click to drop. Keys: ◀ ▶ aim, Space drop, S shake' : 'Slide your finger to aim, lift to drop. SHAKE settles your pile') + '</small>';
-    const cv = $('#cv'), pos = e => { const b = cv.getBoundingClientRect(), lx = (e.clientX - b.left) / b.width * CW; r.aim = Math.max(0, Math.min(d.W, (lx - JX) / sc)) };
+      + '<div style="display:flex;align-items:center;gap:10px;max-width:' + CW + 'px;margin:8px auto 0;padding-right:62px;box-sizing:border-box"><div style="flex:none;min-width:96px;background:#fff6e0;border:4px solid #1a1a1a;border-radius:16px;padding:3px 10px;box-shadow:3px 3px 0 #1a1a1a;text-align:center;line-height:1.1;color:#1a1a1a"><small id="mnm" style="font:900 12px Nunito"></small><br><b id="msc" style="font:400 21px Lilita One,sans-serif">0</b></div><div id="mtm" style="flex:1;text-align:center;font:400 26px Lilita One,sans-serif;color:#fff6e0;-webkit-text-stroke:5px #1a1a1a;paint-order:stroke fill">2:30</div><button class="b cta" id="bsh" style="flex:none;width:auto;min-width:104px;padding:10px 8px;margin:0;background:#8ecae6;color:#1a1a1a">SHAKE</button></div>'
+      + '<small style="display:block;text-align:center;font-weight:900;margin-top:6px">' + (fine() ? 'Move the mouse to aim, click to drop. Keys: ◀ ▶ aim, Space drop, S shake' : '') + '</small>';
+    const cv = $('#cv'), pos = e => { const b = cv.getBoundingClientRect(), lx = (e.clientX - b.left) / b.width * CW; r.aim = Math.max(0, Math.min(d.W, (lx - jx) / sc)) };
     const go = () => { if (!r.cur) return; const cp = r.cur[r.me]; if (r.over || sn() < r.t0 || Date.now() < r.hide || cp.l > 0) return; const rad = r.RR[cp.c], ax = Math.max(rad, Math.min(r.W - rad, r.aim)); send({ t: 'in', k: r.k, a: 'd', x: Math.round(ax * 10) / 10 }); r.hide = Date.now() + 400; r.ghost = { t: Date.now(), x: ax, c: cp.c }; snd('drop') };
     const aimSend = () => { const n = Date.now(); if (n - r.lastS > 55) { r.lastS = n; send({ t: 'in', k: r.k, a: 'm', x: Math.round(r.aim * 10) / 10 }) } };
     cv.onpointermove = e => { if (e.pointerType == 'mouse' || r.down) { pos(e); aimSend() } };
@@ -157,6 +172,7 @@ const MC = (function () {
   function upd(d) {
     const r = X.r; if (!r || d.k != r.k) return; const now = Date.now(), me = r.me;
     d.p.forEach(p => { });
+    { const est = d.now - Date.now(); if (est > r.so) r.so = est; else r.so -= .05 }
     r.sn.push({ ts: d.now, p: d.p }); if (r.sn.length > 10) r.sn.shift(); r.cur = d.p.map(p => ({ ...p, b: null })); r.cur.forEach((c, i) => { c.b = d.p[i].b; c.tl = d.tm });
     if (r.ghost && d.p[me].b.length) { /* real blob arrived */ const b = d.p[me].b; for (let k = 0; k < b.length; k += 4) if (Math.abs(b[k + 1] - r.ghost.x) < 2 && b[k + 2] < r.SP + 40 && b[k + 3] == r.ghost.c) { r.ghost = null; break } }
     (d.ev || []).forEach(e => {

@@ -144,8 +144,8 @@ module.exports = function (C) {
     return {
       t: 'mgu', k: rd.k, now, tm: Math.max(0, ROUND - rd.st), ev: rd.ev.splice(0),
       p: rd.bx.map(b => {
-        const f = []; for (const o of b.it) f.push(o.id, r1(o.x), r1(o.y), o.j ? (o.hp > 1 ? 9 : 10) : o.t);
-        return { s: b.sc, c: sq(b.seed, b.si), n: sq(b.seed, b.si + 1), a: r1(b.ax), i: b.inc, z: Math.round(b.dz * 100) / 100, l: Math.max(0, b.lock - rd.st) | 0, h: Math.max(0, b.sk - rd.st) | 0, b: f };
+        let top = H; const f = []; for (const o of b.it) { if (o.age > .6 && o.vx * o.vx + o.vy * o.vy < 200) top = Math.min(top, o.y - o.r); } for (const o of b.it) f.push(o.id, r1(o.x), r1(o.y), o.j ? (o.hp > 1 ? 9 : 10) : o.t);
+        return { u: Math.round(top), s: b.sc, c: sq(b.seed, b.si), n: sq(b.seed, b.si + 1), a: r1(b.ax), i: b.inc, z: Math.round(b.dz * 100) / 100, l: Math.max(0, b.lock - rd.st) | 0, h: Math.max(0, b.sk - rd.st) | 0, b: f };
       })
     };
   }
@@ -163,7 +163,7 @@ module.exports = function (C) {
       while (rd.acc >= STEP && rd.open) { rd.acc -= STEP; step(rd, L); finish(r, rd); }
       if (!rd.open) return;
     } else rd.last = rd.t0;
-    if (++rd.n % 3 == 0 || rd.ev.length > 6) bc(r, snap(rd, now));
+    if (++rd.n % 2 == 0 || rd.ev.length > 6) bc(r, snap(rd, now));
   }
 
   const blob = {
