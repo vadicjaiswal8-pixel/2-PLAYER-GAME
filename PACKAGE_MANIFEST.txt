@@ -1,0 +1,61 @@
+Recon Brief website source package
+Updated: 2026-10-21
+
+This is a source package. Do not commit generated dist/ or node_modules/; Vercel runs npm run build from the project root. The command runs the dependency-free root-level build.mjs, which copies eligible HTML pages while preserving nested paths, copies required assets, validates the blog outputs and generates the sitemap/robots files.
+
+Root project files:
+.gitignore
+.oxlintrc.json
+PACKAGE_MANIFEST.txt
+README.md
+TODO.md
+VERCEL_DEPLOYMENT.md
+about.html
+app.config.ts
+build.mjs
+favicon.svg
+how-it-works.html
+index.html
+index.html.html
+manus-routes.json
+package-lock.json
+package.json
+plan.md
+robots.txt
+script.js
+sitemap.xml
+styles.css
+vercel.json
+vite.config.js
+
+Public files copied into dist/:
+public/favicon.svg
+public/favicon.png
+public/icons.svg
+public/recon-brief.svg
+public/robots.txt
+public/sitemap.xml
+
+build.mjs is the production build command. It copies eligible source HTML files while preserving their relative paths, copies shared assets and public files, verifies the blog listing, article and images, then scans the built HTML and synchronizes sitemap.xml and robots.txt at the root, under public/, and in dist/. Vite is retained for local development only.
+
+The sitemap URL remains https://www.reconbrief.in/sitemap.xml. www is the preferred host because production redirects non-www requests to www.
+
+Retained React source tree (not imported by the configured root HTML build):
+src/App.css
+src/App.jsx
+src/MarketingSite.css
+src/MarketingSite.jsx
+src/assets/hero.png
+src/assets/react.svg
+src/assets/vite.svg
+src/index.css
+src/main.jsx
+
+Eligible HTML page files are discovered automatically by build.mjs and copied with their relative paths preserved. index.html.html and common private, test, preview, draft, redirect, and error-page filenames are excluded. The sitemap further requires a self-canonical HTTPS URL on www.reconbrief.in, excludes noindex pages and private/test routes, excludes Vercel-configured redirect sources, and requires the canonical path to match the built HTML route.
+
+Current sitemap pages:
+https://www.reconbrief.in/
+https://www.reconbrief.in/about
+https://www.reconbrief.in/how-it-works
+
+The Trust & Privacy navigation link is deferred and not listed in the sitemap. The optional homepage evidence-network background reference was removed after confirming that the asset was unavailable; no replacement image was invented or added.

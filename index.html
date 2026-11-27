@@ -1,337 +1,219 @@
-<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><title>Tussle</title><meta name="description" content="Tussle: quick head-to-head mini games for two. Sumo, Darts, Archery, Pizza Memory, Connect Four, Gomoku, Sea Battle and more. Play a friend with one link, or take on a bot."><meta property="og:site_name" content="Tussle"><meta property="og:type" content="website"><meta property="og:url" content="__HOST__/"><meta property="og:title" content="Tussle: settle it, two players, one link"><meta property="og:description" content="Quick head-to-head mini games: Sumo, Darts, Archery, Pizza Memory, Connect Four, Gomoku, Sea Battle and more. Challenge a friend with one link!"><meta property="og:image" content="__HOST__/og.png"><meta property="og:image:type" content="image/png"><meta property="og:image:width" content="1200"><meta property="og:image:height" content="630"><meta property="og:image:alt" content="Tussle logo: a red and a blue fighter in a dust cloud"><meta name="twitter:card" content="summary_large_image"><meta name="twitter:title" content="Tussle: settle it, two players, one link"><meta name="twitter:image" content="__HOST__/og.png"><link rel="apple-touch-icon" href="/icon-192.png"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="default"><meta name="apple-mobile-web-app-title" content="Tussle"><link rel="manifest" href="/manifest.json"><meta name="theme-color" content="#f4ead5"><link rel="icon" href="/icon-192.png">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Lilita+One&family=Nunito:wght@700;900&display=swap">
-<style>
-*{box-sizing:border-box;touch-action:manipulation;-webkit-tap-highlight-color:transparent}html{-webkit-text-size-adjust:100%}
-body{margin:0;background:#f4ead5 radial-gradient(#1a1a1a1f 1.2px,transparent 1.5px) 0 0/14px 14px;color:#1a1a1a;font:700 16px Nunito,sans-serif;min-height:100vh;min-height:100dvh;overscroll-behavior-y:contain;-webkit-user-select:none;user-select:none;padding:env(safe-area-inset-top) env(safe-area-inset-left) env(safe-area-inset-bottom) env(safe-area-inset-right)}input{-webkit-user-select:text;user-select:text}
-#a{max-width:440px;margin:auto;padding:46px 14px 40px;text-align:center}
-.L,h1,.big,.sc{font-family:'Lilita One',sans-serif;font-weight:400}
-h1{margin:0;font-size:56px;line-height:1;transform:rotate(-3deg);-webkit-text-stroke:3px #1a1a1a;text-shadow:5px 5px 0 #1a1a1a;letter-spacing:1px}
-h2{font:400 26px 'Lilita One';margin:10px 0}
-.b{border:4px solid #1a1a1a;border-radius:18px;font:inherit;font-weight:900;min-height:44px;padding:10px 16px;background:#ffc93c;box-shadow:4px 4px 0 #1a1a1a;cursor:pointer;color:#1a1a1a;margin:6px}
-.b:active{transform:translate(3px,3px);box-shadow:1px 1px 0 #1a1a1a}
-.cta{width:100%;height:64px;margin:6px 0;background:#e5392f;color:#fff6e0;font:400 27px 'Lilita One';letter-spacing:1px}
-.grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:6px}
-.k{margin:0;height:170px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;font:400 21px 'Lilita One'}.k small{font:900 13px Nunito}
-.k:nth-child(odd){transform:rotate(-1.4deg)}.k:nth-child(even){transform:rotate(1.3deg)}
-.pill{border:3px solid #1a1a1a;background:#fff6e0;border-radius:16px;padding:8px 12px;margin:10px 0;word-break:break-all;box-shadow:3px 3px 0 #1a1a1a}
-input{font:900 20px Nunito;text-align:center;width:100%;padding:10px;border-radius:14px;border:4px solid #1a1a1a;background:#fff6e0;margin:6px 0}
-.big{font-size:46px;margin:6px}.sc{font-size:26px;margin:8px}
-.tap{width:100%;height:210px;font:400 44px 'Lilita One';border:4px solid #1a1a1a;border-radius:24px;color:#fff6e0;background:#e5392f;box-shadow:5px 5px 0 #1a1a1a;margin:8px 0;user-select:none}
-.tap:active{transform:translate(4px,4px);box-shadow:1px 1px 0 #1a1a1a}.rd{background:#e5392f}.gr{background:#2f9e5b}
-.rope{position:relative;height:30px;border:4px solid #1a1a1a;border-radius:16px;background:linear-gradient(90deg,#e5392f 50%,#2563c9 50%);margin:12px 0}
-#rm{position:absolute;top:-10px;left:50%;width:22px;height:42px;margin-left:-11px;background:#ffc93c;border:4px solid #1a1a1a;border-radius:8px;transition:left .08s}
-.ci{position:relative;width:168px;height:168px;border:4px solid #1a1a1a;border-radius:50%;background:#fff6e0;margin:10px auto;box-shadow:4px 4px 0 #1a1a1a}
-.ci span{position:absolute;line-height:1;cursor:pointer;transform:translate(-50%,-50%);color:#1a1a1a;padding:2px}
-.k:last-child:nth-child(odd){grid-column:1/-1;transform:rotate(-1deg)}.bad{animation:sh .3s}@keyframes fly{from{transform:translateY(150px) scale(1.6);opacity:.3}to{transform:none;opacity:1}}@keyframes sh{25%{transform:translateX(-8px)}75%{transform:translateX(8px)}}
-.ban{background-image:radial-gradient(#ffffff40 2px,transparent 2.5px);background-size:16px 16px;border:4px solid #1a1a1a;border-radius:20px;box-shadow:4px 4px 0 #1a1a1a;padding:14px 8px 12px;margin:0 0 12px}.bl{width:100%;height:60px;margin:6px 0;background:#2563c9;color:#fff6e0;font:400 24px 'Lilita One',sans-serif}
-.hero{display:block;margin:0 auto;width:min(70%,260px);animation:wob 3.2s ease-in-out infinite}@keyframes wob{0%,100%{transform:translateY(0) rotate(-1.5deg)}50%{transform:translateY(-7px) rotate(1.5deg)}}
-.sec{display:flex;align-items:center;gap:8px;font:400 22px 'Lilita One',sans-serif;margin:20px 4px 8px;text-align:left}.sec i{display:block;width:14px;height:14px;border:3px solid #1a1a1a;border-radius:4px;transform:rotate(12deg)}
-.me{display:flex;align-items:center;gap:10px;background:#fff6e0;border:4px solid #1a1a1a;border-radius:18px;padding:5px 10px;margin:8px 0;box-shadow:3px 3px 0 #1a1a1a}.me input{border:0;margin:0;background:transparent;text-align:left;box-shadow:none;padding:6px;min-width:0;flex:1}
-.av{display:inline-flex;align-items:center;justify-content:center;width:38px;height:38px;border-radius:50%;border:3px solid #1a1a1a;color:#fff6e0;font:400 20px 'Lilita One',sans-serif;flex:none}
-.vs{display:flex;align-items:center;justify-content:center;gap:8px;margin:8px 0;font:900 17px Nunito}.vs .L{font-size:22px;color:#e5392f}
-.board{background:#fff6e0;border:4px solid #1a1a1a;border-radius:18px;box-shadow:4px 4px 0 #1a1a1a;padding:10px;margin:22px 0 8px}.sbr{display:flex;align-items:center;justify-content:center;gap:12px;margin:6px 0;font:400 34px 'Lilita One',sans-serif}
-.k{position:relative}.tg{position:absolute;top:8px;right:8px;font:900 10px Nunito;background:#1a1a1a;color:#fff6e0;border-radius:8px;padding:2px 7px;letter-spacing:.5px}.k:active{transform:translate(3px,3px)!important}
-#qt{position:fixed;top:calc(8px + env(safe-area-inset-top));left:10px;margin:0;padding:0;width:44px;height:44px;border-radius:50%;align-items:center;justify-content:center;z-index:5;box-shadow:2px 2px 0 #1a1a1a;border-width:3px;background:#fff6e0}
-#qm{position:fixed;left:0;top:0;right:0;bottom:0;background:#1a1a1a99;display:flex;align-items:center;justify-content:center;z-index:20;padding:20px}.qb{background:#f4ead5;border:4px solid #1a1a1a;border-radius:22px;padding:18px;max-width:320px;width:100%;box-shadow:5px 5px 0 #1a1a1a;animation:pop .2s ease-out}
-#tt{position:fixed;left:50%;bottom:calc(14px + env(safe-area-inset-bottom));transform:translateX(-50%);background:#1a1a1a;color:#fff6e0;padding:8px 14px;border-radius:14px;font-weight:900;display:none;z-index:30}
-.rs{animation:rise .28s ease-out}@keyframes rise{from{opacity:0;transform:translateY(10px)}}@keyframes pop{from{opacity:0;transform:scale(.92)}}
-.k{animation:pop .35s ease-out backwards}.b{transition:transform .08s,box-shadow .08s}
-.cdp{animation:cdpop .45s ease-out}@keyframes cdpop{from{transform:scale(1.7);opacity:.2}}
-.myturn{color:#e5392f;animation:pulse 1s ease-in-out infinite}@keyframes pulse{50%{transform:scale(1.08)}}
-.rc{position:relative;background:#fff3b0;border:4px solid #1a1a1a;border-radius:14px;padding:10px 12px;margin:8px auto;max-width:300px;box-shadow:4px 4px 0 #1a1a1a}.rc:after{content:'';position:absolute;top:-4px;right:-4px;border-style:solid;border-width:0 26px 26px 0;border-color:transparent #1a1a1a transparent transparent}
-.tray{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;background:#fff;border:4px solid #1a1a1a;border-radius:36px;padding:10px 14px;max-width:300px;margin:8px auto;box-shadow:0 5px 0 #d9d9d9}.tp{display:flex;justify-content:center;touch-action:none;border-radius:14px;padding:2px}.tp.sel{background:#ffc93c88;outline:3px solid #1a1a1a}
-.opz{display:flex;align-items:center;justify-content:center;gap:8px}.opz #opz{width:84px}
-.cf{position:fixed;top:-20px;width:10px;height:14px;z-index:9;pointer-events:none;animation:fall linear forwards}@keyframes fall{to{transform:translateY(110vh) rotate(720deg)}}
-.bnc{animation:bnc .6s ease-in-out infinite}@keyframes bnc{50%{transform:translateY(-16px)}}.sad{animation:sad 1.2s ease-in-out infinite}@keyframes sad{50%{transform:rotate(6deg)}}
-#rbub{display:none;position:fixed;left:50%;top:calc(58px + env(safe-area-inset-top));transform:translateX(-50%);background:#fff6e0;border:3px solid #1a1a1a;border-radius:16px;padding:4px 12px 4px 6px;gap:6px;align-items:center;font:900 14px Nunito,sans-serif;z-index:12;box-shadow:3px 3px 0 #1a1a1a;animation:pop .2s;max-width:86vw}
-#mt{position:fixed;top:calc(8px + env(safe-area-inset-top));right:10px;margin:0;padding:0;width:44px;height:44px;border-radius:50%;display:flex;align-items:center;justify-content:center;z-index:5;box-shadow:2px 2px 0 #1a1a1a;border-width:3px}
-.mdl{position:fixed;left:0;top:0;right:0;bottom:0;background:#1a1a1a99;display:flex;align-items:center;justify-content:center;z-index:25;padding:16px}.mdl .qb{text-align:left;color:#1a1a1a}.mdl h2{text-align:center}
-.strow{display:flex;align-items:center;justify-content:space-between;gap:12px;margin:10px 0}.strow small{font-weight:700;opacity:.7}
-.sw{width:58px;height:32px;border:3px solid #1a1a1a;border-radius:20px;background:#cbd5e1;padding:0;position:relative;flex:none;cursor:pointer;transition:background .15s}.sw i{position:absolute;top:2px;left:2px;width:22px;height:22px;border-radius:50%;background:#fff6e0;border:3px solid #1a1a1a;transition:left .15s}.sw.on{background:#2f9e5b}.sw.on i{left:28px}
-input[type=range]{-webkit-appearance:none;appearance:none;padding:0;height:22px;border:0;background:transparent;margin:0}input[type=range]::-webkit-slider-runnable-track{height:12px;background:#fff6e0;border:3px solid #1a1a1a;border-radius:8px}input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:28px;height:28px;margin-top:-10px;border-radius:50%;background:#ffc93c;border:3px solid #1a1a1a}input[type=range]::-moz-range-track{height:8px;background:#fff6e0;border:3px solid #1a1a1a;border-radius:8px}input[type=range]::-moz-range-thumb{width:22px;height:22px;border-radius:50%;background:#ffc93c;border:3px solid #1a1a1a}
-#gt{position:fixed;top:calc(8px + env(safe-area-inset-top));left:10px;margin:0;padding:0;width:44px;height:44px;border-radius:50%;display:flex;align-items:center;justify-content:center;z-index:5;box-shadow:2px 2px 0 #1a1a1a;border-width:3px;background:#fff6e0}
-#et{position:fixed;right:12px;bottom:calc(12px + env(safe-area-inset-bottom));margin:0;padding:0;width:52px;height:52px;border-radius:50%;display:none;align-items:center;justify-content:center;z-index:14;background:#fff6e0}#et.bump{animation:pop .25s}
-#etray{position:fixed;right:10px;bottom:calc(72px + env(safe-area-inset-bottom));z-index:15;display:grid;grid-template-columns:repeat(3,1fr);gap:6px;background:#f4ead5;border:4px solid #1a1a1a;border-radius:20px;padding:8px;box-shadow:4px 4px 0 #1a1a1a;animation:pop .18s;color:#1a1a1a}
-.qt{grid-column:1/-1;display:flex;flex-wrap:wrap;gap:5px}.qt button{background:#fff6e0;border:3px solid #1a1a1a;border-radius:12px;padding:3px 8px;font:900 12px Nunito;color:#1a1a1a;cursor:pointer}.tx{grid-column:1/-1;display:flex;gap:6px}.tx input{flex:1;min-width:0;border:3px solid #1a1a1a;border-radius:12px;padding:6px 8px;font:900 14px Nunito;background:#fff;color:#1a1a1a}.tx .b{margin:0;padding:4px 12px;font-size:14px;border-width:3px}.em{display:flex;flex-direction:column;align-items:center;gap:1px;background:#fff6e0;border:3px solid #1a1a1a;border-radius:14px;padding:4px 6px;font:900 11px Nunito;color:#1a1a1a;min-width:68px;cursor:pointer}.em:active{transform:scale(.94)}
-#ebub{display:none;position:fixed;left:50%;top:calc(106px + env(safe-area-inset-top));transform:translateX(-50%);background:#fff6e0;color:#1a1a1a;border:3px solid #1a1a1a;border-radius:16px;padding:4px 14px 4px 6px;gap:8px;align-items:center;font:900 16px Nunito,sans-serif;z-index:12;box-shadow:3px 3px 0 #1a1a1a;max-width:86vw;line-height:1.1}#ebub.pop2{animation:pop .22s}
-.shg{display:grid;grid-template-columns:1fr 1fr;gap:10px}.k2{margin:0;display:flex;flex-direction:column;align-items:center;gap:2px;padding:8px 6px;box-shadow:3px 3px 0 #1a1a1a}
-.bnc2{animation:bnc 1.2s ease-in-out infinite}
-.pill,.board,.rc,.me,.qb,#rbub,#tt+*{color:#1a1a1a}input{color:#1a1a1a}
-</style></head><body><button id="qt" class="b" onclick="askQuit()" aria-label="Quit game" style="display:none"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#1a1a1a" stroke-width="3.5" stroke-linecap="round"><path d="M5 5l14 14M19 5L5 19"/></svg></button><div id="tt"></div><button id="mt" class="b" onclick="Meta.quickMute()" aria-label="Sound"></button><div id="a"></div><script src="/b.js"></script><script src="/meta.js"></script><script>
-const $=s=>document.querySelector(s),K='stroke="#1a1a1a" stroke-width="3"',V=b=>'<svg viewBox="0 0 80 80" width="84" height="84">'+b+'</svg>';
-const rng=s=>()=>{s|=0;s=s+0x6D2B79F5|0;let t=Math.imul(s^s>>>15,1|s);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296};
-const DT='<svg viewBox="0 0 40 90" width="20" height="45"><polygon points="20,2 24,26 16,26" fill="#c9c9c9" stroke="#1a1a1a" stroke-width="2"/><rect x="15" y="26" width="10" height="26" fill="#2563c9" stroke="#1a1a1a" stroke-width="2"/><rect x="18" y="52" width="4" height="12" fill="#1a1a1a"/><polygon points="20,60 4,86 20,76 36,86" fill="#e5392f" stroke="#1a1a1a" stroke-width="2"/></svg>';
-const AR='<svg viewBox="0 0 40 110" width="20" height="55"><rect x="18" y="14" width="4" height="78" fill="#8a5a2b" stroke="#1a1a1a" stroke-width="2"/><polygon points="20,0 28,18 12,18" fill="#c9c9c9" stroke="#1a1a1a" stroke-width="2"/><polygon points="18,80 6,102 18,92" fill="#e5392f" stroke="#1a1a1a" stroke-width="2"/><polygon points="22,80 34,102 22,92" fill="#e5392f" stroke="#1a1a1a" stroke-width="2"/></svg>';
-const BOW='<svg viewBox="0 -38 200 128" width="170" height="109"><path d="M20 10Q100 86 180 10" fill="none" stroke="#8a5a2b" stroke-width="8" stroke-linecap="round"/><path d="M20 10L100 44L180 10" fill="none" stroke="#1a1a1a" stroke-width="2.5"/><g id="nk"><rect x="98" y="-24" width="4" height="68" fill="#8a5a2b" stroke="#1a1a1a" stroke-width="2"/><polygon points="100,-37 109,-21 91,-21" fill="#c9c9c9" stroke="#1a1a1a" stroke-width="2"/><polygon points="98,30 88,50 98,42" fill="#e5392f" stroke="#1a1a1a" stroke-width="2"/><polygon points="102,30 112,50 102,42" fill="#e5392f" stroke="#1a1a1a" stroke-width="2"/></g></svg>';
-const DTB=DT.replace('width="20" height="45"','width="36" height="80"');
-const G={
-spot:['Spot the Match','Be first to find the twin','#ffc93c','#1a1a1a',V('<circle cx="28" cy="40" r="24" fill="#fff6e0" '+K+'/><circle cx="52" cy="40" r="24" fill="#fff6e0" fill-opacity=".7" '+K+'/><polygon points="18,30 21,37 28,37 22,41 24,48 18,44 12,48 14,41 8,37 15,37" fill="#2563c9"/><path d="M40 33L46 40L40 47L34 40Z" fill="#e5392f" '+K+'/>')],
-draw:['Quick Draw','Wait… now!','#ff7a2f','#1a1a1a',V('<path d="M8 54Q40 74 72 54Q58 52 56 36Q40 26 24 36Q22 52 8 54Z" fill="#fff6e0" '+K+'/><text x="40" y="22" text-anchor="middle" font-family="Lilita One" font-size="24">!</text>')],
-darts:['Darts','Take turns, one dart each','#2563c9','#fff6e0',V('<circle cx="38" cy="44" r="30" fill="#fff6e0" '+K+'/><circle cx="38" cy="44" r="21" fill="#e5392f" '+K+'/><circle cx="38" cy="44" r="12" fill="#fff6e0" '+K+'/><circle cx="38" cy="44" r="4" fill="#1a1a1a"/><path d="M38 44L68 12" stroke="#1a1a1a" stroke-width="4" stroke-linecap="round"/><path d="M62 10L72 8L70 18Z" fill="#ffc93c" '+K+'/>')],
-archery:['Archery','Mind the wind','#2f9e5b','#fff6e0',V('<path d="M56 8Q22 40 56 72" stroke="#1a1a1a" stroke-width="5" fill="none"/><path d="M56 8L56 72M10 40L66 40" stroke="#1a1a1a" stroke-width="3"/><path d="M66 32L78 40L66 48Z" fill="#ffc93c" '+K+'/><path d="M10 40L4 33M10 40L4 47" stroke="#e5392f" stroke-width="4"/>')],
-pizza:['Pizza Memory','Remember it. Rebuild it.','#f4a261','#1a1a1a',V('<circle cx="40" cy="42" r="31" fill="#f2b66d" '+K+'/><circle cx="40" cy="42" r="25" fill="#e5392f"/><circle cx="40" cy="42" r="21" fill="#ffc93c"/><circle cx="31" cy="35" r="5.5" fill="#e8445c" stroke="#1a1a1a" stroke-width="2"/><circle cx="49" cy="37" r="5.5" fill="#e8445c" stroke="#1a1a1a" stroke-width="2"/><circle cx="40" cy="52" r="5.5" fill="#e8445c" stroke="#1a1a1a" stroke-width="2"/><path d="M26 49q4-5 8 0" stroke="#3f7d1f" stroke-width="3" fill="none"/>')]};
-const HOW={flip:'Your blob runs by itself. Tap JUMP to hop over the spikes.<br>Grab the glowing orbs for a speed boost.<br>Purple gates flip gravity, so you run on the ceiling!<br>First to the flag wins the round. Best of 3.',hockey:'Drag your paddle to smack the puck into your friend\'s goal.<br>Don\'t let it slip past you!<br>First to 5 goals wins.',
-sumo:'Drag to move your blob. Press DASH to ram your friend!<br>The arena keeps shrinking, so knock them off the edge.<br>Best of 3 rounds.',
-spot:'Two circles, one matching symbol.<br>Be the FIRST to tap it to win the point.<br>Wrong tap = locked out for 1 second.<br>First to 5 points wins!',
-draw:'Wait for the screen to turn green.<br>When it says DRAW, tap FIRST to win the point.<br>Tap too early and your friend gets the point.<br>First to 3 points wins!',
-darts:'You and your friend take turns, one dart each.<br>On your turn a line sweeps up and down. Tap to lock the height.<br>Then a line sweeps sideways. Tap again to lock the spot.<br>Your dart lands where the two lines cross, so aim for the bullseye! 5 darts each. Highest total wins!',
-archery:'You and your friend take turns, one arrow each.<br>A line sweeps up and down: tap to lock the height. Then a line sweeps sideways: tap to lock the spot.<br>Wind pushes your arrow sideways, so aim against it. 5 arrows each. Highest total wins!',
-pizza:'A pizza appears for 4 seconds. Memorize which topping goes on which spot!<br>Then drag toppings from the tray onto the spots of a plain pizza. Tap a placed topping to remove it.<br>Press DONE when it matches. A wrong pizza locks you out for 2 seconds.<br>First correct pizza wins the point. First to 3 wins!'};
-const TG={pep:(x,y)=>'<circle cx="'+x+'" cy="'+y+'" r="10" fill="#c0392b" stroke="#1a1a1a" stroke-width="2"/>',
-mush:(x,y)=>'<path d="M'+(x-10)+' '+(y+4)+'A10 10 0 0 1 '+(x+10)+' '+(y+4)+'Z" fill="#fff6e0" stroke="#1a1a1a" stroke-width="2"/><rect x="'+(x-3)+'" y="'+(y+4)+'" width="6" height="7" fill="#fff6e0" stroke="#1a1a1a" stroke-width="2"/>',
-olive:(x,y)=>'<circle cx="'+x+'" cy="'+y+'" r="8" fill="#2d2d2d" stroke="#1a1a1a" stroke-width="2"/><circle cx="'+x+'" cy="'+y+'" r="3" fill="#ffd966"/>',
-onion:(x,y)=>'<circle cx="'+x+'" cy="'+y+'" r="9" fill="#e9d3f0" stroke="#7b3f8c" stroke-width="3"/>',
-ham:(x,y)=>'<rect x="'+(x-8)+'" y="'+(y-8)+'" width="16" height="16" rx="3" fill="#f4a6b8" stroke="#1a1a1a" stroke-width="2"/>',
-basil:(x,y)=>'<ellipse cx="'+x+'" cy="'+y+'" rx="10" ry="6" fill="#2f7d3a" stroke="#1a1a1a" stroke-width="2" transform="rotate(-30 '+x+' '+y+')"/>',
-pepper:(x,y)=>'<circle cx="'+x+'" cy="'+y+'" r="8" fill="none" stroke="#2f9e5b" stroke-width="5"/>'};
-const pz=it=>'<svg viewBox="-110 -110 220 220" width="100%" style="max-width:230px"><circle r="104" fill="#e0a458" stroke="#1a1a1a" stroke-width="4"/><circle r="88" fill="#e5392f"/><circle r="82" fill="#ffd966"/>'+it.map(o=>TG[o.t](o.x,o.y)).join('')+'</svg>';
-const ringH=(l,r)=>'<div class="ci">'+l.map((g,i)=>{const a=(i*60+r()*30)*Math.PI/180,d=24+r()*14;return '<span data-g="'+g+'" style="left:'+(50+d*Math.cos(a))+'%;top:'+(50+d*Math.sin(a))+'%;font-size:'+(24+r()*20)+'px;transform:translate(-50%,-50%) rotate('+Math.floor(r()*360)+'deg)">'+g+'</span>'}).join('')+'</div>';
-let AC;
-const cn=v=>String(v).replace(/[^\p{L}\p{N} _.\-]/gu,'').slice(0,14);
-function ac(){if(!AC){AC=new(window.AudioContext||window.webkitAudioContext)();Meta.audioNodes(AC)}if(AC.state=='suspended')AC.resume();return AC}
-function tone(f,d,type,v,to,at){const c=ac(),t=c.currentTime+(at||0),o=c.createOscillator(),g=c.createGain();o.type=type||'sine';o.frequency.setValueAtTime(f,t);if(to)o.frequency.exponentialRampToValueAtTime(to,t+d);g.gain.setValueAtTime(.0001,t);g.gain.exponentialRampToValueAtTime(v||.15,t+.01);g.gain.exponentialRampToValueAtTime(.0001,t+d);o.connect(g);g.connect(Meta.sfxOut()||c.destination);o.start(t);o.stop(t+d+.02)}
-function noise(d,v,f,at){const c=ac(),t=c.currentTime+(at||0),n=Math.floor(c.sampleRate*d),b=c.createBuffer(1,n,c.sampleRate),a=b.getChannelData(0);for(let i=0;i<n;i++)a[i]=Math.random()*2-1;const s=c.createBufferSource(),fl=c.createBiquadFilter(),g=c.createGain();s.buffer=b;fl.type='lowpass';fl.frequency.value=f||1200;g.gain.setValueAtTime(v||.15,t);g.gain.exponentialRampToValueAtTime(.0001,t+d);s.connect(fl);fl.connect(g);g.connect(Meta.sfxOut()||c.destination);s.start(t)}
-const SFX={tick:()=>tone(700,.07,'square',.07),go:()=>{tone(523,.1,'square',.09);tone(784,.24,'square',.09,0,.1)},tap:()=>tone(430,.05,'triangle',.1,300),pop:()=>tone(520,.07,'sine',.14,780),
- point:()=>{tone(660,.09,'triangle',.14);tone(990,.16,'triangle',.14,0,.09)},bad:()=>tone(180,.22,'sawtooth',.1,90),hit:()=>{noise(.1,.25,500);tone(130,.12,'sine',.2,60)},boom:()=>{noise(.35,.3,900);tone(90,.3,'sine',.25,40)},
- splash:()=>noise(.18,.18,2500),drop:()=>{tone(300,.12,'sine',.14,150);tone(140,.08,'sine',.18,80,.12)},stone:()=>{noise(.04,.3,1800);tone(220,.06,'triangle',.18,150)},whoosh:()=>noise(.22,.14,3000),
- twang:()=>tone(420,.25,'sawtooth',.07,210),win:()=>[523,659,784,1047,1319].forEach((f,i)=>tone(f,.18,'triangle',.15,0,i*.09)),lose:()=>[392,330,262,196].forEach((f,i)=>tone(f,.28,'sawtooth',.09,f*.92,i*.18)),dash:()=>{noise(.2,.16,2800);tone(200,.18,'sawtooth',.06,500)}};
-function snd(k){if(!Meta.sfxOn())return;try{(SFX[k]||SFX.pop)()}catch(e){}}
-document.addEventListener('pointerdown',e=>{if(e.target.closest&&e.target.closest('.b'))snd('tap')});
-const vib=p=>{if(Meta.vibOn()&&navigator.vibrate)try{navigator.vibrate(p)}catch(e){}};
-document.addEventListener('pointerdown',()=>{try{ac();Meta.musSync()}catch(e){}},{once:true});
-function tm(){Meta.quickMute()}
-function confetti(){const cs=['#e5392f','#2563c9','#ffc93c','#2f9e5b','#ff7a2f'];for(let i=0;i<70;i++){const e=document.createElement('div');e.className='cf';e.style.cssText='left:'+Math.random()*100+'vw;background:'+cs[i%5]+';animation-duration:'+(2+Math.random()*2.5)+'s;animation-delay:'+Math.random()*.6+'s';document.body.appendChild(e);setTimeout(()=>e.remove(),5500)}}
-const fx=w=>{const m=(x,mood,rex,col)=>'<g class="'+(mood=='happy'?'bnc':mood=='sad'?'sad':'')+'" style="transform-origin:'+(x+36)+'px 130px"><g transform="translate('+x+' '+(mood=='sad'?52:16)+') scale('+(mood=='sad'?'.74,.5':'.74,.74')+')">'+(rex?rexSvg(rexLv(),{arms:mood=='happy'?'up':'side',mood:mood=='happy'?'hype':mood=='sad'?'sad':''}):mascotSvg(col,{mood,arms:mood=='happy'?'up':'side'}))+'</g></g>';
- const FL=x=>'<g class="bnc" style="transform-origin:'+(x+36)+'px 20px"><path d="M'+(x-6)+' 30Q'+(x-12)+' 14 '+(x-2)+' 4Q'+(x-1)+' 14 '+(x+5)+' 16Q'+(x+4)+' 24 '+(x-6)+' 30Z" fill="#ff9f1c" stroke="#1a1a1a" stroke-width="2.5" stroke-linejoin="round"/><path d="M'+(x+66)+' 30Q'+(x+60)+' 14 '+(x+70)+' 4Q'+(x+71)+' 14 '+(x+77)+' 16Q'+(x+76)+' 24 '+(x+66)+' 30Z" fill="#ff9f1c" stroke="#1a1a1a" stroke-width="2.5" stroke-linejoin="round"/></g>',SN=x=>'<g class="bnc" style="transform-origin:'+(x+36)+'px 20px"><path d="M'+(x-4)+' 6V28M'+(x-14)+' 11L'+(x+6)+' 23M'+(x-14)+' 23L'+(x+6)+' 11" stroke="#7dd3fc" stroke-width="4" stroke-linecap="round"/><path d="M'+(x+72)+' 6V28M'+(x+62)+' 11L'+(x+82)+' 23M'+(x+62)+' 23L'+(x+82)+' 11" stroke="#7dd3fc" stroke-width="4" stroke-linecap="round"/></g>';
- return '<svg viewBox="0 0 300 150" width="300" height="150">'+(w=='me'?FL(40):'')+(w=='opp'&&!isBot()?SN(186):'')+m(40,w=='me'?'happy':w=='opp'?'sad':'angry',0,'#e5392f')+m(186,w=='opp'?'happy':w=='me'?'sad':'angry',isBot(),'#2563c9')+'</svg>'};
-G.hockey=['Air Hockey','Smash it past them','#e5392f','#fff6e0',V('<rect x="14" y="8" width="52" height="64" rx="8" fill="#fff6e0" '+K+'/><path d="M14 40H66" stroke="#1a1a1a" stroke-width="2"/><circle cx="40" cy="22" r="8" fill="#2563c9" '+K+'/><circle cx="40" cy="58" r="8" fill="#e5392f" '+K+'/><circle cx="52" cy="40" r="5" fill="#ffc93c" '+K+'/>')];
-G.sumo=['Sumo','Shove them off','#17a58a','#fff6e0',V('<ellipse cx="40" cy="64" rx="36" ry="9" fill="#f6e2b3" '+K+'/><g transform="translate(3 14) scale(.34)">'+mascotSvg('#e5392f',{sumo:1})+'</g><g transform="translate(41 14) scale(.34)">'+mascotSvg('#2563c9',{sumo:1})+'</g>')];
-G.c4=['Connect Four','Four in a row','#4cc9f0','#1a1a1a',V('<rect x="8" y="12" width="64" height="56" rx="8" fill="#2563c9" '+K+'/><circle cx="26" cy="28" r="7" fill="#e5392f"/><circle cx="40" cy="28" r="7" fill="#fff6e0"/><circle cx="54" cy="28" r="7" fill="#fff6e0"/><circle cx="26" cy="46" r="7" fill="#ffc93c"/><circle cx="40" cy="46" r="7" fill="#e5392f"/><circle cx="54" cy="46" r="7" fill="#ffc93c"/>')];
-G.gomoku=['Gomoku','Five in a row','#80b918','#1a1a1a',V('<rect x="10" y="10" width="60" height="60" rx="6" fill="#f4d9a0" '+K+'/><path d="M25 14V66M40 14V66M55 14V66M14 25H66M14 40H66M14 55H66" stroke="#1a1a1a" stroke-width="2"/><circle cx="25" cy="25" r="7" fill="#e5392f" '+K+'/><circle cx="40" cy="40" r="7" fill="#e5392f" '+K+'/><circle cx="55" cy="25" r="7" fill="#2563c9" '+K+'/>')];
-G.dots=['Dots and Boxes','Claim the boxes','#c77dff','#1a1a1a',V('<rect x="18" y="18" width="22" height="22" fill="#e5392f" fill-opacity=".5"/><path d="M18 18H40V40" stroke="#e5392f" stroke-width="5" fill="none"/><path d="M40 40H62" stroke="#2563c9" stroke-width="5"/><g fill="#1a1a1a"><circle cx="18" cy="18" r="4"/><circle cx="40" cy="18" r="4"/><circle cx="62" cy="18" r="4"/><circle cx="18" cy="40" r="4"/><circle cx="40" cy="40" r="4"/><circle cx="62" cy="40" r="4"/><circle cx="18" cy="62" r="4"/><circle cx="40" cy="62" r="4"/><circle cx="62" cy="62" r="4"/></g>')];
-G.uttt=['Ultimate Tic Tac Toe','Nine boards, one win','#e5392f','#fff6e0',V('<path d="M30 10V70M50 10V70M10 30H70M10 50H70" stroke="#1a1a1a" stroke-width="4" stroke-linecap="round"/><path d="M14 14l12 12m0-12l-12 12" stroke="#fff6e0" stroke-width="4"/><circle cx="40" cy="40" r="7" fill="none" stroke="#2563c9" stroke-width="4"/><path d="M54 54l12 12m0-12l-12 12" stroke="#fff6e0" stroke-width="4"/>')];
-G.sea=['Sea Battle','Sink their fleet','#0e7490','#fff6e0',V('<rect x="6" y="50" width="68" height="22" rx="6" fill="#38bdf8" '+K+'/><path d="M16 50L22 34H58L66 50Z" fill="#fff6e0" '+K+'/><rect x="34" y="22" width="12" height="12" fill="#e5392f" '+K+'/><path d="M40 22V12" stroke="#1a1a1a" stroke-width="3"/>')];
-G.flip=['Flip Run','Race on the ceiling','#ff5d8f','#1a1a1a',V('<rect x="6" y="12" width="68" height="56" rx="8" fill="#fff6e0" '+K+'/><rect x="6" y="12" width="68" height="7" fill="#1a1a1a"/><rect x="6" y="61" width="68" height="7" fill="#1a1a1a"/><path d="M44 61L51 46L58 61Z" fill="#e5392f" '+K+'/><g transform="translate(12 29) scale(.27)">'+mascotSvg('#e5392f',{mood:'angry',arms:'none',nohat:1})+'</g><g transform="translate(40 51) scale(.27 -.27)">'+mascotSvg('#2563c9',{mood:'angry',arms:'none'})+'</g>')];
-G.hurdle=['Hurdle Sprint','Tap fast, jump high','#ffc93c','#1a1a1a',V('<rect x="6" y="52" width="68" height="16" fill="#f6e2b3" '+K+'/><path d="M30 52V34M44 52V34" stroke="#1a1a1a" stroke-width="4"/><rect x="26" y="30" width="22" height="8" fill="#e5392f" '+K+'/><g transform="translate(5 12) scale(.27)">'+mascotSvg('#e5392f',{mood:'angry',arms:'none',nohat:1})+'</g><path d="M52 24l8-8M58 30l10-4" stroke="#1a1a1a" stroke-width="3" stroke-linecap="round"/>')];
-G.stack=['Tower Stack','Stack it straight','#17a58a','#fff6e0',V('<rect x="22" y="56" width="36" height="12" fill="#e5392f" '+K+'/><rect x="26" y="44" width="30" height="12" fill="#ffc93c" '+K+'/><rect x="28" y="32" width="26" height="12" fill="#2563c9" '+K+'/><rect x="38" y="20" width="26" height="12" fill="#ff9f1c" '+K+' transform="rotate(8 50 26)"/>')];
-G.sky=['Sky Climb','Race up the clouds','#4cc9f0','#1a1a1a',V('<rect x="6" y="6" width="68" height="68" rx="8" fill="#bfe6ff" '+K+'/><rect x="12" y="56" width="26" height="9" rx="4" fill="#fff" '+K+'/><rect x="42" y="38" width="26" height="9" rx="4" fill="#fff" '+K+'/><rect x="12" y="20" width="26" height="9" rx="4" fill="#fff" '+K+'/><path d="M40 52L52 36M40 34l-8-10" stroke="#e5392f" stroke-width="3" stroke-dasharray="3 4" fill="none"/>')];
-G.fruit=['Fruit Slice Rush','Swipe, slice, score','#ff7849','#1a1a1a',V('<circle cx="28" cy="44" r="18" fill="#e5392f" '+K+'/><circle cx="22" cy="38" r="4" fill="#fff8"/><circle cx="54" cy="30" r="14" fill="#80b918" '+K+'/><path d="M10 66L66 14" stroke="#1a1a1a" stroke-width="4" stroke-linecap="round"/><circle cx="58" cy="60" r="10" fill="#1a1a1a"/>')];
-G.blob=['Blob Brawl','Merge, stack, outscore','#9b5de5','#fff6e0',V('<circle cx="22" cy="52" r="13" fill="#ffd93c" '+K+'/><circle cx="52" cy="48" r="17" fill="#4cc9f0" '+K+'/><circle cx="40" cy="22" r="11" fill="#ff6b9d" '+K+'/><circle cx="36" cy="19" r="2" fill="#1a1a1a"/><circle cx="44" cy="19" r="2" fill="#1a1a1a"/><circle cx="47" cy="44" r="2.4" fill="#1a1a1a"/><circle cx="57" cy="44" r="2.4" fill="#1a1a1a"/>')];
-const GAMES10=['sumo','darts','archery','flip','pizza','spot','c4','gomoku','dots','uttt','sea','hurdle','stack','sky','fruit','blob'];
-const D={blob:'Drop blobs into your jar. Two matching blobs that touch merge into the next colour. Keep your pile under the red line and score more than your friend before the clock runs out!',hurdle:'Sprint down the track. Tap left and right to run, and jump every hurdle in time. First to the finish wins!',stack:'Drop sliding blocks to build a tower. Line them up well, any overhang is sliced off. Tallest tower after 30 seconds wins!',sky:'Climb the clouds as fast as you can. Tap left or right to jump to the next cloud. Pick wrong and you fall!',fruit:'Swipe to slice fruit for points. Bombs cost you 3 points, and three quick slices make a combo. Best score in 30 seconds wins!',flip:'Race your friend through a spiky course. Jump the spikes, grab speed orbs and flip gravity at the purple gates. First to the flag wins!',sumo:'Two blobs, one shrinking platform. Shove your opponent off the edge before they shove you!',darts:'Take turns throwing darts. Stop the crosshair near the bullseye for the biggest score.',archery:'Take turns shooting arrows at the target. Wind pushes your arrow, so aim against it!',pizza:'Memorize the pizza, then rebuild it topping by topping before your opponent does.',spot:'Two circles share one symbol. Be the first to tap it!',c4:'Drop your discs and be the first to get four in a row horizontally, vertically or diagonally.',gomoku:'Place your stones on the board and be the first to get five in a row horizontally, vertically or diagonally.',dots:'Take turns drawing lines between dots. Complete a box to claim it and go again. Own the most boxes to win.',uttt:'Play on a big board with nine small tic-tac-toe games. Where you play decides which small board your opponent must play in next. Win three small boards in a row to win.',sea:'Your fleet is hidden. Take turns firing at the enemy waters. A hit lets you shoot again. Sink all five ships to win.'};
-Object.assign(HOW,{blob:'Slide your finger to aim, let go to drop a blob.<br>Two blobs of the same colour merge into the next one. Bigger merges and chains score more.<br>Keep your pile under the red line, or you lose the round.<br>The higher score when time runs out wins. SHAKE settles your pile but locks your drops for a second.',hurdle:'Tap the left and right buttons one after the other to run.<br>Press JUMP just before a hurdle. Hit one and you stumble.<br>First to the finish line wins.',stack:'A block slides side to side. Tap DROP to place it.<br>Any part hanging over is cut off, so the tower gets thinner.<br>Land it perfectly to keep the full width. Tallest tower in 30 seconds wins.',sky:'Tap LEFT or RIGHT to jump to the next cloud above you.<br>Only jump where there is a cloud. A wrong jump drops you two rows.<br>First to the top wins.',fruit:'Swipe across the fruit to slice it. +1 each.<br>Avoid bombs, they take away 3 points.<br>Slice three fruit quickly for a bonus. Highest score in 30 seconds wins.',c4:'Tap a column to drop your disc.<br>It falls to the lowest free spot.<br>Connect four in any direction to win.',gomoku:'Tap an empty point to place a stone.<br>Take turns with your opponent.<br>Five in a row in any direction wins.',dots:'Tap a line between two dots.<br>Close all four sides of a box to claim it and play again.<br>Most boxes at the end wins.',uttt:'You must play in the small board matching where your opponent just played.<br>Win a small board to claim it.<br>Claim three small boards in a row to win.',sea:'Drag your ships into position and tap a ship to rotate it. Press Ready.<br>Tap the enemy waters to fire. A hit means you shoot again.<br>Sink all five ships to win.'});
-const TAG={hurdle:'RACE',stack:'RACE',sky:'RACE',fruit:'RACE',flip:'RACE',sumo:'LIVE',darts:'TURNS',archery:'TURNS',pizza:'RACE',spot:'RACE',c4:'TURNS',gomoku:'TURNS',dots:'TURNS',uttt:'TURNS',sea:'TURNS',blob:'LIVE'};
-const SEC=[['ACTION & SKILL',['sumo','darts','archery','pizza','spot'],'#e5392f'],['RACE',['flip','hurdle','stack','sky','fruit'],'#ff9f1c'],['BOARD GAMES',['c4','gomoku','dots','uttt','sea'],'#2563c9'],['PUZZLE BATTLE',['blob'],'#9b5de5']];
-const cardH=g=>'<button class="b k" style="background:'+G[g][2]+';color:'+G[g][3]+'" onclick="openGame(\''+g+'\')"><span class="tg">'+TAG[g]+'</span>'+G[g][4]+G[g][0]+'<small>'+G[g][1]+'</small></button>';
-function nmIn(v){nm=cn(v);localStorage.name=nm;const a=document.querySelector('.av');if(a)a.textContent=(nm[0]||'?').toUpperCase()}
-const SPK1='<svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#1a1a1a" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9v6h4l5 4V5L8 9z" fill="#ffc93c"/><path d="M16 9a4 4 0 010 6M18.5 6.5a8 8 0 010 11"/></svg>';
-const SPK0='<svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#1a1a1a" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9v6h4l5 4V5L8 9z" fill="#cbd5e1"/><path d="M17 9l5 6M22 9l-5 6"/></svg>';
-let lv='';
-function ui(){const a=$('#a'),q=$('#qt');Meta.onView();if(q)q.style.display=view=='play'?'flex':'none';ui0();if(lv!=view){lv=view;if(view!='home'){try{history.pushState({a:1},'')}catch(e){}}if(view!='play'){a.classList.remove('rs');void a.offsetWidth;a.classList.add('rs')}}}
-function tt(m){const e=$('#tt');if(!e)return;e.textContent=m;e.style.display=m?'block':'none'}
-function askQuit(){if($('#qm'))return;const bot=isBot(),d=document.createElement('div');d.id='qm';
- d.innerHTML='<div class="qb"><div class="L" style="font-size:26px">QUIT GAME?</div><p style="margin:8px 0 12px">'+(view=='play'?(bot?'You will leave this match.':'You will forfeit and '+on.opp+' wins.'):'Leave the lobby?')+'</p><button class="b" id="qk">KEEP PLAYING</button><button class="b" id="qy" style="background:#e5392f;color:#fff6e0">QUIT</button></div>';
- document.body.appendChild(d);$('#qk').onclick=()=>d.remove();$('#qy').onclick=()=>{d.remove();doQuit()}}
-function doQuit(){if(view=='play')Meta.recQuit();send({t:'quit'});home()}
-window.addEventListener('popstate',()=>{if(view=='play'||view=='intro'){try{history.pushState({a:1},'')}catch(e){}askQuit()}else if(view=='game'||view=='res')home()});
-const TP={pep:'<circle r="16" fill="#e8445c" stroke="#1a1a1a" stroke-width="3"/><g fill="#ff9fb0"><circle cx="-5" cy="-5" r="2.6"/><circle cx="6" cy="-3" r="2.6"/><circle cx="-2" cy="6" r="2.6"/><circle cx="7" cy="7" r="2"/></g>',
-mush:'<path d="M-16 4Q-16 -14 0 -14Q16 -14 16 4Z" fill="#e9b98a" stroke="#1a1a1a" stroke-width="3" stroke-linejoin="round"/><path d="M-6 4V14H6V4Z" fill="#f6e3cc" stroke="#1a1a1a" stroke-width="3" stroke-linejoin="round"/>',
-basil:'<path d="M-15 10Q-14 -14 12 -15Q15 10 -15 10Z" fill="#8fd14f" stroke="#1a1a1a" stroke-width="3" stroke-linejoin="round"/><path d="M-12 8L9 -10" stroke="#3f7d1f" stroke-width="2.5" stroke-linecap="round"/>',
-tomato:'<path d="M-16 6A16 16 0 0 1 16 6Z" fill="#e5392f" stroke="#1a1a1a" stroke-width="3" stroke-linejoin="round"/><path d="M0 6V-8M-9 6L-6 -4M9 6L6 -4" stroke="#ffd1c9" stroke-width="2" stroke-linecap="round"/>',
-onion:'<path d="M-15 8Q-19 -2 -9 -6Q-8 -17 4 -13Q16 -14 14 -3Q19 7 8 9Q0 14 -15 8Z" fill="#fff6e0" stroke="#1a1a1a" stroke-width="3" stroke-linejoin="round"/>',
-fish:'<path d="M-17 0Q-6 -13 8 -4L17 -11V11L8 4Q-6 13 -17 0Z" fill="#8aa0b8" stroke="#1a1a1a" stroke-width="3" stroke-linejoin="round"/><circle cx="-8" cy="-2" r="2.2" fill="#1a1a1a"/>'};
-const pzBase='<circle r="104" fill="#f2b66d" stroke="#1a1a1a" stroke-width="4"/><circle r="94" fill="none" stroke="#e39a4b" stroke-width="3" stroke-dasharray="2 9"/><circle r="86" fill="#e5392f"/><circle r="80" fill="#ffc93c"/><g fill="#ffdf7a"><ellipse cx="-40" cy="-58" rx="14" ry="6" transform="rotate(-30 -40 -58)"/><ellipse cx="52" cy="-52" rx="12" ry="5" transform="rotate(25 52 -52)"/><ellipse cx="62" cy="40" rx="12" ry="5" transform="rotate(-20 62 40)"/><ellipse cx="-58" cy="46" rx="13" ry="5" transform="rotate(30 -58 46)"/><ellipse cx="6" cy="68" rx="14" ry="5"/></g>';
-const SLP=n=>n==4?[[0,-44],[-44,0],[44,0],[0,44]]:[[0,-44],[-44,0],[44,0],[0,44],[0,0]];
-function pzSvg(sl,o){o=o||{};const P=SLP(sl.length);let s=pzBase;
- P.forEach((p,i)=>{if(o.slots)s+='<circle cx="'+p[0]+'" cy="'+p[1]+'" r="19" fill="'+(o.hl===i?'#fff3b0':'#e0a82a')+'"'+(o.hl===i||o.sel?' stroke="#1a1a1a" stroke-width="3" stroke-dasharray="4 3"':'')+'/>';
-  const v=sl[i];if(v)s+='<g transform="translate('+p[0]+' '+p[1]+')">'+(o.ghost?'<circle r="14" fill="#fff6e0" stroke="#1a1a1a" stroke-width="3"/>':TP[v])+'</g>'});
- return '<svg viewBox="-110 -110 220 220" width="100%" style="max-width:'+(o.w||250)+'px;display:block;margin:4px auto;touch-action:none"'+(o.id?' id="'+o.id+'"':'')+'>'+s+'</svg>'}
-function pzDraw(){const el=$('#pzm');if(!el||!X.sl)return;el.innerHTML=pzSvg(X.sl,{slots:1,hl:X.hl,sel:X.sel,w:250,id:'psv'});const dn=$('#dn');if(dn)dn.style.opacity=X.sl.every(Boolean)?1:.45;document.querySelectorAll('.tp').forEach(e=>e.classList.toggle('sel',e.dataset.t==X.sel))}
-function pzSlotAt(e){const sv=$('#psv');if(!sv||!X.sl)return -1;const r=sv.getBoundingClientRect(),k=220/r.width,x=(e.clientX-r.left)*k-110,y=(e.clientY-r.top)*k-110;let b=-1,bd=30;SLP(X.sl.length).forEach((s,i)=>{const d=Math.hypot(x-s[0],y-s[1]);if(d<bd){bd=d;b=i}});return b}
-function pzSet(i,v){if(i<0)return;X.sl[i]=v;send({t:'in',k:X.k,slots:X.sl});snd(v?'pop':'tap');vib(8);pzDraw()}
-function pzBind(){
- document.querySelectorAll('.tp').forEach(tp=>tp.onpointerdown=e=>{if(closed)return;const t=tp.dataset.t;X.drag={t,x:e.clientX,y:e.clientY,mv:0};
-  const g=document.createElement('div');g.id='gh';g.style.cssText='position:fixed;pointer-events:none;z-index:40;width:64px;height:64px;transform:translate(-50%,-50%);display:none;left:'+e.clientX+'px;top:'+e.clientY+'px';g.innerHTML='<svg viewBox="-20 -20 40 40" width="64" height="64">'+TP[t]+'</svg>';document.body.appendChild(g);
-  const mv=ev=>{const d=X.drag;if(!d)return;if(Math.hypot(ev.clientX-d.x,ev.clientY-d.y)>8)d.mv=1;if(d.mv){g.style.display='block';g.style.left=ev.clientX+'px';g.style.top=ev.clientY+'px';const h=pzSlotAt(ev);if(h!=X.hl){X.hl=h;pzDraw()}}};
-  const up=ev=>{document.removeEventListener('pointermove',mv);document.removeEventListener('pointerup',up);document.removeEventListener('pointercancel',up);g.remove();const d=X.drag;X.drag=null;X.hl=-1;if(!d)return;if(d.mv){const s=pzSlotAt(ev);if(s>=0)pzSet(s,d.t);else pzDraw()}else{X.sel=X.sel==d.t?null:d.t;pzDraw()}};
-  document.addEventListener('pointermove',mv);document.addEventListener('pointerup',up);document.addEventListener('pointercancel',up);if(e.preventDefault)e.preventDefault()});
- $('#pzm').onpointerdown=e=>{if(closed)return;const s=pzSlotAt(e);if(s<0)return;if(X.sel)pzSet(s,X.sel);else if(X.sl[s])pzSet(s,null)};
- $('#un').onpointerdown=()=>{if(closed)return;X.sl.fill(null);send({t:'in',k:X.k,slots:X.sl});pzDraw()};
- $('#dn').onpointerdown=()=>{if(closed||Date.now()<lk||!X.sl.every(Boolean))return;send({t:'in',k:X.k,slots:X.sl,done:1})};pzDraw()}
-function cvInit(w,h){$('#gm').innerHTML='<canvas id="cv" width="'+w*2+'" height="'+h*2+'" style="width:100%;max-width:'+w+'px;touch-action:none;border:4px solid #1a1a1a;border-radius:16px;background:#fff6e0;box-shadow:4px 4px 0 #1a1a1a;display:block;margin:0 auto"></canvas>'+(cur=='sumo'?'<button class="b cta" id="dsh" style="width:70%">DASH!</button>':'');
- X.cv=$('#cv');X.cx=X.cv.getContext('2d');let lt=0;
- const mv=e=>{const n=Date.now();if(n-lt<33)return;lt=n;const r=X.cv.getBoundingClientRect();let x=(e.clientX-r.left)/r.width*w,y=(e.clientY-r.top)/r.height*h;if(cur=='hockey'&&X.me==1){x=w-x;y=h-y}send({t:'in',x:Math.round(x),y:Math.round(y)})};
- X.cv.onpointerdown=e=>{X.cv.setPointerCapture(e.pointerId);lt=0;mv(e)};X.cv.onpointermove=e=>{if(cur=='hockey'||e.buttons||e.pointerType=='touch')mv(e)};X.cv.onpointerup=()=>{if(cur=='sumo')send({t:'in',stop:1})};
- if(cur=='sumo')$('#dsh').onpointerdown=()=>{send({t:'in',dash:1});snd('dash');vib(30)};
- cancelAnimationFrame(X.raf);const loop=()=>{if(view!='play'||!$('#cv'))return;cur=='hockey'?hDraw():sDraw();X.raf=requestAnimationFrame(loop)};loop()}
-function hDraw(){const c=X.cx,s=X.s,D=X.d;if(!s||!D)return;const L=(a,b)=>a+(b-a)*.5;D.pk[0]=L(D.pk[0],s.pk[0]);D.pk[1]=L(D.pk[1],s.pk[1]);for(let i=0;i<2;i++){D.pd[i][0]=L(D.pd[i][0],s.pd[i][0]);D.pd[i][1]=L(D.pd[i][1],s.pd[i][1])}
- const col=i=>i==X.me?'#e5392f':'#2563c9',dot=(x,y,r,f)=>{c.fillStyle=f;c.beginPath();c.arc(x,y,r,0,7);c.fill();if(r>12)c.stroke()};
- c.setTransform(2,0,0,2,0,0);c.clearRect(0,0,300,500);c.save();if(X.me==1){c.translate(300,500);c.rotate(Math.PI)}
- c.lineWidth=4;c.strokeStyle='#1a1a1a';c.beginPath();c.moveTo(0,250);c.lineTo(300,250);c.stroke();c.beginPath();c.arc(150,250,40,0,7);c.stroke();
- c.fillStyle=col(0);c.fillRect(95,492,110,8);c.fillStyle=col(1);c.fillRect(95,0,110,8);
- for(let i=0;i<2;i++){dot(D.pd[i][0],D.pd[i][1],26,col(i));dot(D.pd[i][0],D.pd[i][1],10,'#ffffff66')}dot(D.pk[0],D.pk[1],15,'#ffc93c');c.restore()}
-const SPR={};function sprGet(i){const rx=i==1&&isBot(),key=rx?'r'+rexLv():i;if(!SPR[key]){const im=new Image();im.src=rx?rexUri(rexLv()):mascotUri(i?'#2563c9':'#e5392f',1);SPR[key]=im}return SPR[key]}
-function sDraw(){const c=X.cx,s=X.s,D=X.d;if(!s||!D)return;const now=Date.now();
- for(let i=0;i<2;i++){const b=D.b[i],px=b[0];b[0]+=(s.b[i][0]-b[0])*.5;b[1]+=(s.b[i][1]-b[1])*.5;b[4]=b[0]-px;b[2]=s.b[i][2];b[3]=s.b[i][3]}D.ar+=(s.ar-D.ar)*.3;
- c.setTransform(2,0,0,2,0,0);c.fillStyle='#e8d3a8';c.fillRect(0,0,320,320);
- c.lineWidth=10;c.strokeStyle='#c99a52';c.fillStyle='#f6e2b3';c.beginPath();c.arc(160,160,D.ar,0,7);c.fill();c.stroke();
- c.lineWidth=2.5;c.strokeStyle='#1a1a1a';c.setLineDash([9,7]);c.beginPath();c.arc(160,160,D.ar+5,0,7);c.stroke();c.beginPath();c.arc(160,160,D.ar-5,0,7);c.stroke();c.setLineDash([]);c.lineWidth=3;c.beginPath();c.arc(160,160,D.ar+10,0,7);c.stroke();
- const t=now/1000;
- for(const i of [0,1].sort((a,b)=>D.b[a][1]-D.b[b][1])){const[x,y,da]=D.b[i],fl=X.fall&&X.fall.i==i;let sc=1,rot=Math.max(-.3,Math.min(.3,D.b[i][4]*.06)),al=1,yy=y;
-  if(fl){const p=Math.min(1,(now-X.fall.t)/700);sc=1-p*.75;rot+=p*5;al=1-p*.6;yy=y+p*30}
-  c.globalAlpha=al;c.fillStyle='#0000002a';c.beginPath();c.ellipse(x,yy+24,22*sc,7*sc,0,0,7);c.fill();
-  if(da){c.strokeStyle='#ffc93c';c.lineWidth=4;c.beginPath();c.arc(x,yy,34,0,7);c.stroke()}
-  const k=X.hit&&now-X.hit<160?(1-(now-X.hit)/160)*.12:0,br=1+Math.sin(t*5+i)*.02,im=sprGet(i==X.me?0:1);
-  c.save();c.translate(x,yy+24);c.rotate(rot);c.scale(sc*(da?1.1:1)*(1-k),sc*(da?.92:1)*(1+k)*br);
-  if(im.complete&&im.naturalWidth)(i==1&&isBot()?c.drawImage(im,-28,-76,56,77):c.drawImage(im,-28,-69,56,69));else{c.fillStyle=i==X.me?'#e5392f':'#2563c9';c.beginPath();c.arc(0,-30,24,0,7);c.fill()}
-  c.restore();c.globalAlpha=1}
- if(X.hit&&now-X.hit<260){const k=(now-X.hit)/260,mx=(D.b[0][0]+D.b[1][0])/2,my=(D.b[0][1]+D.b[1][1])/2-10,R=10+k*18;c.fillStyle='#ffc93c';c.strokeStyle='#1a1a1a';c.lineWidth=2.5;c.globalAlpha=1-k;c.beginPath();for(let q=0;q<16;q++){const r=q%2?R*.55:R,a=q*Math.PI/8;c.lineTo(mx+r*Math.cos(a),my+r*Math.sin(a))}c.closePath();c.fill();c.stroke();c.globalAlpha=1}
- const me=D.b[X.me],b=$('#dsh');if(b&&me){b.style.opacity=me[3]>0?.45:1;b.textContent=me[3]>0?'DASH… '+(me[3]/1000).toFixed(1):'DASH!'}}
-let ws,off=0,room=null,n=1,wins={me:0,opp:0},view='home',msg='',last=null,want=0,cd=null,pend=null,cur='',on={me:'',opp:''},nm=cn(localStorage.name||''),introG='',botG='',inviteFor='',selG='',botOpen=0,howOpen=0,lvl=localStorage.lvl==null?1:+localStorage.lvl,lk=0,closed=1,X={},
- pid=localStorage.pid||(localStorage.pid=Math.random().toString(36).slice(2)+Date.now().toString(36));
-const send=o=>ws&&ws.readyState==1&&ws.send(JSON.stringify({...o,pid,name:nm||'Player'}));
-const aimG=()=>cur=='darts'||cur=='archery';
-function sb(p){const o=$('#op');if(!o)return;const k=p?Object.keys(p).find(x=>x!=pid):0,a=p&&p[pid]||0,b=k?p[k]:0;o.textContent=aimG()?nm+': '+a+' pts · '+on.opp+': '+b+' pts':nm+' '+a+' – '+b+' '+on.opp}
-function shake(){const e=$('#gm');if(e){e.classList.remove('bad');void e.offsetWidth;e.classList.add('bad')}}
-function conn(){ws=new WebSocket((location.protocol=='https:'?'wss://':'ws://')+location.host);
- const w0=setTimeout(()=>{if(ws.readyState!=1&&view=='home'){msg='Waking up the game server… the first visit can take up to a minute.';ui()}},2500);
- ws.onopen=()=>{clearTimeout(w0);tt('');if(msg.startsWith('Waking'))msg='';if(view=='play'||view=='intro')view='home';const c=new URLSearchParams(location.search).get('r')||localStorage.room;if(c){if(nm)send({t:'join',code:c});else{pend=c;view='name';ui()}}else ui()};
- ws.onmessage=e=>{const d=JSON.parse(e.data),t=d.t;
-  if(t=='err'){msg=d.err;room=null;localStorage.removeItem('room');history.replaceState(null,'','/');if(view!='play'){view='home';ui()}}
-  else if(t=='room'){room=d.code;n=d.n;wins=d.wins;on=d.names||on;on.bot=(on.opp||'').indexOf('(bot)')>=0;on.opp=(on.opp||'').replace(' (bot)','');localStorage.room=room;msg='';history.replaceState(null,'','/');if(view=='name')view='home';if(want&&n==1){want=0;share()}if(botG){const g=botG;botG='';send({t:'bot',g,lvl})}if(inviteFor&&n>1&&!isBot()){const g=inviteFor;inviteFor='';send({t:'pick',g})}if(view!='play')ui()}
-  else if(t=='intro'){introG=d.g;view='intro';ui()}
-  else if(t=='dgo'){off=d.now-Date.now();startGame(d.g,d.startAt-off);RXS={m:0,h:0};setTimeout(()=>rexSay('start',0,d.g),700)}
-  else if(t=='emote')Meta.emGot(d.e);else if(t=='say')Meta.sayGot(d.m)
-  else if(t=='res'){view='res';last=d;d.rw=Meta.recRes(d);if(cd)clearInterval(cd);cancelAnimationFrame(X.raf);ui()}
-  else if(t=='reset'){if(cd)clearInterval(cd);cancelAnimationFrame(X.raf);view='home';msg='Your friend joined! Pick a game to start.';ui()}
-  else if(t=='note'){msg=d.msg;if(view!='play')ui()}
-  else if(t=='home'){if(cd)clearInterval(cd);cancelAnimationFrame(X.raf);const m=$('#qm');if(m)m.remove();view='home';msg=d.msg||'';ui()}
-  else if(view=='play')duel(d)};
- ws.onclose=()=>{tt('Reconnecting…');setTimeout(conn,1500)}}
-function startGame(g,at){if(cd)clearInterval(cd);cur=g;view='play';Meta.onView();closed=1;const q=$('#qt');if(q)q.style.display='flex';if(lv!='play'){lv='play';try{history.pushState({a:1},'')}catch(e){}}cancelAnimationFrame(X.raf);X={};
- $('#a').innerHTML='<h2>'+G[g][0]+'</h2><div class="pill" id="op"></div><div class="big" id="cd"></div><div id="gm"></div>';sb();if(BG[g])$('#op').style.display='none';
- cd=setInterval(()=>{const l=at-Date.now();const e=$('#cd');if(l>0){const v=Math.ceil(l/1000);if(e.textContent!=v){snd('tick');e.textContent=v;e.classList.remove('cdp');void e.offsetWidth;e.classList.add('cdp')}return}clearInterval(cd);e.textContent='GO!';e.classList.remove('cdp');void e.offsetWidth;e.classList.add('cdp');snd('go')},100)}
-const fine=()=>{try{return matchMedia('(pointer:fine)').matches}catch(e){return false}};
-const tri=(sp,t,ph)=>{const u=(((sp*t+ph)%400)+400)%400;return Math.round((u<200?u-100:300-u)*10)/10};
-function aimBtn(){const b=$('#th');if(!b)return;b.textContent=!X.mine?'WAIT FOR YOUR TURN':X.stage==0?'TAP: LOCK HEIGHT':X.stage==1?'TAP: LOCK SIDE':'...';b.disabled=!X.mine||X.stage>1}
-function aimInit(){const R=cur=='darts'?['#fff6e0','#e5392f','#fff6e0','#e5392f','#1a1a1a']:['#fff6e0','#1a1a1a','#2563c9','#e5392f','#ffc93c'];
- const LN='position:absolute;display:none;pointer-events:none;background:#1a1a1a8c;box-shadow:0 0 0 1px #ffffff66';
- $('#gm').innerHTML='<div class="sc" id="st"></div><div class="pill" id="wd" style="display:none"></div><button class="b cta" id="th" disabled style="margin:2px 0 8px"></button><div id="bd" style="position:relative;width:260px;height:260px;margin:0 auto;touch-action:manipulation"><svg viewBox="-130 -130 260 260" width="260" height="260">'+R.map((c,k)=>'<circle r="'+(120-k*24)+'" fill="'+c+'" '+K+'/>').join('')+'</svg><div id="ly" style="'+LN+';left:0;width:260px;height:3px;margin-top:-1px;border-radius:2px"></div><div id="lx" style="'+LN+';top:0;height:260px;width:3px;margin-left:-1px;border-radius:2px"></div><div id="ch" style="display:none;position:absolute;width:26px;height:26px;border:4px solid #1a1a1a;border-radius:50%;background:#ffffff88"></div></div><div id="wp" style="margin:6px 0;line-height:0;min-height:60px"></div><div class="small" id="ah" style="margin-top:4px;font-weight:800;opacity:.7"></div>';
- $('#th').onpointerdown=aimPress;$('#bd').onpointerdown=aimPress}
-function aimPress(e){if(e&&e.preventDefault)e.preventDefault();if(!X.mine||X.sent||X.stage>1)return;const now=performance.now();if(now-(X.lp||0)<220)return;X.lp=now;const t=(now-X.st)/1000;
- if(X.stage==0){X.ey=t;X.ly=tri(X.p.sy,t,X.p.py);X.t1=X.st+t*1000;X.stage=1;snd('pop');vib(12);send({t:'in',i:X.i,s:1,e:t})}
- else{X.lx=tri(X.p.sx,t-X.ey,X.p.px);X.stage=2;X.sent=1;snd('whoosh');vib(20);send({t:'in',i:X.i,s:2,e:t});const c=$('#ch');if(c){c.style.display='';c.style.left=(117+X.lx)+'px';c.style.top=(117+X.ly)+'px'}}
- aimBtn()}
-function aloop(){if(X.stage==null||X.done)return;const now=performance.now(),ly=$('#ly'),lx=$('#lx');if(!ly)return;
- const y=X.stage==0?tri(X.p.sy,(now-X.st)/1000,X.p.py):X.ly;ly.style.display='block';ly.style.top=(130+y)+'px';ly.style.background=X.stage>=1?'#2f9e5bb3':'#1a1a1a8c';
- if(X.stage>=1){const x=X.stage==1?tri(X.p.sx,(now-X.t1)/1000,X.p.px):X.lx;lx.style.display='block';lx.style.left=(130+x)+'px';lx.style.background=X.stage>=2?'#2f9e5bb3':'#1a1a1a8c'}else lx.style.display='none';
- X.raf=requestAnimationFrame(aloop)}
-function pzr(){$('#pzm').innerHTML=pz(X.it);for(const t in X.cnt)$('#n_'+t).textContent=X.cnt[t]}
-function duel(d){const t=d.t,c=$('#cd');
- if(RC.msg(d)||MC.msg(d))return;
- if(t=='bs'){bs(d);rexThink(d)}
- else if(t=='fstart')fInit(d);
- else if(t=='fs')fState(d);
- else if(t=='hstart'||t=='sstart'){X.ids=d.ids;X.me=d.ids.indexOf(pid);X.s=null;X.d=null;X.fall=null;closed=0;if(c)c.textContent='';if(!$('#cv'))cvInit(t=='hstart'?300:320,t=='hstart'?500:320)}
- else if(t=='hs'){X.s={pk:d.pk,pd:d.pd};if(!X.d)X.d=JSON.parse(JSON.stringify(X.s));if(d.ev)snd('hit')}
- else if(t=='ss'){X.s={b:d.b,ar:d.ar};if(!X.d)X.d=JSON.parse(JSON.stringify(X.s));if(d.ev){X.hit=Date.now();snd('hit');vib(25);const c=$('#cv');if(c){c.classList.remove('bad');void c.offsetWidth;c.classList.add('bad')}}}
- else if(t=='sround'){closed=0;const r=rng(d.seed);if(c)c.textContent='';$('#gm').innerHTML='<div class="sc">Round '+d.k+'</div>'+ringH(d.A,r)+ringH(d.B,r);
-  $('#gm').querySelectorAll('span').forEach(s=>s.onpointerdown=()=>{if(closed||Date.now()<lk)return;send({t:'in',k:d.k,g:s.dataset.g})})}
- else if(t=='lock'){lk=Date.now()+(d.ms||1000);shake();snd('bad');vib([60,40,60]);if(c)c.textContent='Wrong! Locked '+(d.ms||1000)/1000+'s'}
- else if(t=='dwait'){X.k=d.k;closed=0;if(c)c.textContent='';$('#gm').innerHTML='<button id="rb" class="tap rd">WAIT…</button>';$('#rb').onpointerdown=()=>{if(!closed)send({t:'in',k:X.k})}}
- else if(t=='ddraw'){const b=$('#rb');if(b){b.textContent='DRAW!';b.className='tap gr'}}
- else if(t=='pshow'){closed=1;X.k=d.k;X.sl=null;if(X.tm)clearInterval(X.tm);const end=Date.now()+d.ms;$('#gm').innerHTML='<div class="rc"><div class="L" style="font-size:20px">THE RECIPE</div>'+pzSvg(d.slots,{w:250})+'</div>';
-  X.tm=setInterval(()=>{const l=Math.ceil((end-Date.now())/1000),e=$('#cd');if(e)e.textContent=l>0?'Memorize! '+l:'';if(l<=0)clearInterval(X.tm)},200)}
- else if(t=='pplay'){X.k=d.k;X.sl=Array(d.n).fill(null);X.sel=null;X.hl=-1;closed=0;if(c)c.textContent='Build it!';
-  $('#gm').innerHTML='<div class="opz"><div id="opz">'+pzSvg(Array(d.n).fill(null),{w:84,slots:1})+'</div><small id="opn" style="font-weight:900">'+on.opp+' 0/'+d.n+'</small></div><div id="pzm">'+pzSvg(X.sl,{slots:1,w:250,id:'psv'})+'</div><div class="tray">'+d.pal.map(y=>'<div class="tp" data-t="'+y+'"><svg viewBox="-20 -20 40 40" width="54" height="54">'+TP[y]+'</svg></div>').join('')+'</div><button class="b" id="un">CLEAR</button><button class="b" id="dn" style="background:#e5392f;color:#fff6e0;font-size:20px;opacity:.45">DONE!</button>';pzBind()}
- else if(t=='pprog'){const f=d.filled,e=$('#opz');if(e){e.innerHTML=pzSvg(f.map(v=>v?'x':null),{w:84,slots:1,ghost:1});$('#opn').textContent=on.opp+' '+f.filter(Boolean).length+'/'+f.length}}
- else if(t=='spoint'){closed=1;if(X.f)X.f.over=1;RC.over();MC.over();sb(d.pts);if(isBot())rexReact(d);else charReact(d);if(cur=='sumo'&&d.w&&X.ids)X.fall={i:1-X.ids.indexOf(d.w),t:Date.now()};if(d.w){snd(d.w==pid?'point':'bad');vib(d.w==pid?40:[30,30,30])}const b=$('#rb');if(b)b.disabled=true;
-  if(c)c.textContent=d.w==null?'Time up! No point':BG[cur]?(d.w==pid?'You win!':on.opp+' wins!'):cur=='flip'||cur=='hurdle'||cur=='sky'?(d.w==pid?'You got there first!':on.opp+' got there first!'):cur=='stack'?(d.w==pid?'Your tower is taller!':on.opp+' built higher!'):cur=='fruit'?(d.w==pid?'You sliced more!':on.opp+' sliced more!'):cur=='blob'?(d.w==pid?'You out-stacked them!':on.opp+' out-stacked you!'):cur=='draw'?(d.why=='early'?(d.by==pid?'Too early! Point to '+on.opp:on.opp+' jumped the gun!'):(d.w==pid?'You were faster! '+d.ms+' ms':on.opp+' was faster · '+d.ms+' ms')):(d.w==pid?'You got it!':on.opp+' got it!')}
- else if(t=='aturn'){if(d.i==0||!$('#bd'))aimInit();cancelAnimationFrame(X.raf);X.i=d.i;X.p=d.p;X.mine=d.who==pid;X.sent=0;X.stage=0;X.done=0;X.lp=0;X.st=performance.now();X.t1=0;sb(d.pts);
-  $('#st').textContent=X.mine?'YOUR TURN!':on.opp+(cur=='archery'?' is aiming…':' is throwing…');
-  if(cur=='archery'){const w=$('#wd');w.style.display='';w.textContent='Wind '+(d.wind>0?'→ ':'← ')+Math.abs(d.wind)}
-  $('#ch').style.display='none';$('#ah').textContent=X.mine?(fine()?'Space or click also works':'Tap the board or the button'):'';$('#wp').innerHTML=X.mine?(cur=='archery'?BOW:DTB):'';aimBtn();aloop()}
- else if(t=='alock'){if(d.i==X.i&&X.stage==0){X.ly=d.y;X.stage=1;X.t1=performance.now();snd('pop');aimBtn()}}
- else if(t=='athrown'){snd(d.miss?'bad':cur=='archery'?'twang':'hit');vib(30);cancelAnimationFrame(X.raf);X.done=1;X.mine=0;$('#ch').style.display='none';$('#ly').style.display='none';$('#lx').style.display='none';$('#wp').innerHTML='';aimBtn();$('#ah').textContent='';sb(d.pts);
-  if(!d.miss){let m=cur=='archery'?AR:DT;if(d.who!=pid)m=m.replace(/#e5392f/g,OC());$('#bd').insertAdjacentHTML('beforeend','<div style="position:absolute;left:'+(120+d.hx)+'px;top:'+(129+d.hy)+'px;animation:fly .22s ease-out"><div style="transform:rotate('+Math.round(Math.random()*16-8)+'deg);transform-origin:10px 0;line-height:0">'+m+'</div></div>')}
-  $('#st').textContent=(d.who==pid?'You':on.opp)+(d.miss?' missed!':' scored '+d.s+'!')}}
+<!doctype html>
+<html lang="en">
+<head>
 
-// ---- Flip Run client ----
-const FHc=130,FSPR={};
-function fspr(opp){const k=opp?(isBot()?'r'+rexLv():'b'):'m'+(Meta.hat()||'');if(!FSPR[k]){const im=new Image();im.src=opp?(isBot()?rexUri(rexLv()):mascotUri('#2563c9',0)):mascotUri('#e5392f',0);FSPR[k]=im}return FSPR[k]}
-function fJump(e){if(e&&e.preventDefault)e.preventDefault();const f=X.f;if(!f||Date.now()<f.t0||f.over)return;send({t:'in',j:1});snd('tap');f.sq=Date.now()}
-document.addEventListener('keydown',e=>{if(view=='play'&&aimG()&&X.mine&&(e.key==' '||e.key=='Enter')){e.preventDefault();aimPress()}});
-document.addEventListener('keydown',e=>{if(view=='play'&&cur=='flip'&&X.f&&(e.key==' '||e.key=='ArrowUp'||e.key=='w')){e.preventDefault();fJump()}});
-function fInit(d){const c=$('#cd');if(c)c.textContent='';cancelAnimationFrame(X.raf);
- X.f={ids:d.ids,me:d.ids.indexOf(pid),L:d.L,c:d.c,gates:d.c.filter(o=>o[0]==0).map(o=>o[1]),p:null,dp:null,t0:Date.now()+d.wait,over:0,fl:[]};closed=0;
- $('#gm').innerHTML='<canvas id="cv" width="680" height="680" style="width:100%;max-width:340px;touch-action:none;border:4px solid #1a1a1a;border-radius:16px;background:#fff6e0;box-shadow:4px 4px 0 #1a1a1a;display:block;margin:0 auto"></canvas><button class="b cta" id="fj" style="width:70%;height:70px">JUMP!</button>';
- $('#cv').onpointerdown=fJump;$('#fj').onpointerdown=fJump;fLoop()}
-function fState(d){const f=X.f;if(!f)return;f.p=d.p;if(!f.dp)f.dp=d.p.map(a=>a.slice());
- (d.ev||[]).forEach(([i,t])=>{if(i==f.me){snd(t==1?'bad':'point');vib(t==1?[40,30,40]:12);if(t==1)shake()}f.fl.push([i,t,Date.now()])})}
-function fGrav(f,x){let n=0;for(const g of f.gates)if(g<=x)n++;return n%2?-1:1}
-function fLoop(){const f=X.f,cv=$('#cv');if(!f||!cv||view!='play'||cur!='flip')return;const x=cv.getContext('2d'),now=Date.now();x.setTransform(2,0,0,2,0,0);x.clearRect(0,0,340,340);
- if(f.p)for(let i=0;i<2;i++){const a=f.dp[i],b=f.p[i];const j=Math.abs(b[0]-a[0])>200;a[0]=j?b[0]:a[0]+(b[0]-a[0])*.4;a[1]=j?b[1]:a[1]+(b[1]-a[1])*.5;a[2]=b[2];a[3]=b[3];a[4]=b[4]}
- // progress bar
- x.fillStyle='#fff6e0';x.font='900 11px Nunito';x.textAlign='center';x.fillStyle='#1a1a1a';x.fillRect(18,11,304,6);x.fillStyle='#fff';
- for(let k=0;k<8;k++){x.fillStyle=k%2?'#1a1a1a':'#fff';x.fillRect(316,4+k*2.5,6,2.5)}
- const cols=['#e5392f',OC()];
- [1,0].forEach(w=>{const i=w?1-f.me:f.me,px=f.dp?f.dp[i][0]:60,cx=20+296*Math.min(1,px/f.L);x.beginPath();x.arc(cx,14,w?7:9,0,7);x.fillStyle=i==f.me?'#e5392f':OC();x.fill();x.lineWidth=3;x.strokeStyle='#1a1a1a';x.stroke()});
- const lane=(top,i,mine)=>{const p=f.dp?f.dp[i]:[60,14,0,0,0],cx=p[0]-90,g=fGrav(f,p[0]);
-  x.save();x.beginPath();x.rect(0,top,340,FHc);x.clip();x.fillStyle=mine?'#fffaf0':'#f1e6c8';x.fillRect(0,top,340,FHc);
-  // wall stripes scroll
-  x.fillStyle='#1a1a1a';x.fillRect(0,top,340,6);x.fillRect(0,top+FHc-6,340,6);x.fillStyle='#fff6e0';for(let k=-1;k<20;k++){const sx=k*24-(cx%24);x.fillRect(sx,top+1,10,3);x.fillRect(sx,top+FHc-5,10,3)}
-  // gates
-  f.c.forEach(o=>{const sx=o[1]-cx;if(sx<-30||sx>370)return;if(o[0]==0){x.fillStyle='#8b5cf655';x.fillRect(sx-9,top+6,18,FHc-12);x.strokeStyle='#6d28d9';x.lineWidth=3;x.setLineDash([5,5]);x.beginPath();x.moveTo(sx,top+6);x.lineTo(sx,top+FHc-6);x.stroke();x.setLineDash([]);x.fillStyle='#6d28d9';x.font='900 18px Nunito';x.fillText('⇅',sx,top+FHc/2+6)}
-   else if(o[0]==1){const w=o[2]==0,by=w?top+FHc-6:top+6,dy=w?-1:1;x.beginPath();x.moveTo(sx-18,by);x.lineTo(sx,by+dy*30);x.lineTo(sx+18,by);x.closePath();x.fillStyle='#c9ced6';x.fill();x.lineWidth=3;x.strokeStyle='#1a1a1a';x.lineJoin='round';x.stroke()}
-   else{const oy=top+FHc-o[2],t=Math.sin(now/180+o[1])*2;x.beginPath();x.arc(sx,oy+t,9,0,7);x.fillStyle='#ffc93c';x.fill();x.lineWidth=3;x.strokeStyle='#1a1a1a';x.stroke();x.beginPath();x.arc(sx-3,oy+t-3,2.5,0,7);x.fillStyle='#fff';x.fill()}});
-  // finish
-  const fx=f.L-cx;if(fx<370){for(let k=0;k<10;k++){x.fillStyle=k%2?'#1a1a1a':'#fff';x.fillRect(fx,top+6+k*11.2,10,11.2);x.fillStyle=k%2?'#fff':'#1a1a1a';x.fillRect(fx+10,top+6+k*11.2,10,11.2)}}
-  // blob
-  const im=fspr(!mine);if(im.complete&&im.width){const w=34,h=w*im.height/im.width,sy=top+FHc-p[1],gx=90+(p[2]?-3:0);let sq=1,st=1;if(f.sq&&mine&&now-f.sq<150){st=1.18;sq=.85}
-   x.save();x.translate(gx,sy-7*g);if(g==-1)x.scale(1,-1);if(p[4]&&Math.floor(now/90)%2)x.globalAlpha=.4;if(p[3]){x.fillStyle='#ffc93caa';for(let k=1;k<4;k++)x.fillRect(-w/2-k*10,-6+k*2,9,3)}
-   x.drawImage(im,-w/2*sq,-h/2*st-(st>1?3:0)+0,w*sq,h*st);if(p[2]){x.fillStyle='#1a1a1a';x.font='900 14px Nunito';x.fillText('✦ ✦',0,-h/2-2)}x.restore()}
-  x.restore();x.lineWidth=4;x.strokeStyle='#1a1a1a';x.strokeRect(0,top,340,FHc);
-  x.fillStyle=mine?'#e5392f':OC();x.fillRect(6,top+10,5,0);};
- lane(54,f.me,1);lane(202,1-f.me,0);
- x.fillStyle='#1a1a1a';x.font='400 14px Lilita One,sans-serif';x.textAlign='left';x.fillText((nm||'You'),6,50);x.fillText(on.opp||'Friend',6,198);
- const w=f.t0-now;if(w>0){x.fillStyle='#1a1a1acc';x.fillRect(0,0,340,340);x.fillStyle='#fff6e0';x.font='400 54px Lilita One,sans-serif';x.textAlign='center';x.fillText(w>700?'READY':'GO!',170,190)}
- X.raf=requestAnimationFrame(fLoop)}
-function openGame(g){selG=g;view='game';botOpen=0;howOpen=0;msg='';ui()}
-function setLvl(i){lvl=i;localStorage.lvl=i;ui()}
-function playBot(g){msg='';if(!room){botG=g;send({t:'create'});return}send({t:'bot',g,lvl})}
-function playFriend(g){if(!nm.trim()){msg='Type your name on the home screen first!';ui();return}
- if(room&&n>1&&!isBot()){send({t:'pick',g});return}
- inviteFor=g;msg='Send the invite link to your friend. The game starts when they join!';if(!room){want=1;send({t:'create'})}else share();ui()}
-function rematch(g){if(isBot())send({t:'bot',g,lvl:rexLv()});else send({t:'pick',g})}
-function ready(){const b=$('#rbtn');send({t:'ready'});b.textContent='Waiting for '+(on.opp||'friend')+'…';b.disabled=true}
-function home(){if(cd)clearInterval(cd);cancelAnimationFrame(X.raf);const m=$('#qm');if(m)m.remove();view='home';ui()}
-function share(){const u=location.origin+'/?r='+room;
- if(navigator.share)navigator.share({title:'Tussle',text:(nm||'Your friend')+' challenged you on Tussle!',url:u}).catch(()=>{});
- else if(navigator.clipboard)navigator.clipboard.writeText(u).then(()=>{msg='Invite link copied! Send it to your friend.';ui()});else{msg=u;ui()}}
-function invite(){if(!nm.trim()){msg='Type your name first!';ui();return}if(!room){want=1;send({t:'create'})}else share()}
-function joinNow(){const v=$('#nin').value.trim();if(!v)return;nm=cn(v)||'Player';localStorage.name=nm;send({t:'join',code:pend})}
-function ui0(){const a=$('#a');if(view=='play')return;const hero='<img class="hero" src="/logo.png" alt="Tussle logo">';
- if(Meta.view0(a))return;
- if(view=='name'){a.innerHTML=hero+'<h1><span style="color:#e5392f">TUS</span><span style="color:#2563c9">SLE</span></h1>'+'<h2>You\'ve been challenged!</h2><p>Who\'s tussling?</p><input id="nin" maxlength="14" placeholder="Your name" autofocus><button class="b cta" onclick="joinNow()">JOIN THE FIGHT</button>';return}
- if(view=='game'){const g=selG,H=G[g];
-  a.innerHTML='<div class="ban" style="background-color:'+H[2]+'"><div style="transform:scale(1.5);height:120px;padding-top:20px">'+H[4]+'</div><div class="L" style="font-size:32px;color:#fff6e0;-webkit-text-stroke:2px #1a1a1a;text-shadow:3px 3px 0 #1a1a1a;margin-top:6px">'+H[0].toUpperCase()+'</div></div>'
-  +(msg?'<div class="pill">'+msg+'</div>':'')
-  +'<div class="pill" style="text-align:left;word-break:normal;font-size:17px;box-shadow:none">'+D[g]+(howOpen?'<hr><div style="font-size:15px">'+HOW[g]+'</div>':'')+'</div>'
-  +'<button class="b" onclick="howOpen=!howOpen;ui()" style="background:#cbd5e1;font-size:15px;padding:8px 14px">'+(howOpen?'HIDE HOW TO PLAY':'HOW TO PLAY')+'</button>'
-  +'<button class="b bl" onclick="playFriend(\''+g+'\')">PLAY VS FRIEND</button><button class="b bl" onclick="botOpen=!botOpen;ui()">PLAY VS BOT</button>'
-  +(botOpen?'<div class="pill"><div class="L" style="font-size:18px;margin-bottom:6px">BOT DIFFICULTY</div>'+['EASY','MEDIUM','HARD'].map((n,i)=>'<button class="b" style="margin:3px;padding:6px 8px;display:inline-flex;flex-direction:column;align-items:center;background:'+(lvl==i?'#ffc93c':'#fff6e0')+'" onclick="setLvl('+i+')"><svg viewBox="-4 -16 108 148" width="52" height="72">'+rexSvg(i)+'</svg><span style="font-size:13px">'+n+'</span></button>').join('')+'<br><button class="b cta" style="margin-top:8px" onclick="playBot(\''+g+'\')">START!</button></div>':'')
-  +'<button class="b" style="background:#e9967a" onclick="home()">Back</button>';return}
- if(view=='intro'){const g=introG;a.innerHTML='<h2>HOW TO PLAY</h2><div style="margin:8px auto;transform:scale(1.5);height:130px;padding-top:24px">'+G[g][4]+'</div><h2 style="font-size:34px">'+G[g][0]+'</h2><div class="pill" style="text-align:left;font-size:17px;word-break:normal">'+HOW[g]+'</div><button class="b cta" id="rbtn" onclick="ready()">I\'M READY!</button><button class="b" onclick="doQuit()">Back</button>';return}
- const o=on.opp||'Friend';
- if(view=='res'){const d=last,g=d.g,T={me:'YOU WIN!',opp:o.toUpperCase()+' WINS!',tie:"IT'S A TIE!",left:o.toUpperCase()+' LEFT'}[d.win];
-  if(!d.fx){d.fx=1;rexSay(d.win=='opp'?'win':d.win=='me'?'lose':'',d.win=='opp'?'hype':'sad');if(d.win=='me'){confetti();snd('win');vib([80,40,120])}else if(d.win=='opp')snd('lose')}a.innerHTML=fx(d.win)+'<h2 style="font-size:40px">'+T+'</h2>'+charCap(d)+(d.left?'<div class="L" style="font-size:18px">'+o+' quit the game</div>':'')+'<div class="pill">'+(nm||'You')+': '+d.sc.me+(aimG()?' pts':'')+'<br>'+o+': '+d.sc.opp+(aimG()?' pts':'')+'</div>'+(d.rw?Meta.rwH(d.rw):'')+(room&&n>1?'<div class="pill">'+(nm||'You')+' '+wins.me+' – '+wins.opp+' '+o+'</div><button class="b" onclick="rematch(\''+g+'\')">Rematch</button>':'')+'<button class="b" onclick="home()">All games</button>';return}
- const link=room?location.origin+'/?r='+room:'';
- a.innerHTML=hero+'<h1><span style="color:#e5392f">TUS</span><span style="color:#2563c9">SLE</span></h1>'+'<div class="L" style="font-size:19px;margin:4px 0 10px">Settle it. Two players. One link.</div>'+(msg?'<div class="pill">'+msg+'</div>':'')
- +(room&&n>1?'<div class="vs"><span class="av" style="background:#e5392f">'+(nm||'Y')[0].toUpperCase()+'</span><b>'+(nm||'You')+'</b><span class="L">VS</span><b>'+o+'</b>'+oppAv(38)+'</div>'+(isBot()?'<div class="L" style="font-size:15px;margin-bottom:6px">Playing a bot. Hit SHARE INVITE LINK to play a real friend!</div>':''):room?'<div class="pill">Waiting for your friend to join…<br><small>'+link+'</small></div>':'')
- +Meta.playerCard()+'<button class="b cta" onclick="invite()">'+(room?'SHARE INVITE LINK':'CHALLENGE A FRIEND')+'</button>'+Meta.dailyCard()+Meta.quickRow()
- +SEC.map(s=>'<div class="sec"><i style="background:'+s[2]+'"></i>'+s[0]+'</div><div class="grid">'+s[1].map(cardH).join('')+'</div>').join('')
- +'<div class="board"><div class="L" style="font-size:19px">RIVALRY RECORD</div><div class="sbr"><span class="av" style="background:#e5392f">'+(nm||'Y')[0].toUpperCase()+'</span>'+wins.me+' – '+wins.opp+oppAv(38)+'</div><small style="font-weight:900">'+(nm||'You')+' vs '+o+'</small></div>'}
-ui();conn();Meta.boot();
-if("serviceWorker"in navigator)navigator.serviceWorker.register("/sw.js");
-</script>
-<script src="/racec.js"></script><script src="/mergec.js"></script></body></html>
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-RDSBK5Q74S"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-RDSBK5Q74S');
+  </script>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Research Intelligence Platform for Clearer Decisions | Recon Brief</title>
+  <meta name="description" content="Research companies, understand markets and compare competitors with Recon Brief. Explore source-linked findings, structured reports and flexible research depth.">
+  <meta name="keywords" content="research intelligence, market research, competitive intelligence, evidence-backed AI research, research reports">
+  <link rel="canonical" href="https://www.reconbrief.in/">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="Research Intelligence Platform for Clearer Decisions | Recon Brief">
+  <meta property="og:description" content="Research companies, understand markets and compare competitors with Recon Brief. Explore source-linked findings, structured reports and flexible research depth.">
+  <meta property="og:url" content="https://www.reconbrief.in/">
+  <meta property="og:site_name" content="Recon Brief">
+  <meta property="og:image" content="https://www.reconbrief.in/recon-brief-og.png">
+  <meta property="og:image:type" content="image/png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:image:alt" content="Recon Brief homepage: evidence-backed research intelligence from question to decision.">
+  <meta name="twitter:image" content="https://www.reconbrief.in/recon-brief-og.png">
+  <meta name="twitter:image:alt" content="Recon Brief homepage: evidence-backed research intelligence from question to decision.">
+  <!-- Recon Brief Organization and WebSite structured data -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "Organization",
+        "name": "Recon Brief",
+        "url": "https://www.reconbrief.in/"
+      },
+      {
+        "@type": "WebSite",
+        "name": "Recon Brief",
+        "url": "https://www.reconbrief.in/"
+      }
+    ]
+  }
+  </script>
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Research Intelligence Platform for Clearer Decisions | Recon Brief">
+  <meta name="twitter:description" content="Research companies, understand markets and compare competitors with Recon Brief. Explore source-linked findings, structured reports and flexible research depth.">
+  <link rel="icon" href="/favicon.png" type="image/png" sizes="64x64">
+<script>document.documentElement.classList.add("js");(function(){var t=null;try{t=localStorage.getItem("rb-theme")}catch(e){}if(t!=="light"&&t!=="dark"){t=(window.matchMedia&&matchMedia("(prefers-color-scheme: light)").matches)?"light":"dark"}document.documentElement.setAttribute("data-theme",t)})()</script>
+<link rel="preload" href="/fonts/literata-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="/styles.css">
+</head>
+<body class="home">
+<div class="gridbg" aria-hidden="true"></div><div class="gridlit" id="lit" aria-hidden="true"></div>
+<a class="skip" href="#main">Skip to content</a>
+<header class="bar"><div class="bar-in"><a class="wordmark" href="/" aria-label="Recon Brief home"><svg viewBox="0 0 26 26" aria-hidden="true"><rect width="26" height="26" rx="6" fill="#66A3BF"/><text x="13" y="19" text-anchor="middle" font-family="DM Sans,sans-serif" font-weight="700" font-size="17" fill="#06121a">R</text></svg><span><b>Recon</b> <i>Brief</i></span></a><div class="bar-r"><nav class="nav" id="site-nav" aria-label="Main"><a href="/">Home</a><a href="/about">About Us</a><a href="/how-it-works">How It Works</a><a href="/blog">Blog</a><a href="/contact">Contact Us</a><button class="kpill" type="button" data-palette aria-label="Open quick navigation">Jump to <kbd>K</kbd></button><a class="go" href="https://app.reconbrief.in/">Open Recon Brief</a></nav><button class="theme-btn" type="button" data-theme-toggle aria-label="Switch to light theme" aria-pressed="false"><svg class="i-sun" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg><svg class="i-moon" viewBox="0 0 24 24" aria-hidden="true"><path d="M20.5 14.2A8.5 8.5 0 0 1 9.8 3.5a8.5 8.5 0 1 0 10.7 10.7z"/></svg></button><button class="menu-btn" type="button" aria-expanded="false" aria-controls="site-nav">Menu</button></div></div></header>
+<main id="main">
+<section class="hero" aria-labelledby="h1">
+  <div class="hero-in">
+    <p class="eyebrow-pill rise"><i></i>Evidence-led research &amp; intelligence</p>
+    <h1 id="h1"><span class="w" style="animation-delay:0.08s">Research</span> <span class="w" style="animation-delay:0.18s">you</span> <span class="w" style="animation-delay:0.28s">can</span> <span class="w" style="animation-delay:0.38s">inspect.</span><br><em><span class="w" style="animation-delay:0.48s">Intelligence</span> <span class="w" style="animation-delay:0.58s">you</span> <span class="w" style="animation-delay:0.68s">can</span> <span class="w" style="animation-delay:0.78s">act</span> <span class="w" style="animation-delay:0.88s">on.</span></em></h1>
+    <p class="lead rise">Recon Brief helps founders, investors and strategy teams investigate companies, understand markets and compare competitors. Build a structured research brief with source-linked findings, analysis and limitations you can review.</p>
+    <div class="actions rise"><a class="btn" href="https://app.reconbrief.in/">Start a research brief</a><a class="btn ghost" href="/samples">See sample reports</a></div>
+
+    <div class="converge" id="converge">
+      <svg id="cv" viewBox="0 0 1200 380" role="img" aria-label="Twelve sources feeding one claim in a report"></svg>
+      <div class="apex" id="apex" aria-live="polite"></div>
+    </div>
+
+    <div class="window" data-ui aria-label="Sample research run for The Whole Truth Foods">
+      <div class="win-top"><span class="dots" aria-hidden="true"><i></i><i></i><i></i></span><span class="title">Company research &middot; The Whole Truth Foods</span><button class="replay" type="button" id="replay">Replay</button></div>
+      <ol class="run-steps" id="run" data-state="idle" aria-label="Research stages">
+        <li><b>Define</b><span>Question framed</span></li>
+        <li><b>Research</b><span><i id="src-count">12</i> sources gathered</span></li>
+        <li><b>Evidence</b><span>Claims tied to sources</span></li>
+        <li><b>Analyse</b><span>Findings and gaps</span></li>
+        <li><b>Report</b><span>Structured report</span></li>
+      </ol>
+      <div class="win-body">
+        <div class="paper" id="paper">
+          <div class="top"><span>Company research &middot; Standard analysis</span><span>12 sources</span></div>
+          <h3>The Whole Truth Foods</h3>
+          <p>Founded in 2019, the company is an Indian, venture-backed, clean-label food brand.
+            <span class="claim" data-claim="1" tabindex="0">Total revenue reached &#8377;219.83 crore in FY25, against &#8377;70.56 crore in FY24<sup>E5</sup></span>.
+            <span class="claim" data-claim="2" tabindex="0">The business is still loss-making, with a net loss of &#8377;28.15 crore<sup>E5, E12</sup></span>.
+            <span class="claim" data-claim="3" tabindex="0">It raised a $51 million Series D led by Sofina<sup>E11, E12</sup></span>.</p>
+          <div class="figs"><div><strong>&#8377;<span data-count="219.83">219.83</span> cr</strong><span class="l">FY25 total revenue</span></div><div><strong>&#8377;<span data-count="28.15">28.15</span> cr</strong><span class="l">FY25 net loss</span></div></div>
+        </div>
+        <div class="registry">
+          <h4>Evidence behind the highlighted claim</h4>
+          <div class="reg" data-src="5"><div class="id">E5 <span class="badge ok">Primary candidate</span></div><p>Founded by a Former Unilever Executive and IIM Lucknow Alumnus, The Whole Truth Foods Crosses Rs 200 Cr Revenue Mark In FY25</p></div>
+          <div class="reg" data-src="12"><div class="id">E12 <span class="badge ok">Primary candidate</span></div><p>Is The Whole Truth Foods Profitable? FY25 Revenue &amp; Losses</p></div>
+          <div class="reg" data-src="11"><div class="id">E11 <span class="badge warn">Unverified</span></div><p>The Whole Truth Foods Raises $51 Million in Series D Funding Led by Sofina</p></div>
+          <p class="more">Three of 12 sources shown. <a href="/samples-company-research-the-whole-truth-foods">Read the full report</a>.</p>
+        </div>
+      </div>
+    </div>
+    <p class="keys"><span><kbd>1</kbd><kbd>2</kbd><kbd>3</kbd>pick a claim</span><span><kbd>R</kbd>replay the run</span><span><kbd>/</kbd>jump to a page</span><span>A replay of an existing sample. No live research runs here.</span></p>
+  </div>
+</section>
+
+<section class="sec" id="evidence" aria-labelledby="evidence-h">
+  <p class="kicker">The evidence layer</p>
+  <h2 id="evidence-h">Sources are graded, not assumed.</h2>
+  <p class="lead">A report that hides how it knows something is a guess with good formatting. These are the three habits that stop that.</p>
+  <div class="cells three">
+    <div class="cell"><span class="num">01</span><h3>Provenance stays close</h3><p>Titles, domains, dates and source types sit next to the claim they support. In the sample, each source carries a label such as primary candidate or unverified.</p>
+      <div class="mini"><div><b>E5</b><span class="badge ok">Primary candidate</span></div><div><b>E12</b><span class="badge ok">Primary candidate</span></div><div><b>E11</b><span class="badge warn">Unverified</span></div></div></div>
+    <div class="cell"><span class="num">02</span><h3>Claims keep their references</h3><p>Cited evidence, estimates and interpretation are kept apart instead of blended into one answer, so you can see what each statement rests on.</p>
+      <div class="mini"><div><b>Net loss of &#8377;28.15 crore</b><span>E5, E12</span></div><div><b>$51 million Series D</b><span>E11, E12</span></div></div></div>
+    <div class="cell"><span class="num">03</span><h3>Gaps get their own section</h3><p>The sample report ends with a section on research gaps and limitations, so what is missing is stated instead of smoothed over.</p>
+      <div class="mini"><div><b>Research gaps &amp; limitations</b><span>Section 11</span></div><div><b>Evidence check</b><span>Section 12</span></div></div></div>
+  </div>
+  <p style="margin-top:22px"><a href="/research-methodology">How we review evidence</a></p>
+</section>
+
+<section class="sec" id="workflow" aria-labelledby="workflow-h">
+  <p class="kicker">How it works</p>
+  <h2 id="workflow-h">Five stages, from question to report.</h2>
+  <p class="lead">Define, Research, Evidence, Analyse, Report. The order keeps your original question in view while the material comes in.</p>
+  <div class="five" id="five">
+    <div><span class="num">01</span><h3>Define</h3><p>Frame the question worth answering.</p></div>
+    <div><span class="num">02</span><h3>Research</h3><p>Search across sources and materials.</p></div>
+    <div><span class="num">03</span><h3>Evidence</h3><p>Connect each claim to what supports it.</p></div>
+    <div><span class="num">04</span><h3>Analyse</h3><p>Compare signals, patterns and gaps.</p></div>
+    <div><span class="num">05</span><h3>Report</h3><p>Shape the findings into a structured report.</p></div>
+  </div>
+  <p style="margin-top:22px"><a href="/how-it-works">Read each stage in full</a></p>
+</section>
+
+<section class="sec" id="types" aria-labelledby="types-h">
+  <p class="kicker">Five kinds of research</p>
+  <h2 id="types-h">One workflow, different questions.</h2>
+  <div class="cells bento">
+    <div class="cell"><span class="num">01</span><h3>Company Research</h3><p>A company's business model, products, market position, growth signals and strategic context.</p>
+      <div class="mini"><div><b>Company snapshot</b><span>Section 1</span></div><div><b>Business model</b><span>Section 3</span></div><div><b>Financial &amp; operating performance</b><span>Section 5</span></div><div><b>Risks &amp; challenges</b><span>Section 8</span></div></div>
+      <a class="more" href="/company-research">Explore company research</a></div>
+    <div class="cell"><span class="num">02</span><h3>AI Market Research</h3><p>Market boundaries, demand drivers, customer segments, industry trends, opportunities and risks.</p><a class="more" href="/ai-market-research">Read the market research guide</a></div>
+    <div class="cell"><span class="num">03</span><h3>Competitor Analysis</h3><p>How competitors position themselves, where they differ, and which market forces act on them.</p><a class="more" href="/competitor-analysis">Explore competitor analysis</a></div>
+    <div class="cell"><span class="num">04</span><h3>Academic Research</h3><p>Research questions, relevant literature, findings and limitations, organised into one output.</p><a class="more" href="/how-it-works#research-categories">See how it works</a></div>
+    <div class="cell"><span class="num">05</span><h3>Custom Research</h3><p>A specific question or business problem that does not fit neatly into one category.</p><a class="more" href="/how-it-works#research-categories">See how it works</a></div>
+  </div>
+</section>
+
+<section class="sec" id="depth" aria-labelledby="depth-h">
+  <p class="kicker">Report depth</p>
+  <h2 id="depth-h">Pick the depth the question needs.</h2>
+  <div class="cells three">
+    <div class="cell"><span class="num">Quick Answer</span><h3>A fast overview</h3><p>A concise response for straightforward research questions.</p></div>
+    <div class="cell"><span class="num">Standard Report</span><h3>Structured coverage</h3><p>A structured report containing core evidence and analysis.</p></div>
+    <div class="cell"><span class="num">Deep Analysis</span><h3>A broader investigation</h3><p>A more comprehensive research output with broader evidence, comparisons, deeper analysis and limitations.</p></div>
+  </div>
+  <p class="small" style="margin-top:16px">Availability and final content depend on the application and the research task.</p>
+</section>
+
+<section class="sec" id="demo" aria-labelledby="demo-h">
+  <p class="kicker">Illustrative preview</p>
+  <h2 id="demo-h">Try the form. Nothing runs.</h2>
+  <p class="lead">This is a preview of the question form, not live research. Choose a research type to open a sample report where one exists.</p>
+  <div class="demo-grid"><form class="demo" id="demo-form" novalidate>
+    <label for="demo-question">What do you want to understand?</label>
+    <input id="demo-question" value="How is India's EV market changing in 2026?" autocomplete="off" aria-describedby="demo-honesty-note">
+    <div class="pair">
+      <div><label for="demo-research-type">Research type</label><select id="demo-research-type"><option>Company Research</option><option>AI Market Research</option><option>Competitor Analysis</option><option>Academic Research</option><option>Custom Research</option></select></div>
+      <div><label for="demo-report-depth">Report depth</label><select id="demo-report-depth"><option>Quick Answer</option><option selected>Standard Report</option><option>Deep Analysis</option></select></div>
+    </div>
+    <button class="btn" type="button" data-view-sample>View Sample Report</button>
+    <p class="status" data-demo-sample-feedback role="status" aria-live="polite">Company Research sample available.</p>
+    <p class="note" id="demo-honesty-note">The selected depth does not generate a new report, and the linked sample may not use that depth. View Sample Report opens an existing sample. It does not run research.</p>
+    <div class="sugg" aria-label="Example research questions">
+      <button type="button" data-question="Compare Nike and Adidas strategy in India">Compare Nike and Adidas strategy in India</button>
+      <button type="button" data-question="What are the strongest signals in battery storage?">Find signals in battery storage</button>
+      <button type="button" data-question="How should I structure a literature review?">Structure a literature review</button>
+    </div>
+    <span id="demo-state" hidden>Illustrative preview &mdash; no live research</span>
+  </form>
+  <aside class="demo-side" id="demo-side" aria-label="Your selection" aria-live="polite">
+    <div><h3>Research type</h3><p class="v" data-s-type>Company Research</p><p data-s-type-d></p></div>
+    <hr class="sep">
+    <div><h3>Report depth</h3><p class="v" data-s-depth>Standard Report</p><p data-s-depth-d></p></div>
+    <hr class="sep">
+    <div><h3>Sample report</h3><p data-s-sample class="ok"></p></div>
+  </aside></div>
+</section>
+
+<section class="sec" id="questions" aria-labelledby="q-h">
+  <p class="kicker">Questions</p>
+  <h2 id="q-h">Short answers.</h2>
+  <div class="notes">
+    <p><b>Does the preview above run research?</b> No. It is an illustration, and it opens an existing sample.</p>
+    <p><b>Is there a sample I can read?</b> Yes, a Company Research report on The Whole Truth Foods. Samples for the other research types are not available yet.</p>
+    <p><b>What are the three depths?</b> Quick Answer, Standard Report and Deep Analysis, from a fast overview to a broader investigation.</p>
+    <p><b>Can I rely on a report as it stands?</b> No. Source links do not guarantee independent verification, so check important facts, figures and quotations against the originals.</p>
+    <p><b>Who is it for?</b> Founders, investors and strategy teams who investigate companies, understand markets and compare competitors.</p>
+    <p><b>Where do I start?</b> Open the app and write the question you need answered.</p>
+  </div>
+</section>
+
+<section class="sec cta" aria-label="Get started">
+  <h2>Start with the question that matters.</h2>
+  <p class="lead" style="margin:0 auto 30px">Write down what you need to understand. Recon Brief starts there.</p>
+  <div class="actions"><a class="btn" href="https://app.reconbrief.in/">Start a research brief</a><a class="btn ghost" href="/samples">See sample reports</a></div>
+</section>
+</main>
+<footer class="foot"><div class="foot-brand"><a class="wordmark" href="/" aria-label="Recon Brief home"><svg viewBox="0 0 26 26" aria-hidden="true"><rect width="26" height="26" rx="6" fill="#66A3BF"/><text x="13" y="19" text-anchor="middle" font-family="DM Sans,sans-serif" font-weight="700" font-size="17" fill="#06121a">R</text></svg><span><b>Recon</b> <i>Brief</i></span></a><p>Evidence-backed research for clearer decisions.</p></div>
+<div class="foot-in">
+<div><h4>Company</h4><ul><li><a href="/about">About Us</a></li><li><a href="/how-it-works">How It Works</a></li><li><a href="/trust-and-privacy">Trust &amp; Privacy</a></li><li><a href="/contact">Contact Us</a></li><li><a href="/blog">Blog</a></li></ul></div>
+<div><h4>Research</h4><ul><li><a href="/company-research">Company Research</a></li><li><a href="/ai-market-research">AI Market Research</a></li><li><a href="/competitor-analysis">Competitor Analysis</a></li><li><a href="/how-it-works#research-categories">Academic Research</a></li><li><a href="/how-it-works#research-categories">Custom Research</a></li></ul></div>
+<div><h4>Explore</h4><ul><li><a href="/">Home</a></li><li><a href="/#demo">Interactive Demo</a></li><li><a href="/samples">Sample Reports</a></li><li><a href="/about#presentation-builder">Presentation Builder<span class="soon">Coming Soon</span></a></li><li><a href="https://app.reconbrief.in/">Open Recon Brief</a></li></ul></div>
+<div><h4>Stay Connected</h4><p class="stay">Follow Recon Brief for research insights, product updates and useful business intelligence.</p><div class="social"><a href="https://www.facebook.com/profile.php?id=61595208578456" target="_blank" rel="noopener noreferrer" aria-label="Recon Brief on Facebook (opens in a new tab)" data-social="facebook"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M9.101 23.691v-7.98H6.627v-3.667h2.474v-1.58c0-4.085 1.848-5.978 5.858-5.978.401 0 .955.042 1.468.103a8.68 8.68 0 0 1 1.141.195v3.325a8.623 8.623 0 0 0-.653-.036 26.805 26.805 0 0 0-.733-.009c-.707 0-1.259.096-1.675.309a1.686 1.686 0 0 0-.679.622c-.258.42-.374.995-.374 1.752v1.297h3.919l-.386 2.103-.287 1.564h-3.246v8.245C19.396 23.238 24 18.179 24 12.044c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.628 3.874 10.35 9.101 11.647Z"/></svg></a><a href="https://www.instagram.com/reconbrief/" target="_blank" rel="noopener noreferrer" aria-label="Recon Brief on Instagram (opens in a new tab)" data-social="instagram"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M7.0301.084c-1.2768.0602-2.1487.264-2.911.5634-.7888.3075-1.4575.72-2.1228 1.3877-.6652.6677-1.075 1.3368-1.3802 2.127-.2954.7638-.4956 1.6365-.552 2.914-.0564 1.2775-.0689 1.6882-.0626 4.947.0062 3.2586.0206 3.6671.0825 4.9473.061 1.2765.264 2.1482.5635 2.9107.308.7889.72 1.4573 1.388 2.1228.6679.6655 1.3365 1.0743 2.1285 1.38.7632.295 1.6361.4961 2.9134.552 1.2773.056 1.6884.069 4.9462.0627 3.2578-.0062 3.668-.0207 4.9478-.0814 1.28-.0607 2.147-.2652 2.9098-.5633.7889-.3086 1.4578-.72 2.1228-1.3881.665-.6682 1.0745-1.3378 1.3795-2.1284.2957-.7632.4966-1.636.552-2.9124.056-1.2809.0692-1.6898.063-4.948-.0063-3.2583-.021-3.6668-.0817-4.9465-.0607-1.2797-.264-2.1487-.5633-2.9117-.3084-.7889-.72-1.4568-1.3876-2.1228C21.2982 1.33 20.628.9208 19.8378.6165 19.074.321 18.2017.1197 16.9244.0645 15.6471.0093 15.236-.005 11.977.0014 8.718.0076 8.31.0215 7.0301.0839m.1402 21.6932c-1.17-.0509-1.8053-.2453-2.2287-.408-.5606-.216-.96-.4771-1.3819-.895-.422-.4178-.6811-.8186-.9-1.378-.1644-.4234-.3624-1.058-.4171-2.228-.0595-1.2645-.072-1.6442-.079-4.848-.007-3.2037.0053-3.583.0607-4.848.05-1.169.2456-1.805.408-2.2282.216-.5613.4762-.96.895-1.3816.4188-.4217.8184-.6814 1.3783-.9003.423-.1651 1.0575-.3614 2.227-.4171 1.2655-.06 1.6447-.072 4.848-.079 3.2033-.007 3.5835.005 4.8495.0608 1.169.0508 1.8053.2445 2.228.408.5608.216.96.4754 1.3816.895.4217.4194.6816.8176.9005 1.3787.1653.4217.3617 1.056.4169 2.2263.0602 1.2655.0739 1.645.0796 4.848.0058 3.203-.0055 3.5834-.061 4.848-.051 1.17-.245 1.8055-.408 2.2294-.216.5604-.4763.96-.8954 1.3814-.419.4215-.8181.6811-1.3783.9-.4224.1649-1.0577.3617-2.2262.4174-1.2656.0595-1.6448.072-4.8493.079-3.2045.007-3.5825-.006-4.848-.0608M16.953 5.5864A1.44 1.44 0 1 0 18.39 4.144a1.44 1.44 0 0 0-1.437 1.4424M5.8385 12.012c.0067 3.4032 2.7706 6.1557 6.173 6.1493 3.4026-.0065 6.157-2.7701 6.1506-6.1733-.0065-3.4032-2.771-6.1565-6.174-6.1498-3.403.0067-6.156 2.771-6.1496 6.1738M8 12.0077a4 4 0 1 1 4.008 3.9921A3.9996 3.9996 0 0 1 8 12.0077"/></svg></a><a href="https://x.com/RECONBRIEF" target="_blank" rel="noopener noreferrer" aria-label="Recon Brief on X (opens in a new tab)" data-social="x"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M14.234 10.162 22.977 0h-2.072l-7.591 8.824L7.251 0H.258l9.168 13.343L.258 24H2.33l8.016-9.318L16.749 24h6.993zm-2.837 3.299-.929-1.329L3.076 1.56h3.182l5.965 8.532.929 1.329 7.754 11.09h-3.182z"/></svg></a></div></div>
+</div><div class="foot-base"><span>&copy; 2026 Recon Brief. All rights reserved.</span><span>Research / Evidence / Analysis / Clarity</span></div></footer>
+<script src="/lenis.min.js" defer></script>
+<script src="/script.js" defer></script>
+</body>
+</html>

@@ -1,0 +1,36 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "buildCommand": "npm run build",
+  "outputDirectory": "dist",
+  "cleanUrls": true,
+  "rewrites": [
+    {
+      "source": "/blog",
+      "destination": "/blog/index.html"
+    },
+    {
+      "source": "/blog/",
+      "destination": "/blog/index.html"
+    },
+    {
+      "source": "/blog/company-research-guide",
+      "destination": "/blog/company-research-guide/index.html"
+    },
+    {
+      "source": "/blog/company-research-guide/",
+      "destination": "/blog/company-research-guide/index.html"
+    }
+  ],
+  "redirects": [
+    {
+      "source": "/samples/company-research/the-whole-truth-foods",
+      "destination": "/samples",
+      "permanent": true
+    },
+    {
+      "source": "/samples/company-research/the-whole-truth-foods/",
+      "destination": "/samples",
+      "permanent": true
+    }
+  ]
+}
